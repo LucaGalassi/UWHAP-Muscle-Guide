@@ -38,6 +38,11 @@ jobs:
         working-directory: app
         run: npm run build
 
+      - name: Upload Pages artifact (for workflow_run)
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: app/dist
+
       - name: Deploy to gh-pages (same repo)
         uses: peaceiris/actions-gh-pages@v3
         with:

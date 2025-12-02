@@ -25,18 +25,33 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: Prepare content on push to gh-pages
+        if: github.event_name == 'push'
         uses: actions/checkout@v4
         with:
           ref: gh-pages
 
-      - name: Setup Pages
-        uses: actions/configure-pages@v4
-
-      - name: Upload artifact
+      - name: Upload artifact (push to gh-pages)
+        if: github.event_name == 'push'
         uses: actions/upload-pages-artifact@v3
         with:
           path: '.'
+
+      - name: Download artifact (workflow_run)
+        if: github.event_name == 'workflow_run'
+        uses: actions/download-artifact@v4
+        with:
+          name: github-pages
+          path: ./artifact
+
+      - name: Upload artifact (from workflow_run download)
+        if: github.event_name == 'workflow_run'
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./artifact
 
       - name: Deploy to GitHub Pages
         id: deployment
