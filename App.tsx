@@ -5,9 +5,10 @@ import StudyDashboard from './components/StudyDashboard';
 import FlashcardView from './components/StudyModes/FlashcardView';
 import QuizView from './components/StudyModes/QuizView';
 import SmartGuideView from './components/StudyModes/SmartGuideView';
-import { MuscleItem, StudyMode, LearningTool, MuscleProgress } from './types';
-import { MUSCLE_DATA } from './constants';
-import { Menu, ArrowLeft, Calendar, AlertTriangle, Timer } from 'lucide-react';
+import WelcomeModal from './components/WelcomeModal';
+import { MuscleItem, StudyMode, LearningTool, MuscleProgress, AppTheme } from './types';
+import { MUSCLE_DATA, THEME_CONFIG } from './constants';
+import { Menu, ArrowLeft, AlertTriangle, Timer } from 'lucide-react';
 
 const App: React.FC = () => {
   const [selectedMuscle, setSelectedMuscle] = useState<MuscleItem>(MUSCLE_DATA[0]);
@@ -24,6 +25,12 @@ const App: React.FC = () => {
   // AI Settings State
   const [apiKey, setApiKey] = useState<string>('');
 
+  // Global Theme State
+  const [theme, setTheme] = useState<AppTheme>('modern');
+
+  // Welcome Modal State
+  const [showWelcome, setShowWelcome] = useState(true);
+
   // Exam Date Logic
   const EXAM_DATE = new Date('2025-12-08T09:00:00'); // Exam Date
   const [daysUntilExam, setDaysUntilExam] = useState(0);
@@ -34,6 +41,47 @@ const App: React.FC = () => {
     setDaysUntilExam(Math.ceil(diff / (1000 * 60 * 60 * 24)));
   }, []);
 
+  const parseUrlParams = (search: string) => {
+    const params = new URLSearchParams(search);
+    
+    // Muscle
+    const currentParam = params.get('current');
+    if (currentParam) {
+      const found = MUSCLE_DATA.find(m => m.id === currentParam);
+      if (found) setSelectedMuscle(found);
+    }
+
+    // Name
+    const nameParam = params.get('name');
+    if (nameParam) {
+      setStudentName(decodeURIComponent(nameParam));
+    }
+    
+    // Progress
+    const sharedProgress = params.get('p');
+    if (sharedProgress) {
+      try {
+        const decoded = atob(sharedProgress);
+        const parsedShared = JSON.parse(decoded);
+        setProgressMap(parsedShared);
+        localStorage.setItem('srs_progress', JSON.stringify(parsedShared));
+      } catch (e) {
+        console.error("Failed to parse shared progress", e);
+      }
+    }
+
+    // Theme
+    const themeParam = params.get('theme');
+    if (themeParam && THEME_CONFIG[themeParam as AppTheme]) {
+      setTheme(themeParam as AppTheme);
+    }
+
+    // Hide welcome if we have data or explicit action
+    if (currentParam || sharedProgress || nameParam) {
+      setShowWelcome(false);
+    }
+  };
+
   // Initialize state from URL params and LocalStorage on mount
   useEffect(() => {
     // 1. Load API Key
@@ -42,43 +90,23 @@ const App: React.FC = () => {
 
     // 2. Load Progress from LocalStorage
     const storedProgress = localStorage.getItem('srs_progress');
-    let localProgress = {};
     if (storedProgress) {
       try {
-        localProgress = JSON.parse(storedProgress);
-        setProgressMap(localProgress);
+        setProgressMap(JSON.parse(storedProgress));
       } catch (e) {
         console.error("Failed to parse local progress", e);
       }
     }
 
-    // 3. Load URL Params for Sharing (Overrides local if present)
-    const params = new URLSearchParams(window.location.search);
-    const currentParam = params.get('current');
-    if (currentParam) {
-      const found = MUSCLE_DATA.find(m => m.id === currentParam);
-      if (found) setSelectedMuscle(found);
+    // 3. Load Theme
+    const storedTheme = localStorage.getItem('app_theme');
+    if (storedTheme && THEME_CONFIG[storedTheme as AppTheme]) {
+       setTheme(storedTheme as AppTheme);
     }
 
-    const nameParam = params.get('name');
-    if (nameParam) {
-      setStudentName(decodeURIComponent(nameParam));
-    }
-    
-    const sharedProgress = params.get('p');
-    if (sharedProgress) {
-      try {
-        const decoded = atob(sharedProgress);
-        const parsedShared = JSON.parse(decoded);
-        setProgressMap(parsedShared);
-        localStorage.setItem('srs_progress', JSON.stringify(parsedShared));
-        // Force Reference mode if sharing
-        if (nameParam) {
-          // Optional: You could show a welcome toast here
-        }
-      } catch (e) {
-        console.error("Failed to parse shared progress", e);
-      }
+    // 4. Load URL Params (Overrides local)
+    if (window.location.search) {
+      parseUrlParams(window.location.search);
     }
   }, []);
 
@@ -88,6 +116,11 @@ const App: React.FC = () => {
       localStorage.setItem('srs_progress', JSON.stringify(progressMap));
     }
   }, [progressMap]);
+
+  // Save Theme whenever it changes
+  useEffect(() => {
+    localStorage.setItem('app_theme', theme);
+  }, [theme]);
 
   const handleSetApiKey = (key: string) => {
     setApiKey(key);
@@ -103,6 +136,16 @@ const App: React.FC = () => {
       setProgressMap({});
       localStorage.removeItem('srs_progress');
     }
+  };
+
+  const handleResumeFromLink = (url: string) => {
+     try {
+       const urlObj = new URL(url);
+       parseUrlParams(urlObj.search);
+     } catch (e) {
+       console.error("Invalid URL");
+       throw e;
+     }
   };
 
   const updateMuscleProgress = (progress: MuscleProgress) => {
@@ -139,6 +182,7 @@ const App: React.FC = () => {
      const params = new URLSearchParams();
      params.set('current', selectedMuscle.id);
      if (name) params.set('name', encodeURIComponent(name));
+     params.set('theme', theme);
      
      // Encode progress map
      if (Object.keys(progressMap).length > 0) {
@@ -153,6 +197,8 @@ const App: React.FC = () => {
      
      return `${window.location.protocol}//${window.location.host}${window.location.pathname}?${params.toString()}`;
   };
+
+  const currentThemeConfig = THEME_CONFIG[theme];
 
   const renderMainContent = () => {
     if (currentMode === 'REFERENCE') {
@@ -181,14 +227,14 @@ const App: React.FC = () => {
     // Wrapped tools with back button
     return (
       <div className="flex flex-col h-full">
-        <div className="p-4 border-b border-slate-200 bg-white flex items-center justify-between">
+        <div className={`p-4 border-b ${currentThemeConfig.border} ${currentThemeConfig.cardBg} flex items-center justify-between`}>
           <button 
             onClick={() => setActiveTool('NONE')}
-            className="flex items-center gap-2 text-sm font-bold text-slate-600 hover:text-slate-900"
+            className={`flex items-center gap-2 text-sm font-bold hover:opacity-80 ${currentThemeConfig.text}`}
           >
             <ArrowLeft className="w-4 h-4" /> Back to Dashboard
           </button>
-          <div className="text-xs font-bold text-slate-400 uppercase tracking-wider">
+          <div className={`text-xs font-bold uppercase tracking-wider ${currentThemeConfig.subText}`}>
             {activeTool.replace('_', ' ')} MODE
           </div>
         </div>
@@ -197,12 +243,12 @@ const App: React.FC = () => {
             <FlashcardView 
               muscle={selectedMuscle} 
               onNext={(correct) => {
-                 // Pick random muscle for next card
                  const random = MUSCLE_DATA[Math.floor(Math.random() * MUSCLE_DATA.length)];
                  setSelectedMuscle(random);
               }}
               apiKey={apiKey}
-              mode="BROWSE" // Generic mode for manual flashcards
+              mode="BROWSE"
+              currentTheme={theme}
             />
           )}
           {activeTool === 'QUIZ' && <QuizView />}
@@ -219,10 +265,20 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col h-screen bg-slate-50 overflow-hidden">
+    <div className={`flex flex-col h-screen overflow-hidden transition-colors duration-500 ${currentThemeConfig.appBg}`}>
       
+      {/* Welcome Modal */}
+      {showWelcome && (
+        <WelcomeModal 
+          onDismiss={() => setShowWelcome(false)}
+          onResume={handleResumeFromLink}
+          daysUntilExam={daysUntilExam}
+          currentTheme={theme}
+        />
+      )}
+
       {/* EXAM COUNTDOWN BANNER */}
-      <div className="bg-gradient-to-r from-slate-900 to-slate-800 text-white px-4 py-3 flex items-center justify-between shadow-md z-50">
+      <div className="bg-gradient-to-r from-slate-900 to-slate-800 text-white px-4 py-3 flex items-center justify-between shadow-md z-40 relative">
         <div className="flex items-center gap-4">
           <div className="bg-red-500/20 p-2 rounded-lg border border-red-500/50 animate-pulse">
             <Timer className="w-5 h-5 text-red-400" />
@@ -282,6 +338,8 @@ const App: React.FC = () => {
           onSetApiKey={handleSetApiKey}
           progressMap={progressMap}
           onResetProgress={handleResetProgress}
+          currentTheme={theme}
+          onSetTheme={setTheme}
         />
 
         {/* Main Content */}

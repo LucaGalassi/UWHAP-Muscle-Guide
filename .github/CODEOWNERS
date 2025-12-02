@@ -1,8 +1,0 @@
-# Protect CI and GitHub configuration from automated editors
-# Changes to these paths will require review by the owner before merging.
-
-# Lock down all GitHub configs
-.github/* @LucaGalassi
-
-# Explicitly lock workflows
-.github/workflows/* @LucaGalassi

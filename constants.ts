@@ -1,4 +1,4 @@
-import { MuscleItem, MuscleContent } from './types';
+import { MuscleItem, MuscleContent, ThemeConfig, AppTheme } from './types';
 
 // Helper to create IDs
 const m = (name: string, group: 'A' | 'B', subCategory?: string): MuscleItem => ({
@@ -7,6 +7,61 @@ const m = (name: string, group: 'A' | 'B', subCategory?: string): MuscleItem => 
   group,
   subCategory
 });
+
+export const THEME_CONFIG: Record<AppTheme, ThemeConfig> = {
+  modern: {
+    label: 'Modern',
+    appBg: 'bg-slate-50',
+    cardBg: 'bg-white',
+    text: 'text-slate-900',
+    subText: 'text-slate-400',
+    border: 'border-slate-100',
+    accent: 'bg-gradient-to-r from-brand-400 to-blue-600',
+    badge: 'bg-white/90 text-brand-600 border-brand-100 shadow-sm',
+    infoBox: 'bg-white/60 border-slate-200 text-slate-700',
+    iconLoc: 'bg-emerald-100 text-emerald-600',
+    iconFunc: 'bg-blue-100 text-blue-600'
+  },
+  midnight: {
+    label: 'Midnight',
+    appBg: 'bg-slate-950',
+    cardBg: 'bg-slate-900',
+    text: 'text-white',
+    subText: 'text-slate-400',
+    border: 'border-slate-800',
+    accent: 'bg-gradient-to-r from-indigo-500 to-purple-600',
+    badge: 'bg-slate-800 text-indigo-400 border-slate-700 shadow-lg',
+    infoBox: 'bg-slate-800/60 border-slate-700 text-slate-300',
+    iconLoc: 'bg-emerald-900/50 text-emerald-400',
+    iconFunc: 'bg-blue-900/50 text-blue-400'
+  },
+  blueprint: {
+    label: 'Blueprint',
+    appBg: 'bg-blue-50',
+    cardBg: 'bg-blue-600 bg-[radial-gradient(#ffffff33_1px,transparent_1px)] [background-size:20px_20px]',
+    text: 'text-white',
+    subText: 'text-blue-100',
+    border: 'border-blue-500',
+    accent: 'bg-white',
+    badge: 'bg-blue-500 text-white border-blue-400 shadow-lg',
+    infoBox: 'bg-blue-900/40 border-blue-400/50 text-blue-50',
+    iconLoc: 'bg-white/20 text-white',
+    iconFunc: 'bg-white/20 text-white'
+  },
+  nature: {
+    label: 'Nature',
+    appBg: 'bg-stone-100',
+    cardBg: 'bg-stone-50',
+    text: 'text-stone-800',
+    subText: 'text-stone-500',
+    border: 'border-stone-200',
+    accent: 'bg-gradient-to-r from-emerald-500 to-teal-600',
+    badge: 'bg-white text-emerald-700 border-emerald-200 shadow-sm',
+    infoBox: 'bg-white/60 border-stone-200 text-stone-700',
+    iconLoc: 'bg-emerald-100 text-emerald-700',
+    iconFunc: 'bg-amber-100 text-amber-700'
+  }
+};
 
 export const MUSCLE_DATA: MuscleItem[] = [
   // GROUP A

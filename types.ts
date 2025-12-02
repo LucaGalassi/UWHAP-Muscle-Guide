@@ -53,3 +53,20 @@ export interface MuscleProgress {
 }
 
 export type ConfidenceRating = 'AGAIN' | 'HARD' | 'GOOD' | 'EASY';
+
+// Theming
+export type AppTheme = 'modern' | 'midnight' | 'blueprint' | 'nature';
+
+export interface ThemeConfig {
+  label: string;
+  appBg: string; // Global background
+  cardBg: string; // Flashcard front/back background
+  text: string;
+  subText: string;
+  border: string;
+  accent: string;
+  badge: string;
+  infoBox: string;
+  iconLoc: string;
+  iconFunc: string;
+}
