@@ -20,7 +20,6 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["index.tsx", "App.tsx", "constants.ts", "types.ts", "components/**/*.tsx", "services/**/*.ts"],
-  "exclude": ["node_modules", "dist", "**/*.d.ts"],
+  "include": ["."],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

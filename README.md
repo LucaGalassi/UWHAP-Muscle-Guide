@@ -18,4 +18,3 @@ View your app in AI Studio: https://ai.studio/apps/drive/1Cr_IBWJ19pE25MdcvfcCQF
 2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
 3. Run the app:
    `npm run dev`
-# Test workflow trigger - Tue Dec  2 15:26:20 CST 2025

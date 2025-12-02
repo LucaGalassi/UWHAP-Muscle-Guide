@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { MuscleItem, MuscleContent } from '../types';
 import { fetchMuscleDetails } from '../services/geminiService';
-import { MUSCLE_DATA } from '../constants';
+import { MUSCLE_DETAILS, MUSCLE_DATA } from '../constants';
 import { 
   Play, 
   MapPin, 
@@ -15,7 +15,9 @@ import {
   CheckCircle2,
   Circle,
   ArrowRight,
-  PlayCircle
+  PlayCircle,
+  Sparkles,
+  X
 } from 'lucide-react';
 import { GROUP_A_REQUIREMENTS, GROUP_B_REQUIREMENTS } from '../constants';
 
@@ -24,21 +26,29 @@ interface MuscleViewProps {
   onSelectMuscle: (muscle: MuscleItem) => void;
   isLearned: boolean;
   toggleLearned: () => void;
+  apiKey: string;
 }
 
-const MuscleView: React.FC<MuscleViewProps> = ({ muscle, onSelectMuscle, isLearned, toggleLearned }) => {
+const MuscleView: React.FC<MuscleViewProps> = ({ muscle, onSelectMuscle, isLearned, toggleLearned, apiKey }) => {
   const [content, setContent] = useState<MuscleContent | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isBannerDismissed, setIsBannerDismissed] = useState(false);
+
+  // Check if we have static data for this muscle
+  const hasStaticData = !!MUSCLE_DETAILS[muscle.id];
 
   useEffect(() => {
+    // Reset banner dismissal when muscle changes
+    setIsBannerDismissed(false);
+    
     let mounted = true;
     const loadData = async () => {
       setLoading(true);
       setError(null);
       setContent(null);
       try {
-        const data = await fetchMuscleDetails(muscle);
+        const data = await fetchMuscleDetails(muscle, apiKey);
         if (mounted) setContent(data);
       } catch (err) {
         if (mounted) setError("Failed to load muscle details.");
@@ -49,7 +59,7 @@ const MuscleView: React.FC<MuscleViewProps> = ({ muscle, onSelectMuscle, isLearn
 
     loadData();
     return () => { mounted = false; };
-  }, [muscle]);
+  }, [muscle, apiKey]);
 
   const openSearchPopup = (query: string) => {
     const url = `https://www.google.com/search?tbm=isch&q=${encodeURIComponent(query)}`;
@@ -80,6 +90,13 @@ const MuscleView: React.FC<MuscleViewProps> = ({ muscle, onSelectMuscle, isLearn
       </div>
     );
   }
+
+  // Determine if we should show the AI banner
+  // Show only if: 
+  // 1. Static data is missing (meaning we need AI to get good data)
+  // 2. No API key is provided
+  // 3. Banner hasn't been dismissed by user
+  const showAiBanner = !hasStaticData && !apiKey && !isBannerDismissed;
 
   return (
     <div className="h-full flex flex-col overflow-y-auto bg-white custom-scrollbar">
@@ -162,6 +179,28 @@ const MuscleView: React.FC<MuscleViewProps> = ({ muscle, onSelectMuscle, isLearn
       {content && (
         <div className="flex-1 px-8 py-10 max-w-5xl mx-auto w-full space-y-10 pb-24">
           
+          {/* AI Banner - Contextual */}
+          {showAiBanner && (
+             <div className="relative p-4 bg-purple-50 border border-purple-100 rounded-xl flex items-start gap-4 animate-in fade-in slide-in-from-top-2">
+                <div className="p-2 bg-purple-100 text-purple-600 rounded-lg shrink-0">
+                  <Sparkles className="w-5 h-5" />
+                </div>
+                <div className="flex-1">
+                  <h4 className="text-sm font-bold text-purple-900">AI Features Available</h4>
+                  <p className="text-sm text-purple-700 mt-1 leading-relaxed">
+                    Detailed content for <strong>{muscle.name}</strong> is not available in the local database. 
+                    You can add a Gemini API key in Settings to generate Origin, Insertion, and Action details automatically.
+                  </p>
+                </div>
+                <button 
+                  onClick={() => setIsBannerDismissed(true)}
+                  className="text-purple-400 hover:text-purple-600 p-1"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+             </div>
+          )}
+          
           {/* Top Row: O/I/A */}
           <div className="grid md:grid-cols-3 gap-8">
             <InfoCard 
@@ -195,10 +234,10 @@ const MuscleView: React.FC<MuscleViewProps> = ({ muscle, onSelectMuscle, isLearn
                 <Activity className="w-5 h-5 text-slate-400" />
                 Demonstration
               </h3>
-              <p className="text-slate-700 leading-relaxed text-base">
+              <div className="text-slate-700 leading-relaxed text-base whitespace-pre-line">
                 {content.demonstration}
-              </p>
-              <p className="mt-4 text-xs font-medium text-orange-600 flex items-center gap-1.5">
+              </div>
+              <p className="mt-6 text-xs font-medium text-orange-600 flex items-center gap-1.5 bg-orange-50 p-2 rounded-lg inline-block">
                 <Info className="w-3.5 h-3.5" />
                 Must point to origin & insertion on an unpainted skeleton (not on your own body).
               </p>
@@ -227,28 +266,28 @@ const MuscleView: React.FC<MuscleViewProps> = ({ muscle, onSelectMuscle, isLearn
             )}
 
             <div className="space-y-8">
-              {content.clinicalNote && (
+              {content.clinicalConnection && (
                 <div>
                   <h3 className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-3 flex items-center gap-2">
                     <Info className="w-4 h-4" />
-                    Clinical Note
+                    Clinical Connection
                   </h3>
                   <div className="p-5 bg-white border border-slate-200 rounded-xl shadow-sm">
                     <p className="text-sm text-slate-600 leading-relaxed">
-                      {content.clinicalNote}
+                      {content.clinicalConnection}
                     </p>
                   </div>
                 </div>
               )}
 
-               {content.similarMuscles && content.similarMuscles.length > 0 && (
+               {content.relatedMuscles && content.relatedMuscles.length > 0 && (
                 <div>
                   <h3 className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-3">
                     Related Muscles
                   </h3>
-                  <div className="flex flex-wrap gap-2">
-                    {content.similarMuscles.map((name, i) => {
-                      const relatedMuscle = MUSCLE_DATA.find(m => m.name.toLowerCase() === name.toLowerCase());
+                  <div className="flex flex-col gap-2">
+                    {content.relatedMuscles.map((rm, i) => {
+                      const relatedMuscle = MUSCLE_DATA.find(m => m.id === rm.id);
                       
                       if (!relatedMuscle) return null;
 
@@ -256,10 +295,13 @@ const MuscleView: React.FC<MuscleViewProps> = ({ muscle, onSelectMuscle, isLearn
                         <button 
                           key={i}
                           onClick={() => onSelectMuscle(relatedMuscle)}
-                          className="group flex items-center gap-2 pl-3 pr-2 py-1.5 bg-white border border-slate-200 hover:border-brand-300 hover:ring-1 hover:ring-brand-200 rounded-lg text-xs font-semibold text-slate-600 hover:text-brand-700 transition-all shadow-sm"
+                          className="group flex items-center justify-between p-3 bg-white border border-slate-200 hover:border-brand-300 hover:ring-1 hover:ring-brand-200 rounded-xl text-left transition-all shadow-sm"
                         >
-                          {name}
-                          <ArrowRight className="w-3 h-3 text-slate-300 group-hover:text-brand-500" />
+                          <div>
+                            <span className="block text-sm font-bold text-slate-700 group-hover:text-brand-700">{rm.name}</span>
+                            <span className="block text-xs text-slate-500 mt-0.5">{rm.relation}</span>
+                          </div>
+                          <ArrowRight className="w-4 h-4 text-slate-300 group-hover:text-brand-500" />
                         </button>
                       );
                     })}
