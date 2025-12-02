@@ -1,3 +1,5 @@
+# CRITICAL: This workflow auto-deploys to GitHub Pages. Do not remove.
+# If this file is accidentally deleted, re-run: git push origin main
 name: Build and Deploy to GitHub Pages
 
 on:
