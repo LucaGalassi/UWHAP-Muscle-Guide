@@ -289,7 +289,7 @@ const Sidebar: React.FC<SidebarProps> = ({
         
         {/* Footer */}
         <div className={`p-4 border-t ${theme.sidebarBorder} ${theme.sidebarBg} text-[10px] ${theme.sidebarSubText} text-center uppercase tracking-wider font-semibold`}>
-          V3.7 • Made by Luca G • {apiKey ? 'AI Enabled' : 'AI Optional'}
+          V3.8 • Made by Luca G • {apiKey ? 'AI Enabled' : 'AI Optional'}
         </div>
       </div>
 
