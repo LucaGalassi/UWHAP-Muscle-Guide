@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { MUSCLE_DATA } from '../constants';
 import { MuscleItem, StudyMode, MuscleProgress } from '../types';
-import { Search, ChevronRight, BookOpen, CheckCircle2, Share2, Circle, X, Copy, Check, GraduationCap, LayoutList, Settings, Key, Trash2, Trophy, Clock, Target, AlertTriangle } from 'lucide-react';
+import { Search, ChevronRight, BookOpen, CheckCircle2, Share2, Circle, X, Copy, Check, GraduationCap, LayoutList, Settings, Key, Trash2, Trophy, Clock, Target, AlertTriangle, User, Save, PartyPopper } from 'lucide-react';
 
 interface SidebarProps {
   onSelectMuscle: (muscle: MuscleItem) => void;
@@ -10,7 +10,7 @@ interface SidebarProps {
   onCloseMobile: () => void;
   learnedIds: Set<string>;
   toggleLearned: (id: string) => void;
-  getShareLink: () => string;
+  getShareLink: (name: string) => string;
   currentMode: StudyMode;
   onSetMode: (mode: StudyMode) => void;
   apiKey: string;
@@ -40,6 +40,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   const [showSettingsModal, setShowSettingsModal] = useState(false);
   const [copyFeedback, setCopyFeedback] = useState(false);
   const [tempKey, setTempKey] = useState(apiKey);
+  const [shareName, setShareName] = useState('');
 
   const filteredMuscles = useMemo(() => {
     return MUSCLE_DATA.filter((muscle) => {
@@ -63,10 +64,10 @@ const Sidebar: React.FC<SidebarProps> = ({
   }, [filteredMuscles]);
 
   const progress = Math.round((learnedIds.size / MUSCLE_DATA.length) * 100);
-  const dueCount = Object.values(progressMap).filter(p => p.dueDate <= Date.now()).length;
+  const dueCount = (Object.values(progressMap) as MuscleProgress[]).filter(p => p.dueDate <= Date.now()).length;
 
   const handleCopyLink = () => {
-    navigator.clipboard.writeText(getShareLink());
+    navigator.clipboard.writeText(getShareLink(shareName));
     setCopyFeedback(true);
     setTimeout(() => setCopyFeedback(false), 2000);
   };
@@ -84,22 +85,24 @@ const Sidebar: React.FC<SidebarProps> = ({
 
   return (
     <>
-      <div className={`fixed inset-y-0 left-0 z-30 w-80 bg-slate-50 border-r border-slate-200 transform transition-transform duration-300 ease-in-out ${isOpen ? 'translate-x-0' : '-translate-x-full'} md:relative md:translate-x-0 flex flex-col`}>
+      <div className={`fixed inset-y-0 left-0 z-30 w-80 bg-slate-50 border-r border-slate-200 transform transition-transform duration-300 ease-in-out ${isOpen ? 'translate-x-0' : '-translate-x-full'} md:relative md:translate-x-0 flex flex-col h-full`}>
         {/* Header */}
         <div className="p-5 border-b border-slate-200 bg-white">
           <div className="flex items-center justify-between mb-5">
             <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 bg-slate-900 rounded-lg flex items-center justify-center text-white">
+              <div className="w-8 h-8 bg-brand-600 rounded-lg flex items-center justify-center text-white shadow-brand-200 shadow-lg">
                 <BookOpen className="w-4 h-4" />
               </div>
-              <h1 className="text-lg font-bold tracking-tight text-slate-900">A&P Muscle Guide</h1>
+              <h1 className="text-lg font-extrabold tracking-tight text-slate-900 leading-none">
+                A&P Muscle<br/>Guide
+              </h1>
             </div>
             <button 
               onClick={() => {
                 setTempKey(apiKey);
                 setShowSettingsModal(true);
               }}
-              className="p-1.5 hover:bg-slate-100 rounded-full text-slate-400 hover:text-slate-600 transition-colors"
+              className="p-2 hover:bg-slate-100 rounded-full text-slate-400 hover:text-slate-600 transition-colors"
             >
               <Settings className="w-4 h-4" />
             </button>
@@ -133,23 +136,25 @@ const Sidebar: React.FC<SidebarProps> = ({
           {currentMode === 'REFERENCE' && (
             <>
               {/* Progress Tracker */}
-              <div className="mb-5 bg-slate-50 p-3 rounded-xl border border-slate-100">
+              <div className="mb-5 bg-gradient-to-br from-brand-50 to-white p-4 rounded-xl border border-brand-100 shadow-sm">
                 <div className="flex justify-between items-end mb-2">
-                  <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Progress</span>
-                  <span className="text-xs font-bold text-brand-600">{learnedIds.size} / {MUSCLE_DATA.length} Learned</span>
+                  <span className="text-xs font-bold text-brand-800 uppercase tracking-wider flex items-center gap-1">
+                    <Trophy className="w-3 h-3" /> Mastery
+                  </span>
+                  <span className="text-xs font-bold text-brand-600">{learnedIds.size} / {MUSCLE_DATA.length}</span>
                 </div>
-                <div className="h-2 w-full bg-slate-200 rounded-full overflow-hidden">
+                <div className="h-2.5 w-full bg-slate-200 rounded-full overflow-hidden mb-3">
                   <div 
-                    className="h-full bg-brand-500 rounded-full transition-all duration-500" 
+                    className="h-full bg-gradient-to-r from-brand-400 to-brand-600 rounded-full transition-all duration-500" 
                     style={{ width: `${progress}%` }}
                   />
                 </div>
                 <button 
                   onClick={() => setShowShareModal(true)}
-                  className="mt-3 w-full flex items-center justify-center gap-2 text-xs font-semibold text-slate-600 hover:text-brand-600 py-1.5 bg-white border border-slate-200 rounded-lg shadow-sm hover:shadow transition-all"
+                  className="w-full flex items-center justify-center gap-2 text-xs font-bold text-brand-700 hover:text-brand-800 py-2 bg-white border border-brand-200 hover:border-brand-300 rounded-lg shadow-sm hover:shadow transition-all"
                 >
-                  <Share2 className="w-3 h-3" />
-                  Save & Share Progress
+                  <Save className="w-3 h-3" />
+                  Save & Share Stats
                 </button>
               </div>
               
@@ -185,28 +190,28 @@ const Sidebar: React.FC<SidebarProps> = ({
           {/* STUDY MODE: Stats */}
           {currentMode === 'STUDY' && (
             <div className="space-y-3">
-              <div className="bg-red-50 p-4 rounded-xl flex items-center gap-4">
+              <div className="bg-red-50 p-4 rounded-xl flex items-center gap-4 border border-red-100">
                 <div className="p-2 bg-white rounded-lg text-red-600 shadow-sm">
                   <Clock className="w-5 h-5" />
                 </div>
                 <div>
                   <h4 className="text-sm font-bold text-slate-900">{dueCount} Muscles</h4>
-                  <p className="text-xs text-red-600 font-medium">Due for review today</p>
+                  <p className="text-xs text-red-600 font-medium">Due for spaced repetition</p>
                 </div>
               </div>
               
-              <div className="bg-blue-50 p-4 rounded-xl flex items-center gap-4">
+              <div className="bg-blue-50 p-4 rounded-xl flex items-center gap-4 border border-blue-100">
                 <div className="p-2 bg-white rounded-lg text-blue-600 shadow-sm">
                   <Trophy className="w-5 h-5" />
                 </div>
                 <div>
                   <h4 className="text-sm font-bold text-slate-900">{learnedIds.size} Mastered</h4>
-                  <p className="text-xs text-blue-600 font-medium">Keep going!</p>
+                  <p className="text-xs text-blue-600 font-medium">Keep hitting the books!</p>
                 </div>
               </div>
               
               <p className="text-xs text-slate-400 text-center pt-4">
-                Select "Smart Guide" in the dashboard to review your due muscles efficiently.
+                Exam Dec 8th. You got this.
               </p>
             </div>
           )}
@@ -215,9 +220,9 @@ const Sidebar: React.FC<SidebarProps> = ({
         {/* List (Only visible in Reference Mode) */}
         {currentMode === 'REFERENCE' ? (
           <div className="flex-1 overflow-y-auto px-2 py-4 space-y-6 custom-scrollbar">
-            {Object.entries(groupedDisplay).sort().map(([category, muscles]) => (
+            {(Object.entries(groupedDisplay) as [string, MuscleItem[]][]).sort().map(([category, muscles]) => (
               <div key={category} className="space-y-1">
-                <h3 className="px-3 text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">
+                <h3 className="px-3 text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2 sticky top-0 bg-slate-50 py-1 z-10">
                   {category}
                 </h3>
                 <div className="space-y-0.5">
@@ -284,12 +289,14 @@ const Sidebar: React.FC<SidebarProps> = ({
 
       {/* Share Modal */}
       {showShareModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden transform transition-all scale-100">
-            <div className="p-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md animate-in fade-in duration-200">
+          <div className="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden transform transition-all scale-100 border border-slate-100">
+            <div className="p-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/80">
               <div className="flex items-center gap-2">
-                <Share2 className="w-4 h-4 text-brand-600" />
-                <h3 className="font-bold text-slate-900">Save Your Progress</h3>
+                <div className="bg-gradient-to-br from-brand-400 to-blue-600 p-1.5 rounded-lg shadow-sm">
+                  <Share2 className="w-4 h-4 text-white" />
+                </div>
+                <h3 className="font-bold text-slate-900">Save Your Journey</h3>
               </div>
               <button 
                 onClick={() => setShowShareModal(false)}
@@ -299,32 +306,67 @@ const Sidebar: React.FC<SidebarProps> = ({
               </button>
             </div>
             
-            <div className="p-6 space-y-5">
-              <p className="text-sm text-slate-600 leading-relaxed">
-                We've generated a unique link that contains all your learned muscles and study progress.
-                <br /><br />
-                <strong>Copy this link</strong> to save your progress or share it with others.
-              </p>
+            <div className="p-6 space-y-6">
+              <div className="bg-slate-50 rounded-2xl p-5 border border-slate-100 relative overflow-hidden">
+                 <div className="absolute top-0 right-0 p-8 bg-brand-100 rounded-full blur-2xl opacity-50 -mr-4 -mt-4"></div>
+                 <div className="relative z-10">
+                    <h4 className="font-bold text-lg mb-2 flex items-center gap-2 text-slate-900">
+                      <PartyPopper className="w-5 h-5 text-yellow-500" /> 
+                      Progress Saved!
+                    </h4>
+                    <p className="text-sm text-slate-600 leading-relaxed mb-4">
+                      Everything is packed into the link below. No accounts, no login. Just pure URL magic.
+                    </p>
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2 text-xs font-medium text-slate-500">
+                        <div className="w-1.5 h-1.5 rounded-full bg-green-500"></div>
+                        <span>Mastered Muscles ({learnedIds.size})</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-xs font-medium text-slate-500">
+                         <div className="w-1.5 h-1.5 rounded-full bg-blue-500"></div>
+                         <span>Spaced Repetition History</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-xs font-medium text-slate-500">
+                         <div className="w-1.5 h-1.5 rounded-full bg-orange-500"></div>
+                         <span>Current Study Queue</span>
+                      </div>
+                    </div>
+                 </div>
+              </div>
+
+              <div className="space-y-3">
+                 <label className="text-xs font-bold text-slate-400 uppercase tracking-wider block">Customize your link (Fun!)</label>
+                 <div className="relative group">
+                   <User className="absolute left-3 top-2.5 w-4 h-4 text-slate-400 group-focus-within:text-brand-500 transition-colors" />
+                   <input 
+                      type="text" 
+                      placeholder="Enter your name (e.g. Dr. Muscle)" 
+                      value={shareName}
+                      onChange={(e) => setShareName(e.target.value)}
+                      className="w-full pl-9 pr-3 py-3 bg-white border-2 border-slate-100 rounded-xl text-sm font-semibold focus:outline-none focus:border-brand-500 focus:ring-4 focus:ring-brand-500/10 transition-all placeholder:font-normal"
+                   />
+                 </div>
+              </div>
               
               <div className="space-y-2">
-                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider ml-1">Your Smart Link</label>
+                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider ml-1">Your Unique Magic Link</label>
                 <div className="flex gap-2">
                   <input 
                     readOnly 
-                    value={getShareLink()} 
-                    className="flex-1 bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-xs text-slate-600 font-mono focus:outline-none focus:ring-2 focus:ring-brand-500/20 truncate cursor-text"
+                    value={getShareLink(shareName)} 
+                    className="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-600 font-mono focus:outline-none truncate cursor-text hover:bg-slate-100 transition-colors"
                     onClick={(e) => e.currentTarget.select()}
                   />
                   <button 
                     onClick={handleCopyLink}
-                    className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all flex items-center gap-2 min-w-[100px] justify-center ${
+                    className={`px-4 py-2 rounded-xl text-sm font-bold transition-all flex items-center gap-2 min-w-[110px] justify-center transform active:scale-95 ${
                       copyFeedback 
-                      ? 'bg-green-600 text-white shadow-inner' 
-                      : 'bg-brand-600 hover:bg-brand-700 text-white shadow-sm hover:shadow'
+                      ? 'bg-green-500 text-white shadow-green-200 shadow-lg' 
+                      : 'bg-slate-900 hover:bg-slate-800 text-white shadow-xl hover:shadow-2xl'
                     }`}
                   >
                     {copyFeedback ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
-                    {copyFeedback ? "Copied" : "Copy"}
+                    {copyFeedback ? "Copied!" : "Copy"}
                   </button>
                 </div>
               </div>

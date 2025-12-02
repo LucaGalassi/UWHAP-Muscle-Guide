@@ -7,11 +7,12 @@ import QuizView from './components/StudyModes/QuizView';
 import SmartGuideView from './components/StudyModes/SmartGuideView';
 import { MuscleItem, StudyMode, LearningTool, MuscleProgress } from './types';
 import { MUSCLE_DATA } from './constants';
-import { Menu, ArrowLeft } from 'lucide-react';
+import { Menu, ArrowLeft, Calendar, AlertTriangle, Timer } from 'lucide-react';
 
 const App: React.FC = () => {
   const [selectedMuscle, setSelectedMuscle] = useState<MuscleItem>(MUSCLE_DATA[0]);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [studentName, setStudentName] = useState<string>('');
   
   // Navigation State
   const [currentMode, setCurrentMode] = useState<StudyMode>('REFERENCE');
@@ -22,6 +23,16 @@ const App: React.FC = () => {
 
   // AI Settings State
   const [apiKey, setApiKey] = useState<string>('');
+
+  // Exam Date Logic
+  const EXAM_DATE = new Date('2025-12-08T09:00:00'); // Exam Date
+  const [daysUntilExam, setDaysUntilExam] = useState(0);
+
+  useEffect(() => {
+    const now = new Date();
+    const diff = EXAM_DATE.getTime() - now.getTime();
+    setDaysUntilExam(Math.ceil(diff / (1000 * 60 * 60 * 24)));
+  }, []);
 
   // Initialize state from URL params and LocalStorage on mount
   useEffect(() => {
@@ -48,17 +59,23 @@ const App: React.FC = () => {
       const found = MUSCLE_DATA.find(m => m.id === currentParam);
       if (found) setSelectedMuscle(found);
     }
+
+    const nameParam = params.get('name');
+    if (nameParam) {
+      setStudentName(decodeURIComponent(nameParam));
+    }
     
     const sharedProgress = params.get('p');
     if (sharedProgress) {
       try {
         const decoded = atob(sharedProgress);
         const parsedShared = JSON.parse(decoded);
-        // Merge shared progress with local, prefer shared? Or just set it.
-        // For sharing, we usually want to see what was shared.
         setProgressMap(parsedShared);
-        // Also save to local immediately so they keep it
         localStorage.setItem('srs_progress', JSON.stringify(parsedShared));
+        // Force Reference mode if sharing
+        if (nameParam) {
+          // Optional: You could show a welcome toast here
+        }
       } catch (e) {
         console.error("Failed to parse shared progress", e);
       }
@@ -97,8 +114,6 @@ const App: React.FC = () => {
 
   // Helper for Reference Mode toggle (Simple "Learned" checkbox)
   const toggleLearnedSimple = (id: string) => {
-    // If it exists in SRS, toggle between MASTERED and LEARN
-    // If not, create a dummy MASTERED entry
     setProgressMap(prev => {
       const current = prev[id];
       const next = { ...prev };
@@ -120,9 +135,10 @@ const App: React.FC = () => {
     });
   };
 
-  const getShareLink = () => {
+  const getShareLink = (name: string) => {
      const params = new URLSearchParams();
      params.set('current', selectedMuscle.id);
+     if (name) params.set('name', encodeURIComponent(name));
      
      // Encode progress map
      if (Object.keys(progressMap).length > 0) {
@@ -144,7 +160,7 @@ const App: React.FC = () => {
         <MuscleView 
           muscle={selectedMuscle} 
           onSelectMuscle={setSelectedMuscle}
-          isLearned={progressMap[selectedMuscle.id]?.status === 'MASTERED'}
+          isLearned={(progressMap[selectedMuscle.id] as MuscleProgress | undefined)?.status === 'MASTERED'}
           toggleLearned={() => toggleLearnedSimple(selectedMuscle.id)}
           apiKey={apiKey}
         />
@@ -165,13 +181,16 @@ const App: React.FC = () => {
     // Wrapped tools with back button
     return (
       <div className="flex flex-col h-full">
-        <div className="p-4 border-b border-slate-200 bg-white">
+        <div className="p-4 border-b border-slate-200 bg-white flex items-center justify-between">
           <button 
             onClick={() => setActiveTool('NONE')}
             className="flex items-center gap-2 text-sm font-bold text-slate-600 hover:text-slate-900"
           >
             <ArrowLeft className="w-4 h-4" /> Back to Dashboard
           </button>
+          <div className="text-xs font-bold text-slate-400 uppercase tracking-wider">
+            {activeTool.replace('_', ' ')} MODE
+          </div>
         </div>
         <div className="flex-1 overflow-hidden">
           {activeTool === 'FLASHCARDS' && (
@@ -200,47 +219,76 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="flex h-screen bg-slate-50 overflow-hidden">
-      {/* Mobile Menu Button */}
-      <button 
-        onClick={() => setIsMobileMenuOpen(true)}
-        className="md:hidden fixed top-4 left-4 z-40 p-2 bg-brand-900 text-white rounded-md shadow-lg"
-      >
-        <Menu className="w-6 h-6" />
-      </button>
+    <div className="flex flex-col h-screen bg-slate-50 overflow-hidden">
+      
+      {/* EXAM COUNTDOWN BANNER */}
+      <div className="bg-gradient-to-r from-slate-900 to-slate-800 text-white px-4 py-3 flex items-center justify-between shadow-md z-50">
+        <div className="flex items-center gap-4">
+          <div className="bg-red-500/20 p-2 rounded-lg border border-red-500/50 animate-pulse">
+            <Timer className="w-5 h-5 text-red-400" />
+          </div>
+          <div>
+            <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-0.5">Final Exam Countdown</div>
+            <div className="text-sm font-bold text-white flex items-center gap-2">
+               Monday, Dec 8 <span className="w-1.5 h-1.5 rounded-full bg-slate-500"></span> <span className="text-red-300">{daysUntilExam} Days Remaining</span>
+            </div>
+          </div>
+        </div>
+        
+        {studentName && (
+           <div className="hidden md:block text-sm font-medium text-slate-300 bg-slate-700/50 px-3 py-1 rounded-full border border-slate-600">
+             Welcome back, <span className="text-white font-bold">{studentName}</span>
+           </div>
+        )}
 
-      {/* Overlay for mobile */}
-      {isMobileMenuOpen && (
-        <div 
-          className="fixed inset-0 z-30 bg-black/50 md:hidden backdrop-blur-sm"
-          onClick={() => setIsMobileMenuOpen(false)}
+        <div className="hidden md:flex items-center gap-2 text-xs font-bold text-slate-900 bg-yellow-400 px-3 py-1.5 rounded-full shadow-lg shadow-yellow-500/20">
+          <AlertTriangle className="w-3.5 h-3.5" />
+          Focus: Group A
+        </div>
+      </div>
+
+      <div className="flex flex-1 overflow-hidden">
+        {/* Mobile Menu Button */}
+        <button 
+          onClick={() => setIsMobileMenuOpen(true)}
+          className="md:hidden fixed top-24 left-4 z-40 p-2 bg-brand-600 text-white rounded-md shadow-lg"
+        >
+          <Menu className="w-6 h-6" />
+        </button>
+
+        {/* Overlay for mobile */}
+        {isMobileMenuOpen && (
+          <div 
+            className="fixed inset-0 z-30 bg-black/50 md:hidden backdrop-blur-sm"
+            onClick={() => setIsMobileMenuOpen(false)}
+          />
+        )}
+
+        {/* Sidebar Navigation */}
+        <Sidebar 
+          onSelectMuscle={setSelectedMuscle}
+          selectedMuscleId={selectedMuscle.id}
+          isOpen={isMobileMenuOpen}
+          onCloseMobile={() => setIsMobileMenuOpen(false)}
+          learnedIds={new Set((Object.values(progressMap) as MuscleProgress[]).filter(p => p.status === 'MASTERED').map(p => p.muscleId))}
+          toggleLearned={toggleLearnedSimple}
+          getShareLink={getShareLink}
+          currentMode={currentMode}
+          onSetMode={(m) => {
+            setCurrentMode(m);
+            setActiveTool('NONE');
+          }}
+          apiKey={apiKey}
+          onSetApiKey={handleSetApiKey}
+          progressMap={progressMap}
+          onResetProgress={handleResetProgress}
         />
-      )}
 
-      {/* Sidebar Navigation */}
-      <Sidebar 
-        onSelectMuscle={setSelectedMuscle}
-        selectedMuscleId={selectedMuscle.id}
-        isOpen={isMobileMenuOpen}
-        onCloseMobile={() => setIsMobileMenuOpen(false)}
-        learnedIds={new Set(Object.values(progressMap).filter(p => p.status === 'MASTERED').map(p => p.muscleId))}
-        toggleLearned={toggleLearnedSimple}
-        getShareLink={getShareLink}
-        currentMode={currentMode}
-        onSetMode={(m) => {
-          setCurrentMode(m);
-          setActiveTool('NONE');
-        }}
-        apiKey={apiKey}
-        onSetApiKey={handleSetApiKey}
-        progressMap={progressMap}
-        onResetProgress={handleResetProgress}
-      />
-
-      {/* Main Content */}
-      <main className="flex-1 relative w-full h-full flex flex-col">
-        {renderMainContent()}
-      </main>
+        {/* Main Content */}
+        <main className="flex-1 relative w-full h-full flex flex-col">
+          {renderMainContent()}
+        </main>
+      </div>
     </div>
   );
 };
