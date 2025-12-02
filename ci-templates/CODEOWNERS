@@ -1,0 +1,3 @@
+# Canonical CODEOWNERS template
+/.github/* @LucaGalassi
+/.github/workflows/* @LucaGalassi

@@ -1,0 +1,45 @@
+# Self-healing workflow: restore CI files if they are missing
+name: Restore CI Files
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  check-and-restore:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+
+      - name: Detect missing files
+        id: detect
+        run: |
+          missing=0
+          if [ ! -f .github/workflows/deploy.yml ]; then
+            echo "deploy.yml missing"
+            missing=1
+          fi
+          if [ ! -f .github/CODEOWNERS ]; then
+            echo "CODEOWNERS missing"
+            missing=1
+          fi
+          echo "missing=$missing" >> $GITHUB_OUTPUT
+
+      - name: Restore files from templates
+        if: steps.detect.outputs.missing == '1'
+        run: |
+          mkdir -p .github/workflows
+          cp ci-templates/deploy.yml .github/workflows/deploy.yml
+          cp ci-templates/CODEOWNERS .github/CODEOWNERS
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add .github/workflows/deploy.yml .github/CODEOWNERS
+          git commit -m "ci(restore): restore CI files from templates"
+          git push
