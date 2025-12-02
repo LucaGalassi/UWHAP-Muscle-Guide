@@ -1,3 +1,0 @@
-# Protect CI and GitHub configuration from automated editors
-/.github/* @LucaGalassi
-/.github/workflows/* @LucaGalassi

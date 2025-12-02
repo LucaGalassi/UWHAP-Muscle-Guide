@@ -287,7 +287,7 @@ const Sidebar: React.FC<SidebarProps> = ({
         
         {/* Footer */}
         <div className="p-4 border-t border-slate-200 bg-white text-[10px] text-slate-400 text-center uppercase tracking-wider font-semibold">
-          Lab Manual Edition • {apiKey ? 'AI Enabled' : 'AI Optional'}
+          Lab Manual Edition V3.5 • {apiKey ? 'AI Enabled' : 'AI Optional'}
         </div>
       </div>
 
