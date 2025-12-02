@@ -29,28 +29,47 @@ const App: React.FC = () => {
     const storedKey = localStorage.getItem('user_gemini_key');
     if (storedKey) setApiKey(storedKey);
 
-    // 2. Load Progress
+    // 2. Load Progress from LocalStorage
     const storedProgress = localStorage.getItem('srs_progress');
+    let localProgress = {};
     if (storedProgress) {
       try {
-        setProgressMap(JSON.parse(storedProgress));
+        localProgress = JSON.parse(storedProgress);
+        setProgressMap(localProgress);
       } catch (e) {
-        console.error("Failed to parse progress", e);
+        console.error("Failed to parse local progress", e);
       }
     }
 
-    // 3. Load URL Params for Sharing
+    // 3. Load URL Params for Sharing (Overrides local if present)
     const params = new URLSearchParams(window.location.search);
     const currentParam = params.get('current');
     if (currentParam) {
       const found = MUSCLE_DATA.find(m => m.id === currentParam);
       if (found) setSelectedMuscle(found);
     }
+    
+    const sharedProgress = params.get('p');
+    if (sharedProgress) {
+      try {
+        const decoded = atob(sharedProgress);
+        const parsedShared = JSON.parse(decoded);
+        // Merge shared progress with local, prefer shared? Or just set it.
+        // For sharing, we usually want to see what was shared.
+        setProgressMap(parsedShared);
+        // Also save to local immediately so they keep it
+        localStorage.setItem('srs_progress', JSON.stringify(parsedShared));
+      } catch (e) {
+        console.error("Failed to parse shared progress", e);
+      }
+    }
   }, []);
 
   // Save Progress whenever it changes
   useEffect(() => {
-    localStorage.setItem('srs_progress', JSON.stringify(progressMap));
+    if (Object.keys(progressMap).length > 0) {
+      localStorage.setItem('srs_progress', JSON.stringify(progressMap));
+    }
   }, [progressMap]);
 
   const handleSetApiKey = (key: string) => {
@@ -59,6 +78,13 @@ const App: React.FC = () => {
       localStorage.setItem('user_gemini_key', key);
     } else {
       localStorage.removeItem('user_gemini_key');
+    }
+  };
+  
+  const handleResetProgress = () => {
+    if (confirm("Are you sure you want to reset all study progress? This cannot be undone.")) {
+      setProgressMap({});
+      localStorage.removeItem('srs_progress');
     }
   };
 
@@ -97,6 +123,18 @@ const App: React.FC = () => {
   const getShareLink = () => {
      const params = new URLSearchParams();
      params.set('current', selectedMuscle.id);
+     
+     // Encode progress map
+     if (Object.keys(progressMap).length > 0) {
+       try {
+         const json = JSON.stringify(progressMap);
+         const encoded = btoa(json);
+         params.set('p', encoded);
+       } catch (e) {
+         console.error("Failed to encode progress", e);
+       }
+     }
+     
      return `${window.location.protocol}//${window.location.host}${window.location.pathname}?${params.toString()}`;
   };
 
@@ -196,6 +234,7 @@ const App: React.FC = () => {
         apiKey={apiKey}
         onSetApiKey={handleSetApiKey}
         progressMap={progressMap}
+        onResetProgress={handleResetProgress}
       />
 
       {/* Main Content */}

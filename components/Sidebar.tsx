@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { MUSCLE_DATA } from '../constants';
 import { MuscleItem, StudyMode, MuscleProgress } from '../types';
-import { Search, ChevronRight, BookOpen, CheckCircle2, Share2, Circle, X, Copy, Check, GraduationCap, LayoutList, Settings, Key, Trash2, Trophy, Clock, Target } from 'lucide-react';
+import { Search, ChevronRight, BookOpen, CheckCircle2, Share2, Circle, X, Copy, Check, GraduationCap, LayoutList, Settings, Key, Trash2, Trophy, Clock, Target, AlertTriangle } from 'lucide-react';
 
 interface SidebarProps {
   onSelectMuscle: (muscle: MuscleItem) => void;
@@ -16,6 +16,7 @@ interface SidebarProps {
   apiKey: string;
   onSetApiKey: (key: string) => void;
   progressMap: Record<string, MuscleProgress>;
+  onResetProgress?: () => void;
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ 
@@ -30,7 +31,8 @@ const Sidebar: React.FC<SidebarProps> = ({
   onSetMode,
   apiKey,
   onSetApiKey,
-  progressMap
+  progressMap,
+  onResetProgress
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterGroup, setFilterGroup] = useState<'ALL' | 'A' | 'B'>('ALL');
@@ -299,9 +301,9 @@ const Sidebar: React.FC<SidebarProps> = ({
             
             <div className="p-6 space-y-5">
               <p className="text-sm text-slate-600 leading-relaxed">
-                We've generated a unique link that contains all your learned muscles and current selection.
+                We've generated a unique link that contains all your learned muscles and study progress.
                 <br /><br />
-                <strong>Copy this link</strong> to save your progress or share it with others. When you open this link later, everything will be exactly as you left it.
+                <strong>Copy this link</strong> to save your progress or share it with others.
               </p>
               
               <div className="space-y-2">
@@ -347,37 +349,67 @@ const Sidebar: React.FC<SidebarProps> = ({
                  <X className="w-5 h-5 text-slate-400 hover:text-slate-600" />
                </button>
              </div>
-             <div className="p-6">
-                <div className="flex items-start gap-3 mb-4">
-                  <div className="p-2 bg-blue-50 text-blue-600 rounded-lg">
-                    <Key className="w-5 h-5" />
+             <div className="p-6 space-y-6">
+                <div className="space-y-4">
+                  <div className="flex items-start gap-3">
+                    <div className="p-2 bg-blue-50 text-blue-600 rounded-lg">
+                      <Key className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <h4 className="text-sm font-bold text-slate-900">AI Features (Optional)</h4>
+                      <p className="text-xs text-slate-500 mt-1 leading-relaxed">
+                        Add a Gemini API key for extra content. Core lab manual data is free.
+                      </p>
+                    </div>
                   </div>
-                  <div>
-                    <h4 className="text-sm font-bold text-slate-900">AI Features (Optional)</h4>
-                    <p className="text-xs text-slate-500 mt-1 leading-relaxed">
-                      Add a Gemini API key to generate content for muscles not in the textbook. This is optional; all core lab manual content is free and included.
-                    </p>
+                  
+                  <input 
+                    type="password"
+                    placeholder="Enter Gemini API Key..."
+                    value={tempKey}
+                    onChange={(e) => setTempKey(e.target.value)}
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-brand-500/20 outline-none"
+                  />
+                  
+                  <div className="flex justify-between items-center">
+                    <button 
+                      onClick={handleRemoveKey}
+                      className="text-xs text-red-500 font-semibold hover:underline flex items-center gap-1"
+                    >
+                      <Trash2 className="w-3 h-3" /> Remove Key
+                    </button>
                   </div>
                 </div>
-                
-                <input 
-                  type="password"
-                  placeholder="Enter Gemini API Key..."
-                  value={tempKey}
-                  onChange={(e) => setTempKey(e.target.value)}
-                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm mb-4 focus:ring-2 focus:ring-brand-500/20 outline-none"
-                />
-                
-                <div className="flex justify-between items-center">
-                  <button 
-                    onClick={handleRemoveKey}
-                    className="text-xs text-red-500 font-semibold hover:underline flex items-center gap-1"
-                  >
-                    <Trash2 className="w-3 h-3" /> Remove Key
-                  </button>
+
+                {onResetProgress && (
+                   <div className="pt-6 border-t border-slate-100">
+                     <div className="flex items-start gap-3 mb-4">
+                       <div className="p-2 bg-red-50 text-red-600 rounded-lg">
+                         <AlertTriangle className="w-5 h-5" />
+                       </div>
+                       <div>
+                         <h4 className="text-sm font-bold text-slate-900">Danger Zone</h4>
+                         <p className="text-xs text-slate-500 mt-1">
+                           Resetting progress clears all learned statuses and spaced repetition history.
+                         </p>
+                       </div>
+                     </div>
+                     <button 
+                       onClick={() => {
+                         onResetProgress();
+                         setShowSettingsModal(false);
+                       }}
+                       className="w-full py-2 bg-white border border-red-200 text-red-600 font-bold text-xs rounded-lg hover:bg-red-50 transition-colors"
+                     >
+                       Reset All Progress
+                     </button>
+                   </div>
+                )}
+
+                <div className="pt-2">
                   <button 
                     onClick={handleSaveKey}
-                    className="px-4 py-2 bg-brand-600 text-white text-sm font-bold rounded-lg hover:bg-brand-700"
+                    className="w-full px-4 py-2 bg-brand-600 text-white text-sm font-bold rounded-lg hover:bg-brand-700"
                   >
                     Save Settings
                   </button>

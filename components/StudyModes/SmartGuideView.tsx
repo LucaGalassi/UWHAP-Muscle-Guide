@@ -5,7 +5,7 @@ import MuscleView from '../MuscleView';
 import FlashcardView from './FlashcardView';
 import QuizView from './QuizView';
 import { createInitialProgress, calculateNextReview } from '../../utils/srs';
-import { BookOpen, Brain, CheckCircle, ArrowRight, TrendingUp, Clock, Target, Repeat } from 'lucide-react';
+import { BookOpen, Brain, CheckCircle, ArrowRight, TrendingUp, Clock, Target, Repeat, X } from 'lucide-react';
 
 interface SmartGuideViewProps {
   progressMap: Record<string, MuscleProgress>;
@@ -19,6 +19,7 @@ const SmartGuideView: React.FC<SmartGuideViewProps> = ({ progressMap, onUpdatePr
   const [sessionQueue, setSessionQueue] = useState<string[]>([]);
   const [currentMuscleId, setCurrentMuscleId] = useState<string | null>(null);
   const [phase, setPhase] = useState<GuidePhase>('DASHBOARD');
+  const [relatedMusclePopup, setRelatedMusclePopup] = useState<MuscleItem | null>(null);
   
   // Calculate stats
   const dueCount = Object.values(progressMap).filter(p => p.dueDate <= Date.now()).length;
@@ -56,12 +57,14 @@ const SmartGuideView: React.FC<SmartGuideViewProps> = ({ progressMap, onUpdatePr
        queue = newItems.slice(0, 5);
     }
 
-    setSessionQueue(queue);
-    setCurrentMuscleId(queue[0]);
-    
-    // Determine start phase based on if it's new or review
-    const isNew = !progressMap[queue[0]];
-    setPhase(isNew ? 'LEARN' : 'REVIEW_CARD');
+    if (queue.length > 0) {
+      setSessionQueue(queue);
+      setCurrentMuscleId(queue[0]);
+      
+      // Determine start phase based on if it's new or review
+      const isNew = !progressMap[queue[0]];
+      setPhase(isNew ? 'LEARN' : 'REVIEW_CARD');
+    }
   };
 
   const handleProgressUpdate = (rating: ConfidenceRating) => {
@@ -160,14 +163,43 @@ const SmartGuideView: React.FC<SmartGuideViewProps> = ({ progressMap, onUpdatePr
   if (!currentMuscle) return <div>Loading...</div>;
 
   return (
-    <div className="h-full flex flex-col">
+    <div className="h-full flex flex-col relative">
+      {/* Related Muscle Popup Overlay */}
+      {relatedMusclePopup && (
+        <div className="absolute inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
+           <div className="bg-white rounded-2xl w-full max-w-3xl max-h-[90vh] flex flex-col shadow-2xl overflow-hidden">
+             <div className="p-4 border-b border-slate-100 flex items-center justify-between bg-slate-50">
+                <div className="flex items-center gap-2">
+                   <BookOpen className="w-4 h-4 text-brand-600" />
+                   <h3 className="font-bold text-slate-900">Reference: {relatedMusclePopup.name}</h3>
+                </div>
+                <button 
+                  onClick={() => setRelatedMusclePopup(null)}
+                  className="p-1.5 hover:bg-slate-200 rounded-full transition-colors"
+                >
+                  <X className="w-5 h-5 text-slate-500" />
+                </button>
+             </div>
+             <div className="flex-1 overflow-y-auto custom-scrollbar">
+                <MuscleView 
+                   muscle={relatedMusclePopup} 
+                   onSelectMuscle={() => {}} // Disable selecting inside popup
+                   isLearned={false}
+                   toggleLearned={() => {}}
+                   apiKey={apiKey}
+                />
+             </div>
+           </div>
+        </div>
+      )}
+
       {/* Progress Header */}
       <div className="bg-white border-b border-slate-200 px-6 py-3 flex items-center justify-between">
         <div className="flex items-center gap-2">
            <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">Session Progress</span>
            <div className="flex gap-1">
              {sessionQueue.map((id, i) => (
-               <div key={id} className={`w-2 h-2 rounded-full ${i === 0 ? 'bg-brand-500' : 'bg-slate-200'}`} />
+               <div key={id} className={`w-2 h-2 rounded-full ${id === currentMuscleId ? 'bg-brand-500 animate-pulse' : 'bg-slate-200'}`} />
              ))}
            </div>
         </div>
@@ -191,6 +223,7 @@ const SmartGuideView: React.FC<SmartGuideViewProps> = ({ progressMap, onUpdatePr
                  isLearned={false} 
                  toggleLearned={() => {}} 
                  apiKey={apiKey} 
+                 onRelatedMuscleClick={(m) => setRelatedMusclePopup(m)}
                />
                <div className="absolute bottom-8 right-8 z-20">
                  <button 
@@ -213,13 +246,9 @@ const SmartGuideView: React.FC<SmartGuideViewProps> = ({ progressMap, onUpdatePr
               </div>
               <div className="flex-1">
                 <QuizView 
-                  // In a real app, force quiz about currentMuscle here
+                  questionCount={1}
                   onComplete={() => setPhase('REVIEW_CARD')} 
                 />
-                {/* Temporary bypass button for this demo since QuizView is generic */}
-                <div className="text-center p-4">
-                  <button onClick={() => setPhase('REVIEW_CARD')} className="text-sm text-slate-400 underline">Skip Quiz (Demo)</button>
-                </div>
               </div>
            </div>
         )}

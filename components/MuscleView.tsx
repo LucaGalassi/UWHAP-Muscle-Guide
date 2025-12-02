@@ -27,9 +27,10 @@ interface MuscleViewProps {
   isLearned: boolean;
   toggleLearned: () => void;
   apiKey: string;
+  onRelatedMuscleClick?: (muscle: MuscleItem) => void; // New optional prop for Study Mode override
 }
 
-const MuscleView: React.FC<MuscleViewProps> = ({ muscle, onSelectMuscle, isLearned, toggleLearned, apiKey }) => {
+const MuscleView: React.FC<MuscleViewProps> = ({ muscle, onSelectMuscle, isLearned, toggleLearned, apiKey, onRelatedMuscleClick }) => {
   const [content, setContent] = useState<MuscleContent | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -70,6 +71,14 @@ const MuscleView: React.FC<MuscleViewProps> = ({ muscle, onSelectMuscle, isLearn
     window.open(url, 'ImageSearch', `width=${width},height=${height},top=${top},left=${left},resizable=yes,scrollbars=yes,status=no,toolbar=no,menubar=no`);
   };
 
+  const handleRelatedClick = (relatedMuscle: MuscleItem) => {
+    if (onRelatedMuscleClick) {
+      onRelatedMuscleClick(relatedMuscle);
+    } else {
+      onSelectMuscle(relatedMuscle);
+    }
+  };
+
   if (loading) {
     return (
       <div className="h-full flex flex-col items-center justify-center p-8 space-y-6">
@@ -92,10 +101,6 @@ const MuscleView: React.FC<MuscleViewProps> = ({ muscle, onSelectMuscle, isLearn
   }
 
   // Determine if we should show the AI banner
-  // Show only if: 
-  // 1. Static data is missing (meaning we need AI to get good data)
-  // 2. No API key is provided
-  // 3. Banner hasn't been dismissed by user
   const showAiBanner = !hasStaticData && !apiKey && !isBannerDismissed;
 
   return (
@@ -179,9 +184,9 @@ const MuscleView: React.FC<MuscleViewProps> = ({ muscle, onSelectMuscle, isLearn
       {content && (
         <div className="flex-1 px-8 py-10 max-w-5xl mx-auto w-full space-y-10 pb-24">
           
-          {/* AI Banner - Contextual */}
+          {/* AI Banner */}
           {showAiBanner && (
-             <div className="relative p-4 bg-purple-50 border border-purple-100 rounded-xl flex items-start gap-4 animate-in fade-in slide-in-from-top-2">
+             <div className="relative p-4 bg-purple-50 border border-purple-100 rounded-xl flex items-start gap-4">
                 <div className="p-2 bg-purple-100 text-purple-600 rounded-lg shrink-0">
                   <Sparkles className="w-5 h-5" />
                 </div>
@@ -189,7 +194,7 @@ const MuscleView: React.FC<MuscleViewProps> = ({ muscle, onSelectMuscle, isLearn
                   <h4 className="text-sm font-bold text-purple-900">AI Features Available</h4>
                   <p className="text-sm text-purple-700 mt-1 leading-relaxed">
                     Detailed content for <strong>{muscle.name}</strong> is not available in the local database. 
-                    You can add a Gemini API key in Settings to generate Origin, Insertion, and Action details automatically.
+                    You can add a Gemini API key in Settings to generate details.
                   </p>
                 </div>
                 <button 
@@ -227,7 +232,7 @@ const MuscleView: React.FC<MuscleViewProps> = ({ muscle, onSelectMuscle, isLearn
             />
           </div>
 
-          {/* Demonstration - Only shown for Group A (Required) */}
+          {/* Demonstration */}
           {muscle.group === 'A' && (
             <div className="bg-slate-50 rounded-2xl p-8 border border-slate-100">
               <h3 className="text-lg font-bold text-slate-900 mb-4 flex items-center gap-2">
@@ -294,14 +299,18 @@ const MuscleView: React.FC<MuscleViewProps> = ({ muscle, onSelectMuscle, isLearn
                       return (
                         <button 
                           key={i}
-                          onClick={() => onSelectMuscle(relatedMuscle)}
+                          onClick={() => handleRelatedClick(relatedMuscle)}
                           className="group flex items-center justify-between p-3 bg-white border border-slate-200 hover:border-brand-300 hover:ring-1 hover:ring-brand-200 rounded-xl text-left transition-all shadow-sm"
                         >
                           <div>
                             <span className="block text-sm font-bold text-slate-700 group-hover:text-brand-700">{rm.name}</span>
                             <span className="block text-xs text-slate-500 mt-0.5">{rm.relation}</span>
                           </div>
-                          <ArrowRight className="w-4 h-4 text-slate-300 group-hover:text-brand-500" />
+                          {onRelatedMuscleClick ? (
+                            <Info className="w-4 h-4 text-slate-300 group-hover:text-brand-500" />
+                          ) : (
+                            <ArrowRight className="w-4 h-4 text-slate-300 group-hover:text-brand-500" />
+                          )}
                         </button>
                       );
                     })}

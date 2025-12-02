@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { MuscleItem, MuscleContent, ConfidenceRating } from '../../types';
 import { fetchMuscleDetails } from '../../services/geminiService';
-import { Sparkles, Activity, RotateCw, HelpCircle, ThumbsUp, Star, Award } from 'lucide-react';
+import { Sparkles, Activity, RotateCw, HelpCircle } from 'lucide-react';
 
 interface FlashcardViewProps {
   muscle: MuscleItem;

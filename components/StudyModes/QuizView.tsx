@@ -5,16 +5,24 @@ import { CheckCircle2, XCircle, ArrowRight, RefreshCw } from 'lucide-react';
 
 interface QuizViewProps {
   onComplete?: (score: number, total: number) => void;
+  questionCount?: number; // Optional: If set, calls onComplete after this many questions
 }
 
-const QuizView: React.FC<QuizViewProps> = ({ onComplete }) => {
+const QuizView: React.FC<QuizViewProps> = ({ onComplete, questionCount }) => {
   const [question, setQuestion] = useState<QuizQuestion | null>(null);
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
   const [streak, setStreak] = useState(0);
   const [totalAnswered, setTotalAnswered] = useState(0);
+  const [sessionScore, setSessionScore] = useState(0);
 
   const loadNextQuestion = () => {
+    // If we have a target count and reached it, finish
+    if (questionCount && totalAnswered >= questionCount) {
+      if (onComplete) onComplete(sessionScore, totalAnswered);
+      return;
+    }
+
     setQuestion(generateQuizQuestion());
     setSelectedOption(null);
     setIsCorrect(null);
@@ -33,6 +41,7 @@ const QuizView: React.FC<QuizViewProps> = ({ onComplete }) => {
     
     if (correct) {
       setStreak(s => s + 1);
+      setSessionScore(s => s + 1);
     } else {
       setStreak(0);
     }
@@ -40,6 +49,8 @@ const QuizView: React.FC<QuizViewProps> = ({ onComplete }) => {
   };
 
   if (!question) return <div className="p-10 text-center">Loading Quiz...</div>;
+
+  const isLastQuestion = questionCount && totalAnswered >= questionCount;
 
   return (
     <div className="max-w-3xl mx-auto p-6 flex flex-col h-full justify-center">
@@ -49,7 +60,7 @@ const QuizView: React.FC<QuizViewProps> = ({ onComplete }) => {
           <span className="text-sm font-bold text-slate-400 uppercase tracking-widest">Streak</span>
           <span className="bg-brand-100 text-brand-700 px-3 py-1 rounded-full font-bold">{streak} 🔥</span>
         </div>
-        <div className="text-sm font-bold text-slate-400">Total: {totalAnswered}</div>
+        <div className="text-sm font-bold text-slate-400">Total: {totalAnswered} {questionCount ? `/ ${questionCount}` : ''}</div>
       </div>
 
       {/* Question Card */}
@@ -98,7 +109,7 @@ const QuizView: React.FC<QuizViewProps> = ({ onComplete }) => {
             onClick={loadNextQuestion}
             className="w-full py-4 bg-brand-600 hover:bg-brand-700 text-white rounded-xl font-bold shadow-lg transition-all flex items-center justify-center gap-2"
           >
-            Next Question <ArrowRight className="w-5 h-5" />
+            {isLastQuestion ? "Complete & Continue" : "Next Question"} <ArrowRight className="w-5 h-5" />
           </button>
         </div>
       )}
