@@ -1,25 +1,22 @@
 name: Build and Deploy to GitHub Pages
 
-permissions:
-  contents: write
-  pages: write
-  id-token: write
-
 on:
   push:
     branches:
       - main
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          persist-credentials: true
-          token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Use Node.js
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
@@ -37,4 +34,4 @@ jobs:
           publish_dir: ./dist
           publish_branch: gh-pages
           allow_empty_commit: true
-          commit_message: "chore: publish production build to gh-pages [skip ci]"
+          commit_message: "chore: publish to gh-pages"
