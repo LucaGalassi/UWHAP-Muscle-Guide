@@ -1,5 +1,6 @@
 {
   "name": "A&P Muscle Guide",
   "description": "A comprehensive anatomy learning companion. Master muscle origins, insertions, and actions with interactive guides.",
-  "requestFramePermissions": []
+  "requestFramePermissions": [],
+  "lastWorkflowTest": "2025-12-02T00:00:00Z"
 }
