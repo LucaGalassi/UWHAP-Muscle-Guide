@@ -69,4 +69,13 @@ export interface ThemeConfig {
   infoBox: string;
   iconLoc: string;
   iconFunc: string;
+  
+  // Sidebar Specifics
+  sidebarBg: string;
+  sidebarBorder: string;
+  sidebarText: string;
+  sidebarSubText: string;
+  sidebarHover: string;
+  sidebarActive: string; // For selected items
+  inputBg: string; // For search bars and toggle backgrounds
 }

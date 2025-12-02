@@ -20,7 +20,16 @@ export const THEME_CONFIG: Record<AppTheme, ThemeConfig> = {
     badge: 'bg-white/90 text-brand-600 border-brand-100 shadow-sm',
     infoBox: 'bg-white/60 border-slate-200 text-slate-700',
     iconLoc: 'bg-emerald-100 text-emerald-600',
-    iconFunc: 'bg-blue-100 text-blue-600'
+    iconFunc: 'bg-blue-100 text-blue-600',
+    
+    // Sidebar
+    sidebarBg: 'bg-white',
+    sidebarBorder: 'border-slate-200',
+    sidebarText: 'text-slate-900',
+    sidebarSubText: 'text-slate-400',
+    sidebarHover: 'hover:bg-slate-50',
+    sidebarActive: 'bg-slate-100 text-brand-700',
+    inputBg: 'bg-slate-100',
   },
   midnight: {
     label: 'Midnight',
@@ -33,7 +42,16 @@ export const THEME_CONFIG: Record<AppTheme, ThemeConfig> = {
     badge: 'bg-slate-800 text-indigo-400 border-slate-700 shadow-lg',
     infoBox: 'bg-slate-800/60 border-slate-700 text-slate-300',
     iconLoc: 'bg-emerald-900/50 text-emerald-400',
-    iconFunc: 'bg-blue-900/50 text-blue-400'
+    iconFunc: 'bg-blue-900/50 text-blue-400',
+
+    // Sidebar
+    sidebarBg: 'bg-slate-900',
+    sidebarBorder: 'border-slate-800',
+    sidebarText: 'text-slate-200',
+    sidebarSubText: 'text-slate-500',
+    sidebarHover: 'hover:bg-slate-800',
+    sidebarActive: 'bg-slate-800 text-indigo-400 border border-slate-700',
+    inputBg: 'bg-slate-950',
   },
   blueprint: {
     label: 'Blueprint',
@@ -46,7 +64,16 @@ export const THEME_CONFIG: Record<AppTheme, ThemeConfig> = {
     badge: 'bg-blue-500 text-white border-blue-400 shadow-lg',
     infoBox: 'bg-blue-900/40 border-blue-400/50 text-blue-50',
     iconLoc: 'bg-white/20 text-white',
-    iconFunc: 'bg-white/20 text-white'
+    iconFunc: 'bg-white/20 text-white',
+
+    // Sidebar
+    sidebarBg: 'bg-blue-50',
+    sidebarBorder: 'border-blue-200',
+    sidebarText: 'text-slate-900',
+    sidebarSubText: 'text-blue-400',
+    sidebarHover: 'hover:bg-blue-100',
+    sidebarActive: 'bg-white border border-blue-200 shadow-sm text-blue-700',
+    inputBg: 'bg-white',
   },
   nature: {
     label: 'Nature',
@@ -59,7 +86,16 @@ export const THEME_CONFIG: Record<AppTheme, ThemeConfig> = {
     badge: 'bg-white text-emerald-700 border-emerald-200 shadow-sm',
     infoBox: 'bg-white/60 border-stone-200 text-stone-700',
     iconLoc: 'bg-emerald-100 text-emerald-700',
-    iconFunc: 'bg-amber-100 text-amber-700'
+    iconFunc: 'bg-amber-100 text-amber-700',
+
+    // Sidebar
+    sidebarBg: 'bg-[#fafaf9]', // stone-50
+    sidebarBorder: 'border-stone-200',
+    sidebarText: 'text-stone-800',
+    sidebarSubText: 'text-stone-500',
+    sidebarHover: 'hover:bg-stone-200/50',
+    sidebarActive: 'bg-white shadow-sm border border-stone-200 text-emerald-700',
+    inputBg: 'bg-stone-200/50',
   }
 };
 

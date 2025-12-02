@@ -10,6 +10,63 @@ import { MuscleItem, StudyMode, LearningTool, MuscleProgress, AppTheme } from '.
 import { MUSCLE_DATA, THEME_CONFIG } from './constants';
 import { Menu, ArrowLeft, AlertTriangle, Timer } from 'lucide-react';
 
+// Compression Helpers
+const STATUS_MAP = ['NEW', 'LEARNING', 'REVIEW', 'MASTERED'];
+
+const compressProgress = (map: Record<string, MuscleProgress>): string => {
+  const minified = Object.values(map).map(p => {
+    const muscleIndex = MUSCLE_DATA.findIndex(m => m.id === p.muscleId);
+    if (muscleIndex === -1) return null;
+    const statusIdx = STATUS_MAP.indexOf(p.status);
+    // Schema: [index, status, interval, ease, due_mins, last_mins, streak]
+    return [
+      muscleIndex,
+      statusIdx,
+      p.interval,
+      Math.round(p.easeFactor * 100) / 100, // Round ease to 2 decimals
+      Math.floor(p.dueDate / 60000), // Store minutes to save space
+      Math.floor(p.lastReviewed / 60000), // Store minutes to save space
+      p.streak
+    ];
+  }).filter(Boolean);
+  
+  // Convert to JSON string then Base64
+  return btoa(JSON.stringify(minified));
+};
+
+const decompressProgress = (encoded: string): Record<string, MuscleProgress> => {
+  try {
+    const json = atob(encoded);
+    const parsed = JSON.parse(json);
+    
+    // Check if legacy format (standard object map) or new format (array of arrays)
+    if (!Array.isArray(parsed)) {
+       return parsed; 
+    }
+
+    const map: Record<string, MuscleProgress> = {};
+    parsed.forEach((item: any) => {
+      const [mIdx, sIdx, interval, ease, due, last, streak] = item;
+      const muscle = MUSCLE_DATA[mIdx];
+      if (muscle) {
+        map[muscle.id] = {
+          muscleId: muscle.id,
+          status: (STATUS_MAP[sIdx] || 'NEW') as any,
+          interval,
+          easeFactor: ease,
+          dueDate: due * 60000, // Convert back to ms
+          lastReviewed: last * 60000,
+          streak
+        };
+      }
+    });
+    return map;
+  } catch (e) {
+    console.error("Failed to decompress progress", e);
+    return {};
+  }
+};
+
 const App: React.FC = () => {
   const [selectedMuscle, setSelectedMuscle] = useState<MuscleItem>(MUSCLE_DATA[0]);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -61,8 +118,7 @@ const App: React.FC = () => {
     const sharedProgress = params.get('p');
     if (sharedProgress) {
       try {
-        const decoded = atob(sharedProgress);
-        const parsedShared = JSON.parse(decoded);
+        const parsedShared = decompressProgress(sharedProgress);
         setProgressMap(parsedShared);
         localStorage.setItem('srs_progress', JSON.stringify(parsedShared));
       } catch (e) {
@@ -184,11 +240,10 @@ const App: React.FC = () => {
      if (name) params.set('name', encodeURIComponent(name));
      params.set('theme', theme);
      
-     // Encode progress map
+     // Encode progress map using compression
      if (Object.keys(progressMap).length > 0) {
        try {
-         const json = JSON.stringify(progressMap);
-         const encoded = btoa(json);
+         const encoded = compressProgress(progressMap);
          params.set('p', encoded);
        } catch (e) {
          console.error("Failed to encode progress", e);

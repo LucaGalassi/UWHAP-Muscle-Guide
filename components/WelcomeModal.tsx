@@ -63,7 +63,7 @@ const WelcomeModal: React.FC<WelcomeModalProps> = ({ onDismiss, onResume, daysUn
               <div className="w-6 h-6 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-xs shrink-0">1</div>
               <div>
                 <span className="block font-bold text-slate-900">Smart Guide Mode</span>
-                <span>Uses "Spaced Repetition" to calculate exactly when you need to review a muscle so you never forget it.</span>
+                <span>Uses "Spaced Repetition" to calculate exactly when you need to review a muscle so you never forget it. Best for daily study.</span>
               </div>
             </li>
             <li className="flex gap-3">
@@ -85,17 +85,17 @@ const WelcomeModal: React.FC<WelcomeModalProps> = ({ onDismiss, onResume, daysUn
         <div className="space-y-4 text-sm text-slate-600 leading-relaxed">
           <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded-r-xl">
              <h4 className="font-bold text-red-700 flex items-center gap-2 mb-1">
-               <AlertTriangle className="w-4 h-4" /> No Accounts / No Login
+               <AlertTriangle className="w-4 h-4" /> No Accounts = Privacy
              </h4>
              <p className="text-red-600 text-xs">
-               We do not store your data on a server. Your progress lives in your URL.
+               We do not store your data on a server. Your progress lives in your browser or your custom link.
              </p>
           </div>
           <p>
-            To save your progress, you must click <strong>"Save & Share Stats"</strong> in the sidebar.
+            To save your progress across devices or browsers, you must click <strong>"Save & Share Stats"</strong> in the sidebar.
           </p>
           <p>
-            This generates a long <strong>Magic Link</strong>. Copy this link and save it (Notes app, email to self). <span className="font-bold">Paste it back here next time to resume.</span>
+            This generates a long <strong>Magic Link</strong>. Copy this link and save it (e.g., in your Notes app or email it to yourself). <span className="font-bold text-brand-600">Paste it back here next time to resume.</span>
           </p>
         </div>
       )
@@ -107,14 +107,14 @@ const WelcomeModal: React.FC<WelcomeModalProps> = ({ onDismiss, onResume, daysUn
       content: (
         <div className="space-y-4 text-sm text-slate-600 leading-relaxed">
           <p>
-            The core muscle list matches your <strong>Lab Manual Edition</strong>.
+            The core muscle list matches your <strong>Lab Manual Edition V3.5</strong>.
           </p>
           <p>
-            <strong>Note:</strong> Detailed descriptions (demonstrations, mnemonics) were generated using AI (Google Gemini) to speed up development.
+            <strong>Note on Descriptions:</strong> Detailed descriptions, demonstrations, and mnemonics were generated using AI (Google Gemini) to accelerate app production.
           </p>
           <div className="bg-slate-100 p-4 rounded-xl border border-slate-200">
             <p className="text-xs font-bold text-slate-700">
-              ALWAYS verify specific origin/insertion text with your official course materials if in doubt. The Lab Manual is your source of truth.
+              <span className="text-red-600">IMPORTANT:</span> ALWAYS verify specific origin/insertion text with your official course materials if in doubt. The Lab Manual is your absolute source of truth for the exam.
             </p>
           </div>
         </div>

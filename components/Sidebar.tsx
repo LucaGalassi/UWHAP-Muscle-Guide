@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { MUSCLE_DATA } from '../constants';
+import { MUSCLE_DATA, THEME_CONFIG } from '../constants';
 import { MuscleItem, StudyMode, MuscleProgress, AppTheme } from '../types';
 import { Search, ChevronRight, BookOpen, CheckCircle2, Share2, Circle, X, Copy, Check, GraduationCap, LayoutList, Settings, Key, Trash2, Trophy, Clock, Sun, Moon, DraftingCompass, Leaf, Palette, Save, AlertTriangle } from 'lucide-react';
 
@@ -46,6 +46,8 @@ const Sidebar: React.FC<SidebarProps> = ({
   const [tempKey, setTempKey] = useState(apiKey);
   const [shareName, setShareName] = useState('');
 
+  const theme = THEME_CONFIG[currentTheme];
+
   const filteredMuscles = useMemo(() => {
     return MUSCLE_DATA.filter((muscle) => {
       const matchesSearch = muscle.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
@@ -89,15 +91,15 @@ const Sidebar: React.FC<SidebarProps> = ({
 
   return (
     <>
-      <div className={`fixed inset-y-0 left-0 z-30 w-80 bg-slate-50 border-r border-slate-200 transform transition-transform duration-300 ease-in-out ${isOpen ? 'translate-x-0' : '-translate-x-full'} md:relative md:translate-x-0 flex flex-col h-full`}>
+      <div className={`fixed inset-y-0 left-0 z-30 w-80 ${theme.sidebarBg} ${theme.sidebarBorder} border-r transform transition-transform duration-300 ease-in-out ${isOpen ? 'translate-x-0' : '-translate-x-full'} md:relative md:translate-x-0 flex flex-col h-full`}>
         {/* Header */}
-        <div className="p-5 border-b border-slate-200 bg-white">
+        <div className={`p-5 border-b ${theme.sidebarBorder} ${theme.sidebarBg}`}>
           <div className="flex items-center justify-between mb-5">
             <div className="flex items-center gap-2.5">
               <div className="w-8 h-8 bg-brand-600 rounded-lg flex items-center justify-center text-white shadow-brand-200 shadow-lg">
                 <BookOpen className="w-4 h-4" />
               </div>
-              <h1 className="text-lg font-extrabold tracking-tight text-slate-900 leading-none">
+              <h1 className={`text-lg font-extrabold tracking-tight leading-none ${theme.sidebarText}`}>
                 A&P Muscle<br/>Guide
               </h1>
             </div>
@@ -106,20 +108,20 @@ const Sidebar: React.FC<SidebarProps> = ({
                 setTempKey(apiKey);
                 setShowSettingsModal(true);
               }}
-              className="p-2 hover:bg-slate-100 rounded-full text-slate-400 hover:text-slate-600 transition-colors"
+              className={`p-2 rounded-full transition-colors ${theme.sidebarSubText} ${theme.sidebarHover} hover:${theme.sidebarText}`}
             >
               <Settings className="w-4 h-4" />
             </button>
           </div>
 
           {/* Mode Switcher */}
-          <div className="flex bg-slate-100 p-1 rounded-xl mb-6">
+          <div className={`flex ${theme.inputBg} p-1 rounded-xl mb-6`}>
             <button 
               onClick={() => onSetMode('REFERENCE')}
               className={`flex-1 py-2 rounded-lg text-xs font-bold flex items-center justify-center gap-2 transition-all ${
                 currentMode === 'REFERENCE' 
-                ? 'bg-white shadow-sm text-slate-900' 
-                : 'text-slate-500 hover:text-slate-700'
+                ? `${theme.cardBg} shadow-sm ${theme.sidebarText}`
+                : `${theme.sidebarSubText} hover:${theme.sidebarText}`
               }`}
             >
               <LayoutList className="w-3.5 h-3.5" /> List
@@ -128,8 +130,8 @@ const Sidebar: React.FC<SidebarProps> = ({
               onClick={() => onSetMode('STUDY')}
               className={`flex-1 py-2 rounded-lg text-xs font-bold flex items-center justify-center gap-2 transition-all ${
                 currentMode === 'STUDY' 
-                ? 'bg-white shadow-sm text-brand-700' 
-                : 'text-slate-500 hover:text-slate-700'
+                ? `${theme.cardBg} shadow-sm text-brand-600`
+                : `${theme.sidebarSubText} hover:${theme.sidebarText}`
               }`}
             >
               <GraduationCap className="w-3.5 h-3.5" /> Study
@@ -163,25 +165,25 @@ const Sidebar: React.FC<SidebarProps> = ({
               </div>
               
               <div className="relative mb-4">
-                <Search className="absolute left-3 top-2.5 w-4 h-4 text-slate-400" />
+                <Search className={`absolute left-3 top-2.5 w-4 h-4 ${theme.sidebarSubText}`} />
                 <input
                   type="text"
                   placeholder="Search all muscles..."
-                  className="w-full pl-9 pr-3 py-2 bg-slate-100 border-none rounded-lg text-sm text-slate-900 placeholder-slate-400 focus:ring-2 focus:ring-brand-500/20 focus:bg-white transition-all outline-none"
+                  className={`w-full pl-9 pr-3 py-2 ${theme.inputBg} border-none rounded-lg text-sm ${theme.sidebarText} placeholder-${theme.sidebarSubText} focus:ring-2 focus:ring-brand-500/20 transition-all outline-none`}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
               </div>
 
-              <div className={`flex bg-slate-100 p-1 rounded-lg transition-opacity duration-200 ${searchTerm ? 'opacity-50 pointer-events-none' : 'opacity-100'}`}>
+              <div className={`flex ${theme.inputBg} p-1 rounded-lg transition-opacity duration-200 ${searchTerm ? 'opacity-50 pointer-events-none' : 'opacity-100'}`}>
                 {(['ALL', 'A', 'B'] as const).map(g => (
                   <button
                     key={g}
                     onClick={() => setFilterGroup(g)}
                     className={`flex-1 py-1 text-xs font-semibold rounded-md transition-all ${
                       filterGroup === g 
-                        ? 'bg-white text-slate-900 shadow-sm' 
-                        : 'text-slate-500 hover:text-slate-700'
+                        ? `${theme.cardBg} ${theme.sidebarText} shadow-sm` 
+                        : `${theme.sidebarSubText} hover:${theme.sidebarText}`
                     }`}
                   >
                     {g === 'ALL' ? 'All' : `Group ${g}`}
@@ -214,7 +216,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                 </div>
               </div>
               
-              <p className="text-xs text-slate-400 text-center pt-4">
+              <p className={`text-xs text-center pt-4 ${theme.sidebarSubText}`}>
                 Exam Dec 8th. You got this.
               </p>
             </div>
@@ -226,7 +228,7 @@ const Sidebar: React.FC<SidebarProps> = ({
           <div className="flex-1 overflow-y-auto px-2 py-4 space-y-6 custom-scrollbar">
             {(Object.entries(groupedDisplay) as [string, MuscleItem[]][]).sort().map(([category, muscles]) => (
               <div key={category} className="space-y-1">
-                <h3 className="px-3 text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2 sticky top-0 bg-slate-50 py-1 z-10">
+                <h3 className={`px-3 text-[10px] font-bold uppercase tracking-widest mb-2 sticky top-0 py-1 z-10 ${theme.sidebarBg} ${theme.sidebarSubText}`}>
                   {category}
                 </h3>
                 <div className="space-y-0.5">
@@ -238,7 +240,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                       <div 
                         key={muscle.id}
                         className={`group flex items-center w-full rounded-md transition-all ${
-                           isSelected ? 'bg-white shadow-sm ring-1 ring-slate-200' : 'hover:bg-slate-100'
+                           isSelected ? theme.sidebarActive : theme.sidebarHover
                         }`}
                       >
                         <button
@@ -246,7 +248,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                             e.stopPropagation();
                             toggleLearned(muscle.id);
                           }}
-                          className="p-3 focus:outline-none text-slate-300 hover:text-brand-500 transition-colors"
+                          className={`p-3 focus:outline-none transition-colors ${isSelected ? 'text-brand-500' : 'text-slate-300 hover:text-brand-500'}`}
                           title={isLearned ? "Mark as unlearned" : "Mark as learned"}
                         >
                           {isLearned ? (
@@ -263,7 +265,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                           }}
                           className="flex-1 py-2 pr-3 text-left flex items-center justify-between"
                         >
-                          <span className={`text-sm font-medium truncate ${isSelected ? 'text-brand-700' : 'text-slate-600'} ${isLearned && !isSelected ? 'text-slate-400' : ''}`}>
+                          <span className={`text-sm font-medium truncate ${isSelected ? '' : theme.sidebarText} ${isLearned && !isSelected ? 'opacity-50' : ''}`}>
                             {muscle.name}
                           </span>
                           {isSelected && <ChevronRight className="w-3.5 h-3.5 text-brand-500" />}
@@ -277,27 +279,23 @@ const Sidebar: React.FC<SidebarProps> = ({
 
             {Object.keys(groupedDisplay).length === 0 && (
               <div className="p-8 text-center">
-                <p className="text-sm text-slate-500">No muscles found.</p>
+                <p className={`text-sm ${theme.sidebarSubText}`}>No muscles found.</p>
               </div>
             )}
           </div>
         ) : (
-          <div className="flex-1 bg-slate-50"></div>
+          <div className="flex-1"></div>
         )}
         
         {/* Footer */}
-        <div className="p-4 border-t border-slate-200 bg-white text-[10px] text-slate-400 text-center uppercase tracking-wider font-semibold">
+        <div className={`p-4 border-t ${theme.sidebarBorder} ${theme.sidebarBg} text-[10px] ${theme.sidebarSubText} text-center uppercase tracking-wider font-semibold`}>
           Lab Manual Edition V3.5 • {apiKey ? 'AI Enabled' : 'AI Optional'}
         </div>
       </div>
 
-      {/* Share Modal - Kept same as before but using passed in getShareLink */}
+      {/* Share Modal */}
       {showShareModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md animate-in fade-in duration-200">
-           {/* ... existing share modal code ... */}
-           {/* Assuming the original Share Modal content is sufficient, abbreviated here for brevity in diff unless changes needed.
-               However, since I need to return full file content, I must include the full modal code below.
-            */}
            <div className="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden transform transition-all scale-100 border border-slate-100">
             <div className="p-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/80">
               <div className="flex items-center gap-2">
@@ -315,7 +313,13 @@ const Sidebar: React.FC<SidebarProps> = ({
             </div>
             
             <div className="p-6 space-y-6">
-               {/* Progress content ... */}
+               <div className="bg-brand-50 p-4 rounded-xl border border-brand-100 flex items-start gap-3">
+                  <AlertTriangle className="w-5 h-5 text-brand-600 mt-0.5 shrink-0" />
+                  <p className="text-xs text-brand-800 leading-relaxed">
+                    <strong>Important:</strong> We do not have accounts. To save your progress, you <strong>must copy and save the link below</strong>.
+                  </p>
+               </div>
+
                <div className="space-y-3">
                  <label className="text-xs font-bold text-slate-400 uppercase tracking-wider block">Customize your link (Fun!)</label>
                  <div className="relative group">
