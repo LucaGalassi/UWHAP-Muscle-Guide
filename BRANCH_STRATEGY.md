@@ -1,194 +1,163 @@
-# Branch Strategy: Separating Source from Automation
+# Single-Branch Strategy: Everything on `main`
 
 ## Overview
-This project uses **two branches** to avoid conflicts between source code and CI/build automation:
+This project uses **one branch** for both source code and automation:
 
-- **`main`** — Source code only (React components, services, utilities)
-- **`automation`** — CI/build configuration (GitHub Actions, tsconfig, package management)
+- **`main`** — Everything (React components, services, CI config, build files)
 
-This separation ensures that:
-- ✅ Your app builder can freely update source code on `main` without touching CI
-- ✅ Automation changes are isolated and don't create conflicts
-- ✅ Build/deploy issues are decoupled from feature development
+**Why this works**:
+- App builder only has access to `main` → simple workflow
+- Workflow automatically handles missing `package-lock.json` (generates it if needed)
+- No branch conflicts or merging required
+- Everything is in sync
 
 ---
 
-## Branch Responsibilities
+## What's on `main`
 
-### `main` branch
-Contains only application source code:
+**Source Code** (app builder's domain):
 - `components/` — React components
 - `services/` — API services (Gemini, etc.)
 - `utils/` — Utility functions
 - `App.tsx`, `index.tsx` — App entry points
-- `types.ts`, `constants.ts` — Type definitions and constants
-- `index.css` — Styles
-- `index.html` — HTML template
-- `package.json` — Dependencies only (no `package-lock.json`)
-- `README.md` — Documentation
+- `types.ts`, `constants.ts` — Type definitions
+- `index.css`, `index.html` — Styles and template
+
+**Automation & Build Config** (shared/protected):
+- `.github/workflows/deploy.yml` — Auto-deploy workflow (protected, critical)
+- `tsconfig.json` — TypeScript build config
+- `package-lock.json` — Exact dependency versions
+- `.github/.gitkeep` — Directory protection
+
+**Documentation**:
+- `README.md` — Project docs
 - `BUILD_FIXES_SUMMARY.md` — Build reference
-
-**Do NOT commit to `main`**:
-- `.github/workflows/` — CI workflows go to `automation`
-- `tsconfig.json` — Build config goes to `automation`
-- `package-lock.json` — Lock file goes to `automation`
-- `.gitkeep` files — Protection files go to `automation`
-
-### `automation` branch
-Contains CI/build infrastructure:
-- `.github/workflows/deploy.yml` — GitHub Actions auto-deploy workflow
-- `tsconfig.json` — TypeScript configuration with build optimizations
-- `package-lock.json` — Exact dependency versions for reproducible builds
-- `.github/.gitkeep` — Directory protection files
+- `package.json` — Dependencies
 
 ---
 
 ## Workflow
 
-### For your app builder (working on `main`)
+### App builder: push source code to `main`
 ```bash
-# Always work on main for source code
 git checkout main
 git pull origin main
 
-# Make your changes (components, services, utils, etc.)
+# Make changes (components, services, utils, etc.)
 # ...
 
-# Push to main — this triggers deployment via automation branch
-git add components/ services/ utils/ App.tsx index.tsx
+git add components/ services/ App.tsx index.tsx
 git commit -m "feat: add new feature"
 git push origin main
 ```
 
-**Important**: Do NOT edit `.github/`, `tsconfig.json`, or `package-lock.json` on `main`.
+**Result**: GitHub Actions automatically:
+1. Checks out the code
+2. Installs dependencies (with fallback if `package-lock.json` missing)
+3. Builds the app
+4. Deploys to GitHub Pages
 
-### For automation/CI maintenance (when build issues arise)
+### Handling build failures
+If the build breaks (e.g., `tsconfig.json` issues):
+
 ```bash
-# Switch to automation branch
-git checkout automation
-git pull origin automation
+# Check the error in GitHub Actions tab
+# https://github.com/LucaGalassi/UWHAP-Muscle-Guide/actions
 
-# Fix build config (tsconfig, workflow, lock file, etc.)
-# ...
+# Fix the build config locally
+# (update tsconfig.json, package.json, etc.)
 
-# Push to automation
-git add .github/ tsconfig.json package-lock.json
-git commit -m "ci: fix build issue"
-git push origin automation
-
-# When ready, merge automation into main via PR
-git checkout main
-git merge automation
+git add tsconfig.json
+git commit -m "ci: fix build error"
 git push origin main
+
+# Workflow automatically retries
 ```
+
+---
+
+## Key Files (Do Not Delete)
+
+| File | Purpose | Protected |
+|------|---------|-----------|
+| `.github/workflows/deploy.yml` | Auto-deploy workflow | ⚠️ Critical |
+| `tsconfig.json` | TypeScript config | Needed for build |
+| `package.json` | Dependencies | Needed for build |
+| `package-lock.json` | Dependency lock | Generated if missing |
+| `.github/.gitkeep` | Directory protection | Preserves .github/ |
 
 ---
 
 ## GitHub Actions Workflow
 
-The workflow is defined in `.github/workflows/deploy.yml` on the **`automation` branch**:
+Triggered on every push to `main`:
 
-1. Checks out the latest code from `main`
-2. Installs dependencies (using `package-lock.json` from `automation`)
-3. Builds the app (`npm run build`)
-4. Deploys to GitHub Pages
+```yaml
+steps:
+  1. Checkout code from main
+  2. Setup Node.js 20
+  3. Install dependencies:
+     - If package-lock.json exists → npm ci
+     - Otherwise → npm install (auto-generates lock file)
+  4. Build: npm run build
+  5. Deploy to gh-pages branch
+```
 
-**Key**: The workflow always reads `tsconfig.json` and `package-lock.json` from the `automation` branch, so source code changes on `main` won't break the build.
-
----
-
-## Setup Instructions
-
-### Initial Setup (Already Done)
-- ✅ Created `automation` branch with all CI/build files
-- ✅ Configured GitHub Actions to use `automation` branch for config
-- ✅ Documented build requirements in `BUILD_FIXES_SUMMARY.md`
-
-### For Future Updates
-
-**If source code needs build fixes**:
-1. Update `.github/workflows/deploy.yml` on `automation` branch
-2. Update `tsconfig.json` on `automation` branch
-3. Update `package-lock.json` on `automation` branch
-4. Merge `automation` into `main` when ready
-
-**If source code has new dependencies**:
-1. Add to `package.json` on `main`
-2. Run `npm install` to generate updated `package-lock.json`
-3. Push `package-lock.json` update to `automation` branch
+**Result**: Live site updates automatically at https://lucagalassi.github.io/UWHAP-Muscle-Guide/
 
 ---
 
-## Example: Adding a New Dependency
+## Avoiding Conflicts
 
+### ✅ Safe to do on `main`
+- Add/update React components
+- Modify services or utils
+- Update `package.json` (add dependencies)
+- Change `index.tsx`, `App.tsx`
+
+### ⚠️ Handle with care on `main`
+- Editing `tsconfig.json` — only if you understand TypeScript config
+- Deleting `package-lock.json` — it will be regenerated, but wastes time
+- Touching `.github/workflows/` — only if CI is broken and needs fixing
+
+### Never delete
+- `.github/workflows/deploy.yml` — breaks auto-deploy
+- `.github/.gitkeep` — unprotects the directory
+
+---
+
+## Common Tasks
+
+### Add a new npm dependency
 ```bash
-# On main: add dependency to package.json
-git checkout main
 npm install new-package
-
-# Create package-lock.json
 git add package.json package-lock.json
 git commit -m "feat: add new-package"
-
-# Push to trigger build
-git push origin main
-
-# If build succeeds: automation syncs automatically
-# If build fails: update automation branch and merge back
-
-# On automation: update build config if needed
-git checkout automation
-# ... make changes ...
-git push origin automation
-
-# Merge back to main
-git checkout main
-git merge automation
 git push origin main
 ```
 
----
-
-## Benefits
-
-| Issue | Solution |
-|-------|----------|
-| `tsconfig.json` reverts to strict mode | Config stays on `automation`, source on `main` |
-| `.github/workflows/` keeps getting deleted | Isolated on `automation` with protection |
-| `package-lock.json` conflicts | Managed separately on `automation` |
-| Build failures on code push | Decoupled from source — automation can be fixed independently |
-
----
-
-## Quick Reference
-
+### Fix a TypeScript error
 ```bash
-# Work on app features
-git checkout main
-git pull origin main
-# ... make changes ...
-git push origin main
-
-# Work on CI/build issues
-git checkout automation
-git pull origin automation
-# ... fix tsconfig, workflows, package-lock.json ...
-git push origin automation
-
-# Sync automation config into main
-git checkout main
-git merge automation
+# Edit tsconfig.json or source files
+# ...
+git add tsconfig.json
+git commit -m "ci: fix TypeScript error"
 git push origin main
 ```
+
+### Re-run the workflow manually
+Go to GitHub Actions tab and click "Re-run failed jobs" on the latest run.
 
 ---
 
 ## Support
 
-If the build breaks:
-1. Check the GitHub Actions tab for error messages
-2. Update the `automation` branch with fixes
-3. Merge `automation` into `main` to apply fixes
-4. Re-run the workflow
+**Workflow failing?**
+- Check GitHub Actions tab: https://github.com/LucaGalassi/UWHAP-Muscle-Guide/actions
+- See `BUILD_FIXES_SUMMARY.md` for common issues
+- Most failures are either missing `package-lock.json` or `tsconfig.json` issues (both auto-fixed on retry)
 
-Live site: https://lucagalassi.github.io/UWHAP-Muscle-Guide/
+**Live Site**: https://lucagalassi.github.io/UWHAP-Muscle-Guide/
+
+**No need to do anything special** — just push code to `main` and the workflow handles the rest.
+
