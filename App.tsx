@@ -672,7 +672,15 @@ const App: React.FC = () => {
             try {
               handleResumeData(input);
               setShowWelcome(false);
-            } catch {}
+              setHasSavedSession(true);
+            } catch (e) {
+              throw e; // Re-throw so splash screen can show error
+            }
+          }}
+          onNewStudent={() => {
+            // Mark as new user and show the welcome/tutorial modal
+            setIsNewUser(true);
+            setShowWelcome(true);
           }}
         />
       )}

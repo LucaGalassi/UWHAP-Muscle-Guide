@@ -135,25 +135,37 @@ const WelcomeModal: React.FC<WelcomeModalProps> = ({ onDismiss, onResume, daysUn
     },
     {
       title: "Who are you?",
-      subtitle: "Personalize your experience",
-      icon: <User className="w-12 h-12 text-brand-600" />,
+      subtitle: "Create Your Profile & Save",
+      icon: <User className={`w-12 h-12 ${isDarkTutorial ? 'text-purple-400' : currentTheme === 'nature' ? 'text-emerald-600' : 'text-purple-600'}`} />,
       content: (
         <div className={`space-y-4 text-sm leading-relaxed ${tutorialMuted}`}>
           <p className={tutorialText}>
-            Enter your name so we can personalize your save codes and progress reports.
+            Enter your name to <strong>create your save profile</strong>. This immediately saves your session to this browser.
           </p>
-          <div className="space-y-2">
+          <div className="space-y-3">
             <label className={`text-xs font-bold uppercase tracking-wider ${tutorialMuted}`}>Student Name</label>
             <input
               type="text"
               value={studentName}
               onChange={(e) => onSetStudentName(e.target.value)}
               placeholder="Enter your name..."
-              className={`w-full px-4 py-3 rounded-xl text-lg font-bold focus:ring-2 focus:ring-brand-500/20 outline-none border ${currentThemeConfig.border} ${isDarkTutorial ? 'bg-slate-900 text-white' : currentTheme === 'nature' ? 'bg-[#f5f5f4] text-stone-800' : 'bg-slate-50 text-slate-900'}`}
+              className={`w-full px-4 py-3 rounded-xl text-lg font-bold focus:ring-2 focus:ring-brand-500/20 outline-none border ${currentThemeConfig.border} ${isDarkTutorial ? 'bg-slate-900 text-white placeholder:text-slate-500' : currentTheme === 'nature' ? 'bg-[#f5f5f4] text-stone-800 placeholder:text-stone-400' : 'bg-slate-50 text-slate-900 placeholder:text-slate-400'}`}
             />
-            <p className={`text-xs italic ${tutorialMuted}`}>
-              This name will be embedded in your save codes so you can easily identify your progress.
-            </p>
+            {studentName && (
+              <div className={`flex items-center gap-2 text-xs font-medium p-2 rounded-lg ${isDarkTutorial ? 'bg-emerald-900/50 text-emerald-300' : currentTheme === 'nature' ? 'bg-emerald-100 text-emerald-700' : 'bg-emerald-50 text-emerald-600'}`}>
+                <CheckCircle className="w-4 h-4" />
+                <span>Session created for <strong>{studentName}</strong> — saving automatically!</span>
+              </div>
+            )}
+          </div>
+          <div className={`p-3 rounded-xl flex items-start gap-3 ${tutorialPanel}`}>
+            <Save className={`w-5 h-5 mt-0.5 shrink-0 ${isDarkTutorial ? 'text-emerald-400' : currentTheme === 'nature' ? 'text-emerald-600' : 'text-emerald-500'}`} />
+            <div>
+              <p className={`font-bold text-xs uppercase tracking-wide ${tutorialText}`}>How Saving Works</p>
+              <p className={`text-xs mt-1 ${tutorialMuted}`}>
+                Your name, progress, and theme are saved to this browser automatically. To transfer to another device, copy your <strong>Save Code</strong> from Settings.
+              </p>
+            </div>
           </div>
         </div>
       )
