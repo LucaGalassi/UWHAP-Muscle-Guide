@@ -310,7 +310,7 @@ const AdvancedAnimationViewer: React.FC<AdvancedAnimationViewerProps> = ({
                     className={`w-full px-4 py-3 rounded-lg border ${theme.border} ${theme.cardBg} ${theme.text} font-semibold flex items-center justify-center gap-2 hover:border-brand-400 transition-colors`}
                   >
                     <ExternalLink className="w-4 h-4" />
-                    Watch tutorials
+                    Watch videos
                   </button>
                 </div>
               </div>

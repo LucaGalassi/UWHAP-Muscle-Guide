@@ -46,10 +46,10 @@ const FlashcardView: React.FC<FlashcardViewProps> = ({ muscle, onRate, onNext, a
     console.log('Rating selected:', rating);
     if (onRate) {
       onRate(rating);
-    } else {
-      // Fallback for simple mode
-      onNext(rating === 'GOOD' || rating === 'EASY');
     }
+    // Always advance after rating so the flow isn't stuck
+    const isCorrect = rating === 'GOOD' || rating === 'EASY';
+    onNext(isCorrect);
   };
 
   const theme = THEME_CONFIG[currentTheme];
