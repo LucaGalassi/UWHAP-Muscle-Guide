@@ -19,7 +19,6 @@ import {
   MotionDefinition,
   MOTIONS,
   getMotionsForMuscle,
-  generateGifSearchQuery,
   getLearningTipsForMotion,
   getClinicalRelevanceForMotion,
   getCommonErrorsForMotion,
@@ -314,37 +313,6 @@ const AdvancedAnimationViewer: React.FC<AdvancedAnimationViewerProps> = ({
                   
                   {/* Motion Search Buttons */}
                   <div className="space-y-3">
-                    {/* Primary action buttons row */}
-                    <div className="grid grid-cols-2 gap-3">
-                      <button
-                        onClick={() => {
-                          const query = generateGifSearchQuery(muscleId || '', muscleName, selectedMotion.id);
-                          window.open(
-                            `https://www.google.com/search?tbm=isch&q=${encodeURIComponent(query + ' medical animation gif')}`,
-                            '_blank'
-                          );
-                        }}
-                        className="px-4 py-3 rounded-xl bg-gradient-to-r from-brand-500 to-blue-600 text-white font-semibold text-sm flex items-center justify-center gap-2 hover:shadow-lg hover:scale-[1.02] transition-all"
-                      >
-                        <Search className="w-4 h-4" />
-                        <span className="truncate">{selectedMotion.displayName}</span>
-                      </button>
-                      <button
-                        onClick={() =>
-                          window.open(
-                            `https://www.youtube.com/results?search_query=${encodeURIComponent(
-                              `${selectedMotion.displayName} motion anatomy`
-                            )}`,
-                            '_blank'
-                          )
-                        }
-                        className={`px-4 py-3 rounded-xl border-2 ${theme.border} ${theme.cardBg} ${theme.text} font-semibold text-sm flex items-center justify-center gap-2 hover:border-red-400 hover:bg-red-50/50 transition-all`}
-                      >
-                        <ExternalLink className="w-4 h-4 text-red-500" />
-                        YouTube
-                      </button>
-                    </div>
-
                     {/* Google GIF Search */}
                     <div className={`p-3 rounded-lg border ${theme.border} ${theme.infoBox}`}>
                       <p className={`text-[11px] uppercase tracking-wider ${theme.subText} mb-2`}>Google GIF Search</p>
