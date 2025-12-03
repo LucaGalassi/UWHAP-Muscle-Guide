@@ -26,8 +26,23 @@ const SmartGuideView: React.FC<SmartGuideViewProps> = ({ progressMap, onUpdatePr
   const [phase, setPhase] = useState<GuidePhase>('DASHBOARD');
   const [relatedMusclePopup, setRelatedMusclePopup] = useState<MuscleItem | null>(null);
   const [showAnimationViewer, setShowAnimationViewer] = useState(false);
-  
+
   const theme = THEME_CONFIG[currentTheme];
+  const cardSurface = `${theme.cardBg} border ${theme.border}`;
+  const trackBg = currentTheme === 'midnight'
+    ? 'bg-slate-800'
+    : currentTheme === 'blueprint'
+      ? 'bg-blue-900/30'
+      : currentTheme === 'nature'
+        ? 'bg-emerald-50'
+        : 'bg-slate-100';
+  const contentBg = currentTheme === 'midnight'
+    ? 'bg-slate-900/70'
+    : currentTheme === 'blueprint'
+      ? 'bg-[#0f2137]'
+      : currentTheme === 'nature'
+        ? 'bg-[#f5f5f4]'
+        : 'bg-slate-50';
   
   // Customization State
   const [learnBatchSize, setLearnBatchSize] = useState(5);
@@ -134,46 +149,46 @@ const SmartGuideView: React.FC<SmartGuideViewProps> = ({ progressMap, onUpdatePr
         </div>
 
         {/* Detailed Tracking Bars - Enhanced */}
-        <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm mb-10">
-          <h3 className="text-sm font-bold text-slate-400 uppercase tracking-widest mb-6 flex items-center gap-2">
+        <div className={`${cardSurface} p-6 rounded-3xl shadow-sm mb-10`}>
+          <h3 className={`text-sm font-bold uppercase tracking-widest mb-6 flex items-center gap-2 ${theme.subText} opacity-80`}>
              <TrendingUp className="w-4 h-4" /> Your Progress Overview
           </h3>
-          
+
           <div className="space-y-6">
             {/* Mastered */}
             <div>
                <div className="flex justify-between text-sm font-bold mb-2">
                  <span className="text-emerald-700 flex items-center gap-2"><CheckCircle className="w-4 h-4" /> Mastered</span>
-                 <span className="text-slate-900 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-100">{masteredCount} of {MUSCLE_DATA.length}</span>
+                 <span className={`bg-emerald-50 px-3 py-1 rounded-full border border-emerald-100 ${theme.text}`}>{masteredCount} of {MUSCLE_DATA.length}</span>
                </div>
-               <div className="h-4 w-full bg-slate-100 rounded-full overflow-hidden shadow-inner">
+               <div className={`h-4 w-full ${trackBg} rounded-full overflow-hidden shadow-inner`}>
                  <div className="h-full bg-gradient-to-r from-emerald-400 to-emerald-600 rounded-full transition-all duration-1000" style={{width: `${(masteredCount / MUSCLE_DATA.length) * 100}%`}}></div>
                </div>
-               <p className="text-xs text-slate-500 mt-1">Deeply learned, reviewed 3+ times successfully</p>
+               <p className={`text-xs mt-1 ${theme.subText}`}>Deeply learned, reviewed 3+ times successfully</p>
             </div>
 
             {/* In Review */}
             <div>
                <div className="flex justify-between text-sm font-bold mb-2">
                  <span className="text-blue-700 flex items-center gap-2"><Repeat className="w-4 h-4" /> In Review</span>
-                 <span className="text-slate-900 bg-blue-50 px-3 py-1 rounded-full border border-blue-100">{reviewCount}</span>
+                 <span className={`bg-blue-50 px-3 py-1 rounded-full border border-blue-100 ${theme.text}`}>{reviewCount}</span>
                </div>
-               <div className="h-4 w-full bg-slate-100 rounded-full overflow-hidden shadow-inner">
+               <div className={`h-4 w-full ${trackBg} rounded-full overflow-hidden shadow-inner`}>
                  <div className="h-full bg-gradient-to-r from-blue-400 to-blue-600 rounded-full transition-all duration-1000" style={{width: `${(reviewCount / MUSCLE_DATA.length) * 100}%`}}></div>
                </div>
-               <p className="text-xs text-slate-500 mt-1">Building retention through spaced reviews</p>
+               <p className={`text-xs mt-1 ${theme.subText}`}>Building retention through spaced reviews</p>
             </div>
 
              {/* Learning */}
              <div>
                <div className="flex justify-between text-sm font-bold mb-2">
                  <span className="text-orange-700 flex items-center gap-2"><Brain className="w-4 h-4" /> Currently Learning</span>
-                 <span className="text-slate-900 bg-orange-50 px-3 py-1 rounded-full border border-orange-100">{learningCount}</span>
+                 <span className={`bg-orange-50 px-3 py-1 rounded-full border border-orange-100 ${theme.text}`}>{learningCount}</span>
                </div>
-               <div className="h-4 w-full bg-slate-100 rounded-full overflow-hidden shadow-inner">
+               <div className={`h-4 w-full ${trackBg} rounded-full overflow-hidden shadow-inner`}>
                  <div className="h-full bg-gradient-to-r from-orange-400 to-orange-600 rounded-full transition-all duration-1000" style={{width: `${(learningCount / MUSCLE_DATA.length) * 100}%`}}></div>
                </div>
-               <p className="text-xs text-slate-500 mt-1">Recently introduced, needs reinforcement</p>
+               <p className={`text-xs mt-1 ${theme.subText}`}>Recently introduced, needs reinforcement</p>
             </div>
           </div>
         </div>
@@ -182,12 +197,22 @@ const SmartGuideView: React.FC<SmartGuideViewProps> = ({ progressMap, onUpdatePr
         <div className="grid md:grid-cols-2 gap-8 mb-8">
           {/* Review Column */}
           <div className="flex flex-col gap-4">
-             <div className="bg-red-50 p-6 rounded-3xl border border-red-100 flex items-center gap-6">
-               <div className="w-14 h-14 bg-white text-red-500 rounded-2xl flex items-center justify-center shrink-0 shadow-sm border border-red-100">
+             <div
+               className={`p-6 rounded-3xl flex items-center gap-6 ${
+                 currentTheme === 'midnight'
+                   ? 'bg-red-500/20 border border-red-400/50 text-rose-50'
+                   : currentTheme === 'blueprint'
+                     ? 'bg-[#142d4f] border border-red-200/60 text-slate-50'
+                     : currentTheme === 'nature'
+                       ? 'bg-red-50 border border-red-200 text-[#1c1917]'
+                       : 'bg-red-50 border border-red-100'
+               }`}
+             >
+               <div className="w-14 h-14 bg-white/80 text-red-500 rounded-2xl flex items-center justify-center shrink-0 shadow-sm border border-red-100">
                  <Clock className="w-7 h-7" />
                </div>
                <div>
-                 <div className="text-4xl font-black text-slate-900 mb-1">{dueCount}</div>
+                 <div className={`text-4xl font-black mb-1 ${theme.text}`}>{dueCount}</div>
                  <div className="text-xs font-bold text-red-600 uppercase tracking-widest">Items Due Today</div>
                </div>
              </div>
@@ -196,9 +221,9 @@ const SmartGuideView: React.FC<SmartGuideViewProps> = ({ progressMap, onUpdatePr
                 onClick={() => startSession('DUE')}
                 disabled={dueCount === 0}
                 className={`w-full p-5 rounded-2xl font-bold transition-all flex items-center justify-between group shadow-lg ${
-                  dueCount > 0 
-                  ? 'bg-gradient-to-r from-red-600 to-red-500 text-white hover:shadow-red-200 hover:-translate-y-1' 
-                  : 'bg-slate-100 text-slate-400 cursor-not-allowed border border-slate-200'
+                  dueCount > 0
+                  ? 'bg-gradient-to-r from-red-600 to-red-500 text-white hover:shadow-red-200 hover:-translate-y-1'
+                  : `${trackBg} ${theme.subText} cursor-not-allowed ${theme.border}`
                 }`}
               >
                 <div className="flex items-center gap-3">
@@ -214,32 +239,32 @@ const SmartGuideView: React.FC<SmartGuideViewProps> = ({ progressMap, onUpdatePr
 
           {/* Learn Column */}
           <div className="flex flex-col gap-4">
-             <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm h-full">
+             <div className={`${cardSurface} p-6 rounded-3xl shadow-sm h-full`}>
                 <div className="flex justify-between items-start mb-4">
                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center">
+                      <div className="w-10 h-10 bg-blue-100/80 text-blue-700 rounded-xl flex items-center justify-center">
                         <Target className="w-5 h-5" />
                       </div>
                       <div>
-                         <h3 className="font-bold text-slate-900">Learn New Muscles</h3>
-                         <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Guided introduction</p>
+                         <h3 className={`font-bold ${theme.text}`}>Learn New Muscles</h3>
+                         <p className={`text-[10px] font-bold uppercase tracking-wider ${theme.subText} opacity-80`}>Guided introduction</p>
                       </div>
                    </div>
-                   <button 
-                    onClick={() => setShowLearnSettings(!showLearnSettings)} 
-                    className={`p-2 rounded-lg transition-colors ${showLearnSettings ? 'bg-blue-50 text-blue-600' : 'text-slate-400 hover:text-blue-600 hover:bg-slate-50'}`}
+                   <button
+                    onClick={() => setShowLearnSettings(!showLearnSettings)}
+                    className={`p-2 rounded-lg transition-colors ${showLearnSettings ? 'bg-blue-50 text-blue-600' : `${theme.subText} hover:text-blue-600 hover:bg-blue-50/60`}`}
                    >
                      <Settings className="w-5 h-5" />
                    </button>
                 </div>
-                
+
                 {showLearnSettings ? (
-                  <div className="space-y-4 animate-in fade-in slide-in-from-top-2 bg-slate-50 p-4 rounded-xl border border-slate-100">
+                  <div className={`space-y-4 animate-in fade-in slide-in-from-top-2 ${theme.inputBg} p-4 rounded-xl border ${theme.border}`}>
                     <div>
-                      <label className="text-[10px] font-bold text-slate-400 uppercase mb-2 block">Batch Size</label>
-                      <div className="flex bg-white rounded-lg p-1 border border-slate-200 shadow-sm">
+                      <label className={`text-[10px] font-bold uppercase mb-2 block ${theme.subText} opacity-80`}>Batch Size</label>
+                      <div className={`flex rounded-lg p-1 border ${theme.border} shadow-sm ${theme.cardBg}`}>
                         {[5, 10, 15].map(size => (
-                          <button 
+                          <button
                             key={size}
                             onClick={() => setLearnBatchSize(size)}
                             className={`flex-1 py-1.5 text-xs font-bold rounded-md transition-all ${learnBatchSize === size ? 'bg-blue-600 text-white shadow-md' : 'text-slate-500 hover:text-slate-900'}`}
@@ -250,10 +275,10 @@ const SmartGuideView: React.FC<SmartGuideViewProps> = ({ progressMap, onUpdatePr
                       </div>
                     </div>
                     <div>
-                      <label className="text-[10px] font-bold text-slate-400 uppercase mb-2 block">Focus Group</label>
-                      <div className="flex bg-white rounded-lg p-1 border border-slate-200 shadow-sm">
+                      <label className={`text-[10px] font-bold uppercase mb-2 block ${theme.subText} opacity-80`}>Focus Group</label>
+                      <div className={`flex rounded-lg p-1 border ${theme.border} shadow-sm ${theme.cardBg}`}>
                         {(['ALL', 'A', 'B'] as const).map(g => (
-                          <button 
+                          <button
                             key={g}
                             onClick={() => setLearnFilter(g)}
                             className={`flex-1 py-1.5 text-xs font-bold rounded-md transition-all ${learnFilter === g ? 'bg-blue-600 text-white shadow-md' : 'text-slate-500 hover:text-slate-900'}`}
@@ -265,7 +290,7 @@ const SmartGuideView: React.FC<SmartGuideViewProps> = ({ progressMap, onUpdatePr
                     </div>
                   </div>
                 ) : (
-                  <div className="text-sm text-slate-500 mb-2 leading-relaxed">
+                  <div className={`text-sm mb-2 leading-relaxed ${theme.subText}`}>
                     Ready to learn <strong className="text-blue-700 bg-blue-50 px-1 rounded">{learnBatchSize}</strong> new muscles from <strong className="text-blue-700 bg-blue-50 px-1 rounded">{learnFilter === 'ALL' ? 'All Groups' : `Group ${learnFilter}`}</strong>.
                   </div>
                 )}
@@ -277,7 +302,7 @@ const SmartGuideView: React.FC<SmartGuideViewProps> = ({ progressMap, onUpdatePr
                 className={`w-full p-5 rounded-2xl font-bold transition-all flex items-center justify-between group shadow-lg ${
                   filteredNewItems.length > 0
                   ? 'bg-blue-600 text-white hover:bg-blue-700 hover:shadow-blue-200 hover:-translate-y-1'
-                  : 'bg-slate-100 border border-slate-200 text-slate-400 cursor-not-allowed'
+                  : `${trackBg} ${theme.subText} cursor-not-allowed ${theme.border}`
                 }`}
               >
                 <div className="flex items-center gap-3">
@@ -302,24 +327,24 @@ const SmartGuideView: React.FC<SmartGuideViewProps> = ({ progressMap, onUpdatePr
       {/* Related Muscle Popup Overlay */}
       {relatedMusclePopup && (
         <div className="absolute inset-0 z-50 bg-slate-900/70 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-200">
-           <div className="bg-white rounded-3xl w-full max-w-4xl h-[85vh] flex flex-col shadow-2xl overflow-hidden ring-1 ring-white/20">
-             <div className="p-4 border-b border-slate-100 flex items-center justify-between bg-slate-50">
+           <div className={`${cardSurface} rounded-3xl w-full max-w-4xl h-[85vh] flex flex-col shadow-2xl overflow-hidden ring-1 ring-white/20`}>
+             <div className={`p-4 border-b ${theme.border} flex items-center justify-between ${theme.cardBg}`}>
                 <div className="flex items-center gap-2">
                    <div className="p-1.5 bg-brand-100 rounded-lg">
                       <BookOpen className="w-4 h-4 text-brand-600" />
                    </div>
-                   <h3 className="font-bold text-slate-900">Quick Reference</h3>
+                   <h3 className={`font-bold ${theme.text}`}>Quick Reference</h3>
                 </div>
-                <button 
+                <button
                   onClick={() => setRelatedMusclePopup(null)}
                   className="p-2 hover:bg-red-50 hover:text-red-500 rounded-full transition-colors"
                 >
                   <X className="w-5 h-5" />
                 </button>
              </div>
-             <div className="flex-1 overflow-y-auto custom-scrollbar bg-white">
+             <div className="flex-1 overflow-y-auto custom-scrollbar">
                 {/* KEY PROP ADDED HERE TO FORCE RE-RENDER ON CHANGE */}
-                <MuscleView 
+                <MuscleView
                    key={relatedMusclePopup.id}
                    muscle={relatedMusclePopup} 
                    onSelectMuscle={() => {}} 
@@ -335,7 +360,7 @@ const SmartGuideView: React.FC<SmartGuideViewProps> = ({ progressMap, onUpdatePr
       )}
 
       {/* Progress Header */}
-      <div className="bg-white border-b border-slate-200 px-6 py-4 flex items-center justify-between shadow-sm z-10">
+      <div className={`${cardSurface} border-b px-6 py-4 flex items-center justify-between shadow-sm z-10`}>
         <div className="flex items-center gap-4">
            <div className={`px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest flex items-center gap-2 ${phase === 'LEARN' ? 'bg-blue-50 text-blue-600' : 'bg-red-50 text-red-600'}`}>
              {phase === 'LEARN' ? <BookOpen className="w-3 h-3"/> : <Repeat className="w-3 h-3"/>}
@@ -353,7 +378,7 @@ const SmartGuideView: React.FC<SmartGuideViewProps> = ({ progressMap, onUpdatePr
         </button>
       </div>
 
-      <div className="flex-1 overflow-hidden relative bg-slate-50">
+      <div className={`flex-1 overflow-hidden relative ${contentBg}`}>
         {phase === 'LEARN' && (
           <div className="h-full flex flex-col">
             <div className="flex-1 overflow-hidden relative">

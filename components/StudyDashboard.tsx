@@ -55,15 +55,15 @@ const StudyDashboard: React.FC<StudyDashboardProps> = ({ onSelectTool, learnedCo
 
       <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
         {/* Flashcards */}
-        <button 
+        <button
           onClick={() => onSelectTool('FLASHCARDS')}
-          className="group relative p-8 bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-lg hover:border-brand-200 transition-all text-left"
+          className={`group relative p-8 rounded-2xl border ${theme.border} ${theme.cardBg} shadow-sm hover:shadow-lg transition-all text-left`}
         >
-          <div className="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-            <Layers className="w-6 h-6 text-orange-600" />
+          <div className="w-12 h-12 bg-orange-100/80 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+            <Layers className="w-6 h-6 text-orange-600 drop-shadow" />
           </div>
-          <h3 className="text-xl font-bold text-slate-900 mb-2">Flashcards</h3>
-          <p className="text-sm text-slate-500 leading-relaxed mb-6">
+          <h3 className={`text-xl font-bold ${theme.text} mb-2`}>Flashcards</h3>
+          <p className={`text-sm leading-relaxed mb-6 ${theme.subText}`}>
             Classic active recall. Flip cards to test your memory of origins, insertions, and actions.
           </p>
           <span className="text-orange-600 text-xs font-bold uppercase tracking-wider flex items-center gap-1 group-hover:gap-2 transition-all">
@@ -72,15 +72,15 @@ const StudyDashboard: React.FC<StudyDashboardProps> = ({ onSelectTool, learnedCo
         </button>
 
         {/* Quiz */}
-        <button 
+        <button
           onClick={() => onSelectTool('QUIZ')}
-          className="group relative p-8 bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-lg hover:border-brand-200 transition-all text-left"
+          className={`group relative p-8 rounded-2xl border ${theme.border} ${theme.cardBg} shadow-sm hover:shadow-lg transition-all text-left`}
         >
-          <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-            <Brain className="w-6 h-6 text-blue-600" />
+          <div className="w-12 h-12 bg-blue-100/80 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+            <Brain className="w-6 h-6 text-blue-600 drop-shadow" />
           </div>
-          <h3 className="text-xl font-bold text-slate-900 mb-2">Quiz Mode</h3>
-          <p className="text-sm text-slate-500 leading-relaxed mb-6">
+          <h3 className={`text-xl font-bold ${theme.text} mb-2`}>Quiz Mode</h3>
+          <p className={`text-sm leading-relaxed mb-6 ${theme.subText}`}>
             Multiple choice challenges generated dynamically from your curriculum.
           </p>
           <span className="text-blue-600 text-xs font-bold uppercase tracking-wider flex items-center gap-1 group-hover:gap-2 transition-all">
@@ -89,9 +89,17 @@ const StudyDashboard: React.FC<StudyDashboardProps> = ({ onSelectTool, learnedCo
         </button>
 
         {/* Smart Guide */}
-        <button 
+        <button
           onClick={() => onSelectTool('SMART_GUIDE')}
-          className="group relative p-8 bg-slate-900 rounded-2xl shadow-xl hover:shadow-2xl hover:bg-slate-800 transition-all text-left overflow-hidden"
+          className={`group relative p-8 rounded-2xl shadow-xl hover:shadow-2xl transition-all text-left overflow-hidden ${
+            currentTheme === 'midnight'
+              ? 'bg-slate-900 hover:bg-slate-800 text-white'
+              : currentTheme === 'blueprint'
+                ? 'bg-[#132a4a] hover:bg-[#163158] text-slate-50 border border-blue-400/60'
+                : currentTheme === 'nature'
+                  ? 'bg-gradient-to-br from-emerald-700 to-teal-700 text-white border border-emerald-200/70'
+                  : 'bg-slate-900 hover:bg-slate-800 text-white'
+          }`}
         >
           <div className="absolute top-0 right-0 p-32 bg-white/5 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none"></div>
           <div className="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform backdrop-blur-sm">
@@ -107,15 +115,15 @@ const StudyDashboard: React.FC<StudyDashboardProps> = ({ onSelectTool, learnedCo
         </button>
 
         {/* Lightning Round */}
-        <button 
+        <button
           onClick={() => onSelectTool('LIGHTNING')}
-          className="group relative p-8 bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-lg hover:border-brand-200 transition-all text-left"
+          className={`group relative p-8 rounded-2xl border ${theme.border} ${theme.cardBg} shadow-sm hover:shadow-lg transition-all text-left`}
         >
-          <div className="w-12 h-12 bg-emerald-100 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-            <Zap className="w-6 h-6 text-emerald-600" />
+          <div className="w-12 h-12 bg-emerald-100/80 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+            <Zap className="w-6 h-6 text-emerald-600 drop-shadow" />
           </div>
-          <h3 className="text-xl font-bold text-slate-900 mb-2">Lightning Round</h3>
-          <p className="text-sm text-slate-500 leading-relaxed mb-6">
+          <h3 className={`text-xl font-bold ${theme.text} mb-2`}>Lightning Round</h3>
+          <p className={`text-sm leading-relaxed mb-6 ${theme.subText}`}>
             8-question speed drill with instant scoring. Perfect for quick daily streaks.
           </p>
           <span className="text-emerald-600 text-xs font-bold uppercase tracking-wider flex items-center gap-1 group-hover:gap-2 transition-all">
