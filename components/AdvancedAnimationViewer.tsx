@@ -36,6 +36,64 @@ const MOTIONS: MotionName[] = [
   'Ankle Dorsiflexion','Ankle Plantarflexion'
 ];
 
+type ModelKey = 'overview' | 'upper' | 'lower' | 'hand' | 'spine';
+
+const MODEL_MOTION_MAP: Record<ModelKey, MotionName[]> = {
+  overview: MOTIONS,
+  upper: [
+    'Elbow Flexion','Elbow Extension',
+    'Shoulder Flexion','Shoulder Extension',
+    'Shoulder Abduction','Shoulder Adduction',
+    'Shoulder Medial Rotation','Shoulder Lateral Rotation',
+    'Forearm Pronation','Forearm Supination'
+  ],
+  lower: [
+    'Hip Flexion','Hip Extension',
+    'Knee Flexion','Knee Extension',
+    'Ankle Dorsiflexion','Ankle Plantarflexion'
+  ],
+  hand: ['Forearm Pronation','Forearm Supination'],
+  spine: MOTIONS
+};
+
+const MOTION_MODEL_MAP: Record<MotionName, ModelKey> = {
+  'Elbow Flexion': 'upper',
+  'Elbow Extension': 'upper',
+  'Shoulder Flexion': 'upper',
+  'Shoulder Extension': 'upper',
+  'Shoulder Abduction': 'upper',
+  'Shoulder Adduction': 'upper',
+  'Shoulder Medial Rotation': 'upper',
+  'Shoulder Lateral Rotation': 'upper',
+  'Forearm Pronation': 'upper',
+  'Forearm Supination': 'upper',
+  'Hip Flexion': 'lower',
+  'Hip Extension': 'lower',
+  'Knee Flexion': 'lower',
+  'Knee Extension': 'lower',
+  'Ankle Dorsiflexion': 'lower',
+  'Ankle Plantarflexion': 'lower'
+};
+
+type CameraPreset = 'Free' | 'Front' | 'Side' | 'Top';
+
+const CAMERA_POSITIONS: Record<Exclude<CameraPreset, 'Free'>, THREE.Vector3Tuple> = {
+  Front: [0, 0.8, 3],
+  Side: [3, 0.8, 0],
+  Top: [0, 3, 0.1]
+};
+
+const normalizeModelLabel = (label?: string | null): ModelKey => {
+  const lower = (label ?? '').toLowerCase();
+  if (lower.includes('upper')) return 'upper';
+  if (lower.includes('lower')) return 'lower';
+  if (lower.includes('hand')) return 'hand';
+  if (lower.includes('vertebra')) return 'spine';
+  return 'overview';
+};
+
+const getDefaultModelForMotion = (motion: MotionName): ModelKey => MOTION_MODEL_MAP[motion] ?? 'overview';
+
 interface JointSpec {
   name: string;
   axis: THREE.Vector3; // local axis of rotation
@@ -91,13 +149,19 @@ function AxisHelper({ axis, length=0.6 }: { axis: THREE.Vector3; length?: number
   );
 }
 
-function CameraController({ position }: { position: number[] }) {
+function CameraPresetController({ preset, manual }: { preset: CameraPreset; manual: boolean }) {
   const { camera } = useThree();
-  const vec = new THREE.Vector3(...position);
-  useFrame((state, delta) => {
-    camera.position.lerp(vec, 5 * delta);
-    camera.lookAt(0, 0, 0);
+  const target = useMemo(() => {
+    if (preset === 'Free') return null;
+    return new THREE.Vector3(...CAMERA_POSITIONS[preset]);
+  }, [preset]);
+
+  useFrame((_, delta) => {
+    if (manual || preset === 'Free' || !target) return;
+    camera.position.lerp(target, Math.min(1, delta * 3));
+    camera.lookAt(0, 0.5, 0);
   });
+
   return null;
 }
 
@@ -120,51 +184,47 @@ function ArmRig({ motion, playing, angleOut, skeleton }: { motion: MotionName; p
   const hip = useRef<THREE.Group>(null);
   const knee = useRef<THREE.Group>(null);
   const ankle = useRef<THREE.Group>(null);
+  const hand = useRef<THREE.Group>(null);
+  const originalQuats = useRef<Map<THREE.Object3D, THREE.Quaternion>>(new Map());
+  const tempQuat = useRef(new THREE.Quaternion());
   const spec = motionToTargets(motion);
   const axisNorm = useMemo(() => spec.joint.axis.clone().normalize(), [spec.joint.axis]);
 
+  useEffect(() => {
+    originalQuats.current.clear();
+  }, [motion, skeleton]);
+
     // Map bones if skeleton is provided
   const skeletonBones = useMemo(() => {
-    if (!skeleton?.nodes) return null;
-    
-    // DEBUG: Log all available bone names
-    console.log("Available GLTF Nodes:", Object.keys(skeleton.nodes));
+    if (!skeleton?.scene) return null;
+
+    const lookup: { bone: THREE.Bone; name: string }[] = [];
+    skeleton.scene.traverse((node: THREE.Object3D) => {
+      if ((node as THREE.Bone).isBone) {
+        lookup.push({ bone: node as THREE.Bone, name: node.name.toLowerCase() });
+      }
+    });
+    if (!lookup.length) return null;
 
     const findAll = (patterns: string[]) => {
-      const keys = Object.keys(skeleton.nodes);
-      const lower = keys.map(k => ({ k, l: k.toLowerCase() }));
-      const results: any[] = [];
-      
-      for (const p of patterns) {
-        const pl = p.toLowerCase();
-        // Find ALL matches that contain the pattern
-        const matches = lower.filter(({ l }) => l.includes(pl));
-        matches.forEach(m => {
-            if (!results.includes((skeleton.nodes as any)[m.k])) {
-                results.push((skeleton.nodes as any)[m.k]);
-            }
-        });
-      }
-      return results;
+      const tokens = patterns.map(p => p.toLowerCase());
+      return lookup
+        .filter(entry => tokens.some(token => entry.name.includes(token)))
+        .map(entry => entry.bone);
     };
 
-    // Group definitions based on user provided tags
     return {
-      shoulder: findAll(['Humerus', 'Brachialis', 'Biceps', 'Triceps', 'Coracobrachialis', 'Brachial', 'Axillary', 'Deltoid', 'Teres', 'Infraspinatus', 'Supraspinatus', 'Subscapularis', 'Latissimus', 'Pectoralis']),
-      elbow: findAll(['Ulna', 'Radius', 'Forearm', 'Brachioradialis', 'Extensor', 'Flexor', 'Pronator', 'Supinator', 'Anconeus', 'Palmaris']),
-      forearm: findAll(['Radius', 'Pronator', 'Supinator']), // Rotation only affects radius + attached muscles
-      hip: findAll(['Femur', 'Thigh', 'Quadriceps', 'Hamstring', 'Adductor', 'Sartorius', 'Gracilis', 'Gluteus', 'Iliacus', 'Psoas', 'Tensor_fasciae', 'Pectineus', 'Piriformis', 'Gemellus', 'Obturator', 'Quadratus_femoris']),
-      knee: findAll(['Tibia', 'Fibula', 'Shin', 'Calf', 'Gastrocnemius', 'Soleus', 'Plantaris', 'Popliteus', 'Tibialis', 'Fibularis', 'Peroneus', 'Extensor_digitorum_longus', 'Extensor_hallucis', 'Flexor_digitorum', 'Flexor_hallucis']),
-      ankle: findAll(['Talus', 'Calcaneus', 'Foot', 'Tarsal', 'Metatarsal', 'Phalanx', 'Toe', 'Hallucis', 'Digitorum', 'Lumbrical', 'Interossei', 'Abductor', 'Adductor', 'Flexor_digiti', 'Extensor_digiti']),
-      hand: findAll(['Carpal', 'Metacarpal', 'Phalanx', 'Scaphoid', 'Lunate', 'Triquetrum', 'Pisiform', 'Trapezium', 'Trapezoid', 'Capitate', 'Hamate', 'Finger', 'Thumb', 'Palm', 'Hand']),
-      
-      // Ambient Motion Groups
-      torso: findAll(['Rib', 'Sternum', 'Vertebra', 'Sacrum', 'Coccyx', 'Pelvis', 'Clavicle', 'Scapula', 'Manubrium', 'Xiphoid']),
-      head: findAll(['Cervical', 'Atlas', 'Axis', 'Skull', 'Mandible', 'Maxilla', 'Frontal', 'Parietal', 'Occipital', 'Temporal', 'Sphenoid', 'Ethmoid', 'Nasal', 'Zygomatic', 'Vomer', 'Lacrimal', 'Palatine']),
+      shoulder: findAll(['humerus', 'brach', 'bicep', 'tricep', 'deltoid', 'teres', 'infra', 'supra', 'subscap', 'latissimus', 'pectoralis', 'scap']),
+      elbow: findAll(['ulna', 'radius', 'brachioradialis', 'extensor', 'flexor', 'pronator', 'supinator', 'anconeus', 'palmaris']),
+      forearm: findAll(['radius', 'pronator', 'supinator']),
+      hip: findAll(['femur', 'thigh', 'quad', 'hamstring', 'adductor', 'sartorius', 'gracilis', 'glute', 'iliacus', 'psoas', 'tensor_fasciae', 'pectineus', 'piriformis', 'gemellus', 'obturator', 'quadratus_femoris']),
+      knee: findAll(['tibia', 'fibula', 'shin', 'gastrocnemius', 'soleus', 'plantaris', 'popliteus', 'tibialis', 'fibularis', 'peroneus', 'extensor_digitorum', 'extensor_hallucis', 'flexor_digitorum', 'flexor_hallucis']),
+      ankle: findAll(['talus', 'calcaneus', 'foot', 'tarsal', 'metatarsal', 'phalanx', 'toe', 'hallucis', 'digitorum', 'lumbrical', 'interossei', 'abductor', 'adductor', 'flexor_digiti', 'extensor_digiti']),
+      hand: findAll(['carpal', 'metacarpal', 'phalanx', 'scaphoid', 'lunate', 'triquetrum', 'pisiform', 'trapezium', 'trapezoid', 'capitate', 'hamate', 'finger', 'thumb', 'palm']),
+      torso: findAll(['rib', 'sternum', 'vertebra', 'sacrum', 'coccyx', 'pelvis', 'clavicle', 'scapula', 'manubrium', 'xiphoid']),
+      head: findAll(['cervical', 'atlas', 'axis', 'skull', 'mandible', 'maxilla', 'frontal', 'parietal', 'occipital', 'temporal', 'sphenoid', 'ethmoid', 'nasal', 'zygomatic', 'vomer', 'lacrimal', 'palatine'])
     };
   }, [skeleton]);
-
-  const hand = useRef<THREE.Group>(null);
 
   useFrame((state) => {
     // Auto-oscillate smoothly within joint range when playing
@@ -177,20 +237,26 @@ function ArmRig({ motion, playing, angleOut, skeleton }: { motion: MotionName; p
 
     const setQuat = (obj?: THREE.Object3D | null) => {
       if (!obj) return;
-      obj.quaternion.setFromAxisAngle(axisNorm, rad);
+      if (!originalQuats.current.has(obj)) {
+        originalQuats.current.set(obj, obj.quaternion.clone());
+      }
+      const base = originalQuats.current.get(obj);
+      if (!base) return;
+      tempQuat.current.setFromAxisAngle(axisNorm, rad);
+      obj.quaternion.copy(base).multiply(tempQuat.current);
     };
 
     // Determine which bones to use (Skeleton or Fallback Refs)
     const currentBones = skeletonBones || {
-        shoulder: [shoulder.current].filter(Boolean),
-        elbow: [elbow.current].filter(Boolean),
-        forearm: [forearm.current].filter(Boolean),
-        hip: [hip.current].filter(Boolean),
-        knee: [knee.current].filter(Boolean),
-        ankle: [ankle.current].filter(Boolean),
-        hand: [hand.current].filter(Boolean),
-        torso: [],
-        head: []
+      shoulder: [shoulder.current].filter(Boolean) as THREE.Object3D[],
+      elbow: [elbow.current].filter(Boolean) as THREE.Object3D[],
+      forearm: [forearm.current].filter(Boolean) as THREE.Object3D[],
+      hip: [hip.current].filter(Boolean) as THREE.Object3D[],
+      knee: [knee.current].filter(Boolean) as THREE.Object3D[],
+      ankle: [ankle.current].filter(Boolean) as THREE.Object3D[],
+      hand: [hand.current].filter(Boolean) as THREE.Object3D[],
+      torso: [],
+      head: []
     };
 
     // Smart Group Rotation:
@@ -368,19 +434,36 @@ export const AdvancedAnimationViewer: React.FC<AdvancedAnimationViewerProps> = (
   const [motion, setMotion] = useState<MotionName>(defaultMotion as MotionName);
   const [playing, setPlaying] = useState(true);
   const [angle, setAngle] = useState(0);
-  const [cameraPreset, setCameraPreset] = useState<'Front'|'Side'|'Top'>('Side');
+  const [cameraPreset, setCameraPreset] = useState<CameraPreset>('Side');
+  const [manualCamera, setManualCamera] = useState(false);
   const [models, setModels] = useState<ModelEntry[]>([]);
   const [selectedModelUrl, setSelectedModelUrl] = useState<string | null>(null);
+  const [autoModelSync, setAutoModelSync] = useState(true);
   const [forceBoxRig, setForceBoxRig] = useState(false);
+  const initialCameraPosition: THREE.Vector3Tuple = CAMERA_POSITIONS.Side;
 
-  const cameraPosition = useMemo(() => {
-    switch (cameraPreset) {
-      case 'Front': return [0, 0.5, 2.5];
-      case 'Top': return [0, 2.5, 0.1];
-      case 'Side':
-      default: return [2.5, 0.5, 0];
-    }
-  }, [cameraPreset]);
+  const selectedModel = useMemo(() => models.find(m => m.url === selectedModelUrl) ?? null, [models, selectedModelUrl]);
+  const selectedModelKey = normalizeModelLabel(selectedModel?.label);
+  const availableMotions = useMemo(() => {
+    const mapped = MODEL_MOTION_MAP[selectedModelKey] ?? MOTIONS;
+    return mapped.length ? mapped : MOTIONS;
+  }, [selectedModelKey]);
+  const cameraOptions: { label: string; value: CameraPreset }[] = [
+    { label: 'Free', value: 'Free' },
+    { label: 'Front', value: 'Front' },
+    { label: 'Side', value: 'Side' },
+    { label: 'Top', value: 'Top' }
+  ];
+
+  const handleModelChange = (url: string | null) => {
+    setSelectedModelUrl(url);
+    setAutoModelSync(false);
+  };
+
+  const handleCameraSelect = (preset: CameraPreset) => {
+    setCameraPreset(preset);
+    setManualCamera(preset === 'Free');
+  };
 
   // Heuristic default motion by muscle name for easier auto-selection
   useEffect(() => {
@@ -409,18 +492,21 @@ export const AdvancedAnimationViewer: React.FC<AdvancedAnimationViewerProps> = (
     setPlaying(true);
   }, [muscleName, defaultMotion]);
 
-  // Auto-select model based on motion
   useEffect(() => {
-    if (!models.length) return;
-    const lower = motion.toLowerCase();
-    let target = 'Overview Skeleton';
-    if (lower.includes('elbow') || lower.includes('shoulder') || lower.includes('forearm')) target = 'Upper Limb';
-    else if (lower.includes('hip') || lower.includes('knee') || lower.includes('ankle')) target = 'Lower Limb';
-    
-    const found = models.find(m => m.label === target);
-    if (found) setSelectedModelUrl(found.url);
-    else if (models.length) setSelectedModelUrl(models[0].url);
-  }, [motion, models]);
+    if (!availableMotions.length) return;
+    if (!availableMotions.includes(motion)) {
+      setMotion(availableMotions[0]);
+    }
+  }, [availableMotions, motion]);
+
+  useEffect(() => {
+    if (!models.length || !autoModelSync) return;
+    const targetKey = getDefaultModelForMotion(motion);
+    const found = models.find(m => normalizeModelLabel(m.label) === targetKey);
+    if (found) {
+      setSelectedModelUrl(found.url);
+    }
+  }, [motion, models, autoModelSync]);
 
   useEffect(() => {
     const base = (import.meta as any).env?.BASE_URL || '/';
@@ -434,13 +520,11 @@ export const AdvancedAnimationViewer: React.FC<AdvancedAnimationViewerProps> = (
             .filter((m: any) => !m.label.toLowerCase().includes('cervical'))
             .map((m: any) => ({ label: m.label, url: toUrl(m.url) }));
           setModels(mapped);
-          if (mapped.length && !selectedModelUrl) setSelectedModelUrl(mapped[0].url);
         }
       })
       .catch(() => {
         const fallback = toUrl('models/overview-skeleton.glb');
         setModels([{ label: 'Skeleton (Default Path)', url: fallback }]);
-        if (!selectedModelUrl) setSelectedModelUrl(fallback);
       });
   }, []);
 
@@ -468,47 +552,82 @@ export const AdvancedAnimationViewer: React.FC<AdvancedAnimationViewerProps> = (
           </button>
         </div>
 
-        <div className="p-5 space-y-4 flex-1 flex flex-col">
-          <div className="flex items-center justify-between gap-3">
-            <div>
-              <p className={`${theme.text} text-base font-semibold`}>{muscleName}</p>
-              <p className={`text-sm ${theme.subText}`}>Motion: {motion} • Angle: {angle.toFixed(0)}°</p>
+        <div className="p-5 space-y-4 flex-1 flex flex-col overflow-hidden">
+          <div className="flex flex-col gap-3">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <p className={`${theme.text} text-base font-semibold`}>{muscleName}</p>
+                <p className={`text-sm ${theme.subText}`}>Motion: {motion} • Angle: {angle.toFixed(0)}°</p>
+              </div>
+              <div className="flex flex-wrap items-center gap-2">
+                <select value={motion} onChange={(e)=>setMotion(e.target.value as MotionName)} className={`px-4 py-3 rounded-lg border ${theme.border} text-sm ${theme.text} ${theme.inputBg} min-w-[14rem]`}>
+                  {availableMotions.map(m => <option key={m} value={m}>{m}</option>)}
+                </select>
+                <button onClick={()=>setPlaying(p=>!p)} className={`px-4 py-3 rounded-lg border ${theme.border} ${theme.inputBg} ${theme.text} text-sm font-semibold flex items-center gap-2`}>
+                  {playing ? <PauseCircle className="w-4 h-4" /> : <PlayCircle className="w-4 h-4" />} {playing ? 'Pause' : 'Play'}
+                </button>
+              </div>
             </div>
-            <div className="flex items-center gap-2">
-              <select value={motion} onChange={(e)=>setMotion(e.target.value as MotionName)} className={`px-4 py-3 rounded-lg border ${theme.border} text-base ${theme.text} ${theme.inputBg} min-w-[16rem]`}>
-                {MOTIONS.map(m => <option key={m} value={m}>{m}</option>)}
-              </select>
-              <button onClick={()=>setPlaying(p=>!p)} className={`px-4 py-3 rounded-lg border ${theme.border} ${theme.inputBg} ${theme.text} text-base font-semibold`}>
-                {playing ? <PauseCircle className="w-4 h-4 inline-block mr-1" /> : <PlayCircle className="w-4 h-4 inline-block mr-1" />} {playing ? 'Pause' : 'Play'}
-              </button>
-              <select value={cameraPreset} onChange={(e)=>setCameraPreset(e.target.value as any)} className={`px-4 py-3 rounded-lg border ${theme.border} text-base ${theme.text} ${theme.inputBg}`}>
-                <option value="Front">Front</option>
-                <option value="Side">Side</option>
-                <option value="Top">Top</option>
-              </select>
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div className="flex flex-wrap items-center gap-2">
+                <span className={`text-xs font-semibold uppercase ${theme.subText}`}>Model</span>
+                <select value={selectedModelUrl ?? ''} onChange={(e)=>handleModelChange(e.target.value || null)} className={`px-4 py-2 rounded-lg border ${theme.border} text-sm ${theme.text} ${theme.inputBg} min-w-[14rem]`}>
+                  {models.map(m => <option key={m.url} value={m.url}>{m.label}</option>)}
+                  {!models.length && <option value=''>Box Rig (No Model)</option>}
+                </select>
+                <button onClick={()=>setAutoModelSync(true)} disabled={autoModelSync} className={`px-3 py-2 rounded-lg border ${theme.border} text-xs font-semibold ${autoModelSync ? 'bg-emerald-500 text-white border-emerald-500 cursor-default' : `${theme.inputBg} ${theme.text}`}`}>
+                  {autoModelSync ? 'Motion Linked' : 'Link to Motion'}
+                </button>
+              </div>
+              <div className="flex flex-wrap items-center gap-2">
+                <span className={`text-xs font-semibold uppercase ${theme.subText}`}>Camera</span>
+                <div className={`flex rounded-2xl border ${theme.border} overflow-hidden`}>
+                  {cameraOptions.map(opt => {
+                    const isActive = cameraPreset === opt.value;
+                    return (
+                      <button
+                        key={opt.value}
+                        onClick={() => handleCameraSelect(opt.value)}
+                        className={`px-3 py-2 text-xs font-semibold ${isActive ? 'bg-blue-500 text-white' : `${theme.inputBg} ${theme.text}`}`}
+                      >
+                        {opt.label}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
             </div>
           </div>
-
-          <div className="flex gap-4 flex-1 min-h-0">
-            <div className={`rounded-2xl border ${theme.border} ${theme.inputBg} p-2 flex-1 min-h-0`}>
-              <Canvas camera={{ position: cameraPosition as any, fov: 45 }} dpr={[1, 2]} frameloop="always">
-                <CameraController position={cameraPosition} />
-                <ambientLight intensity={0.7} />
-                <directionalLight position={[5,5,5]} intensity={0.8} />
-                <gridHelper args={[10, 20]} />
-                {selectedModelUrl && !forceBoxRig ? (
-                  <Suspense fallback={<Loader />}>
-                    <Bounds fit clip observe margin={1.2}>
-                      <GLTFArmRig url={selectedModelUrl} />
-                    </Bounds>
-                  </Suspense>
-                ) : (
-                  <ArmRig motion={motion} playing={playing} angleOut={setAngle} />
-                )}
-                <OrbitControls enablePan={true} enableZoom={true} enableRotate={true} makeDefault />
-              </Canvas>
-            </div>
-            <aside className={`w-80 rounded-2xl border ${theme.border} ${theme.inputBg} p-4 flex flex-col overflow-y-auto`}>
+          <div className="flex-1 min-h-0 flex flex-col gap-4 overflow-hidden">
+            <div className="flex gap-4 flex-1 min-h-0 overflow-hidden">
+              <div className={`rounded-2xl border ${theme.border} ${theme.inputBg} p-2 flex-1 min-h-0 overflow-hidden`}>
+                <Canvas camera={{ position: initialCameraPosition, fov: 45 }} dpr={[1, 2]} frameloop="always">
+                  <CameraPresetController preset={cameraPreset} manual={manualCamera} />
+                  <ambientLight intensity={0.7} />
+                  <directionalLight position={[5,5,5]} intensity={0.8} />
+                  <gridHelper args={[10, 20]} />
+                  {selectedModelUrl && !forceBoxRig ? (
+                    <Suspense fallback={<Loader />}>
+                      <Bounds fit clip observe margin={1.2}>
+                        <GLTFArmRig url={selectedModelUrl} />
+                      </Bounds>
+                    </Suspense>
+                  ) : (
+                    <ArmRig motion={motion} playing={playing} angleOut={setAngle} />
+                  )}
+                  <OrbitControls
+                    enablePan
+                    enableZoom
+                    enableRotate
+                    makeDefault
+                    onStart={() => {
+                      setManualCamera(true);
+                      setCameraPreset('Free');
+                    }}
+                  />
+                </Canvas>
+              </div>
+              <aside className={`w-80 rounded-2xl border ${theme.border} ${theme.inputBg} p-4 flex flex-col overflow-y-auto`}>
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-2">
                   <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${theme.cardBg} border ${theme.border}`}>
@@ -584,19 +703,20 @@ export const AdvancedAnimationViewer: React.FC<AdvancedAnimationViewerProps> = (
                   </button>
                 ))}
               </div>
-            </aside>
-          </div>
+              </aside>
+            </div>
 
-          <div className={`text-xs ${theme.subText} space-y-2`}>
-            <p>
-              Axes legend — X: Med/Lat Rotation, Y: Pro/Supination, Z: Abd/Add, Flex/Ext
-            </p>
-            <p>
-              Beta: 3D animations are approximations for educational visualization. Joint axes, ranges, and coupling are simplified and may not reflect exact biomechanics. If a GLTF skeleton is placed at <code>public/models/overview-skeleton.glb</code> it will be loaded and bones will be driven when available.
-            </p>
-            <p>
-              Next steps: load rigged GLTF skeletons, map joints to bones, constrain rotations per anatomical axes, and annotate with dynamic labels/angles.
-            </p>
+            <div className={`text-xs ${theme.subText} space-y-2 overflow-y-auto pr-1`}>
+              <p>
+                Axes legend — X: Med/Lat Rotation, Y: Pro/Supination, Z: Abd/Add, Flex/Ext
+              </p>
+              <p>
+                Beta: 3D animations are approximations for educational visualization. Joint axes, ranges, and coupling are simplified and may not reflect exact biomechanics. If a GLTF skeleton is placed at <code>public/models/overview-skeleton.glb</code> it will be loaded and bones will be driven when available.
+              </p>
+              <p>
+                Next steps: load rigged GLTF skeletons, map joints to bones, constrain rotations per anatomical axes, and annotate with dynamic labels/angles.
+              </p>
+            </div>
           </div>
         </div>
       </div>
