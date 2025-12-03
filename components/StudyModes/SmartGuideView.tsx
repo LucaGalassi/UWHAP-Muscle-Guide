@@ -4,8 +4,9 @@ import { MUSCLE_DATA, THEME_CONFIG } from '../../constants';
 import MuscleView from '../MuscleView';
 import FlashcardView from './FlashcardView';
 import QuizView from './QuizView';
+import AdvancedAnimationViewer from '../AdvancedAnimationViewer';
 import { createInitialProgress, calculateNextReview } from '../../utils/srs';
-import { BookOpen, Brain, CheckCircle, ArrowRight, TrendingUp, Clock, Target, Repeat, X, Settings, ListFilter, Play, Sparkles } from 'lucide-react';
+import { BookOpen, Brain, CheckCircle, ArrowRight, TrendingUp, Clock, Target, Repeat, X, Settings, ListFilter, Play, Sparkles, PlayCircle } from 'lucide-react';
 
 interface SmartGuideViewProps {
   progressMap: Record<string, MuscleProgress>;
@@ -23,6 +24,7 @@ const SmartGuideView: React.FC<SmartGuideViewProps> = ({ progressMap, onUpdatePr
   const [currentMuscleId, setCurrentMuscleId] = useState<string | null>(null);
   const [phase, setPhase] = useState<GuidePhase>('DASHBOARD');
   const [relatedMusclePopup, setRelatedMusclePopup] = useState<MuscleItem | null>(null);
+  const [showAnimationViewer, setShowAnimationViewer] = useState(false);
   
   const theme = THEME_CONFIG[currentTheme];
   
@@ -352,7 +354,16 @@ const SmartGuideView: React.FC<SmartGuideViewProps> = ({ progressMap, onUpdatePr
                  onRelatedMuscleClick={(m) => setRelatedMusclePopup(m)}
                  currentTheme={currentTheme}
                />
-               <div className="absolute bottom-8 right-8 z-20">
+               {/* Floating Action Buttons */}
+               <div className="absolute bottom-8 right-8 z-20 flex flex-col gap-3 items-end">
+                 {/* Animation Button */}
+                 <button 
+                   onClick={() => setShowAnimationViewer(true)}
+                   className="px-5 py-3 bg-purple-600 text-white font-bold rounded-xl shadow-lg hover:bg-purple-700 flex items-center gap-2 transition-all hover:scale-105"
+                 >
+                   <PlayCircle className="w-5 h-5" /> View Animations
+                 </button>
+                 {/* Continue Button */}
                  <button 
                    onClick={() => setPhase('QUIZ')}
                    className="px-8 py-4 bg-brand-600 text-white font-bold rounded-2xl shadow-xl hover:bg-brand-700 flex items-center gap-3 animate-bounce border border-white/20"
@@ -390,6 +401,17 @@ const SmartGuideView: React.FC<SmartGuideViewProps> = ({ progressMap, onUpdatePr
           </div>
         )}
       </div>
+
+      {/* Animation Viewer Modal */}
+      {showAnimationViewer && currentMuscle && (
+        <AdvancedAnimationViewer
+          muscleName={currentMuscle.name}
+          muscleId={currentMuscle.id}
+          currentTheme={currentTheme}
+          onClose={() => setShowAnimationViewer(false)}
+          browserMode={false}
+        />
+      )}
     </div>
   );
 };

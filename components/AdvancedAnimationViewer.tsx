@@ -260,23 +260,28 @@ const AdvancedAnimationViewer: React.FC<AdvancedAnimationViewerProps> = ({
                   </div>
                 )}
 
-                {/* Context from Muscle Card - MOVED UP FOR PROMINENCE */}
+                {/* STUDY REQUIREMENTS - TOP PRIORITY SECTION */}
                 {!browserMode && (actionString || demonstrationText) && (
-                  <div className={`p-4 rounded-lg border ${theme.border} ${theme.cardBg}`}>
-                    <div className="flex items-center gap-2 mb-3">
-                      <Info className="w-5 h-5 text-blue-500" />
-                      <h4 className={`text-sm font-bold ${theme.text}`}>Muscle Context</h4>
+                  <div className={`p-5 rounded-xl border-2 border-blue-500/50 ${currentTheme === 'midnight' || currentTheme === 'blueprint' ? 'bg-blue-900/30' : 'bg-blue-50'}`}>
+                    <div className="flex items-center gap-2 mb-4">
+                      <div className="w-8 h-8 rounded-lg bg-blue-500 text-white flex items-center justify-center">
+                        <Info className="w-5 h-5" />
+                      </div>
+                      <div>
+                        <h4 className={`text-base font-bold ${theme.text}`}>📚 Study Requirements</h4>
+                        <p className={`text-xs ${theme.subText}`}>Learn these for your exam</p>
+                      </div>
                     </div>
                     {actionString && (
-                      <div className="mb-3">
-                        <p className={`text-[11px] font-semibold uppercase ${theme.subText} mb-1`}>Actions</p>
-                        <p className={`text-sm ${theme.text} leading-relaxed`}>{actionString}</p>
+                      <div className={`mb-4 p-3 rounded-lg ${currentTheme === 'midnight' || currentTheme === 'blueprint' ? 'bg-slate-800' : 'bg-white'} border ${theme.border}`}>
+                        <p className="text-xs font-bold uppercase text-blue-600 mb-2 flex items-center gap-1">🎯 Required Actions</p>
+                        <p className={`text-sm ${theme.text} leading-relaxed font-medium`}>{actionString}</p>
                       </div>
                     )}
                     {demonstrationText && (
-                      <div>
-                        <p className={`text-[11px] font-semibold uppercase ${theme.subText} mb-1`}>Demonstration</p>
-                        <p className={`text-sm ${theme.text} leading-relaxed`}>{demonstrationText}</p>
+                      <div className={`p-3 rounded-lg ${currentTheme === 'midnight' || currentTheme === 'blueprint' ? 'bg-slate-800' : 'bg-white'} border ${theme.border}`}>
+                        <p className="text-xs font-bold uppercase text-emerald-600 mb-2 flex items-center gap-1">🏋️ Demonstration</p>
+                        <p className={`text-sm ${theme.text} leading-relaxed font-medium`}>{demonstrationText}</p>
                       </div>
                     )}
                   </div>
@@ -606,7 +611,9 @@ const AnimatedModel: React.FC<AnimatedModelProps> = ({
 };
 
 // ============================================================================
-// ANIMATION RIG
+// ANIMATION RIG - Simplified for full anatomical models
+// Instead of trying to find specific bones, just rotate the entire model
+// to showcase the anatomy. The stick figure provides motion demonstration.
 // ============================================================================
 
 interface AnimationRigProps {
@@ -623,93 +630,21 @@ const AnimationRig: React.FC<AnimationRigProps> = ({
   onAngleUpdate
 }) => {
   const groupRef = useRef<THREE.Group>(null);
-  const originalQuats = useRef<Map<THREE.Object3D, THREE.Quaternion>>(new Map());
-  const [visibleObjects, setVisibleObjects] = useState<Set<THREE.Object3D>>(new Set());
+  const baseRotation = useRef<THREE.Euler | null>(null);
 
-  // Find bones/meshes matching joint
-  const targetBones = useMemo(() => {
-    const bones: THREE.Object3D[] = [];
-    const jointId = motion.joint.id.toLowerCase();
-    
-    scene.traverse((node) => {
-      const name = node.name.toLowerCase();
-      
-      // Skip nodes that are too deep in hierarchy (likely small details)
-      let depth = 0;
-      let parent = node.parent;
-      while (parent && depth < 10) {
-        depth++;
-        parent = parent.parent;
-      }
-      if (depth > 6) return; // Skip deeply nested objects
-      
-      // Skip objects without geometry (helpers, empties, etc)
-      if (!(node as any).geometry && node.type !== 'Bone') return;
-      
-      // Match based on joint type
-      if (jointId.includes('shoulder') && (
-        name.includes('humerus') || name.includes('arm') || name.includes('shoulder') ||
-        name.includes('deltoid') || name.includes('brach')
-      )) {
-        bones.push(node);
-      } else if (jointId.includes('elbow') && (
-        name.includes('ulna') || name.includes('radius') || name.includes('forearm')
-      )) {
-        bones.push(node);
-      } else if (jointId.includes('hip') && (
-        name.includes('femur') || name.includes('thigh') || name.includes('hip')
-      )) {
-        bones.push(node);
-      } else if (jointId.includes('knee') && (
-        name.includes('tibia') || name.includes('fibula') || name.includes('shin') || name.includes('leg')
-      )) {
-        bones.push(node);
-      } else if (jointId.includes('ankle') && (
-        name.includes('foot') || name.includes('ankle') || name.includes('calcaneus')
-      )) {
-        bones.push(node);
-      }
-    });
-    
-    return bones;
-  }, [scene, motion.joint.id]);
-
-  // Track which objects have moved significantly
-  const trackedPositions = useRef<Map<THREE.Object3D, THREE.Vector3>>(new Map());
-  
+  // Store base rotation on first render
   useEffect(() => {
-    // After a few frames, hide objects that haven't moved
-    const timer = setTimeout(() => {
-      const movedObjects = new Set<THREE.Object3D>();
-      
-      targetBones.forEach(bone => {
-        const lastPos = trackedPositions.current.get(bone);
-        if (lastPos) {
-          const currentPos = new THREE.Vector3();
-          bone.getWorldPosition(currentPos);
-          const distance = lastPos.distanceTo(currentPos);
-          
-          // If object moved more than 0.1 units, consider it active
-          if (distance > 0.1) {
-            movedObjects.add(bone);
-            // Also show parent objects
-            let parent = bone.parent;
-            while (parent && parent !== scene) {
-              movedObjects.add(parent);
-              parent = parent.parent;
-            }
-          }
-        }
-      });
-      
-      setVisibleObjects(movedObjects);
-    }, 2000); // Wait 2 seconds to track movement
-    
-    return () => clearTimeout(timer);
-  }, [targetBones, scene]);
+    if (groupRef.current && !baseRotation.current) {
+      baseRotation.current = groupRef.current.rotation.clone();
+    }
+  }, []);
 
   useFrame((state) => {
+    if (!groupRef.current) return;
+    
     const t = state.clock.getElapsedTime();
+    
+    // Calculate animation angle for display
     const range = (motion.joint.maxDeg - motion.joint.minDeg) / 2;
     const mid = (motion.joint.maxDeg + motion.joint.minDeg) / 2;
     const currentAngle = playing 
@@ -718,38 +653,17 @@ const AnimationRig: React.FC<AnimationRigProps> = ({
     
     onAngleUpdate(currentAngle);
 
-    const rad = THREE.MathUtils.degToRad(currentAngle);
-    const axis = motion.joint.axis.clone().normalize();
-
-    targetBones.forEach(bone => {
-      if (!originalQuats.current.has(bone)) {
-        originalQuats.current.set(bone, bone.quaternion.clone());
-        // Store initial position for movement tracking
-        const pos = new THREE.Vector3();
-        bone.getWorldPosition(pos);
-        trackedPositions.current.set(bone, pos);
-      }
-      
-      const baseQuat = originalQuats.current.get(bone)!;
-      const rotQuat = new THREE.Quaternion().setFromAxisAngle(axis, rad);
-      bone.quaternion.copy(baseQuat).multiply(rotQuat);
-    });
-    
-    // Hide objects that haven't moved (after visibility tracking is complete)
-    if (visibleObjects.size > 0) {
-      scene.traverse((node) => {
-        if ((node as any).isMesh) {
-          // Show only objects in the visible set OR objects not in target bones
-          const shouldShow = !targetBones.includes(node) || visibleObjects.has(node);
-          (node as any).visible = shouldShow;
-        }
-      });
+    // Gently rotate the entire model for showcase (not bone-specific animation)
+    // This provides a nice 3D view of the anatomy without random parts flying around
+    if (playing) {
+      // Slow gentle rotation to showcase the model
+      groupRef.current.rotation.y = t * 0.3; // Slow turntable rotation
     }
   });
 
   return (
     <group ref={groupRef}>
-      <primitive object={scene} />
+      <primitive object={scene} scale={1} />
     </group>
   );
 };
