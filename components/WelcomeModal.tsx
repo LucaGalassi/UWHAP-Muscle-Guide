@@ -40,7 +40,8 @@ const WelcomeModal: React.FC<WelcomeModalProps> = ({ onDismiss, onResume, daysUn
   const tutorialNumberVariants = [
     currentThemeConfig.iconFunc,
     currentThemeConfig.iconLoc,
-    `${currentThemeConfig.accent} text-white`
+    `${currentThemeConfig.accent} text-white`,
+    `${currentThemeConfig.badge}`
   ];
 
   const themeShowcase: Record<AppTheme, { tagline: string; highlight: string; swatch: string; icon: React.ReactNode }> = {
@@ -137,7 +138,7 @@ const WelcomeModal: React.FC<WelcomeModalProps> = ({ onDismiss, onResume, daysUn
               </div>
             </li>
             <li className="flex gap-3">
-              <div className="w-6 h-6 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center font-bold text-xs shrink-0">4</div>
+              <div className={`w-6 h-6 rounded-full flex items-center justify-center font-bold text-xs shrink-0 ${tutorialNumberVariants[3]}`}>4</div>
               <div>
                 <span className={`block font-bold ${tutorialText}`}>Quiz Mode</span>
                 <span className={tutorialMuted}>Generate custom multiple-choice quizzes to simulate exam conditions.</span>
