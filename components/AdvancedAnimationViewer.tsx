@@ -246,24 +246,26 @@ const AdvancedAnimationViewer: React.FC<AdvancedAnimationViewerProps> = ({
             <div className="flex items-center gap-2 mb-4">
               <button
                 onClick={() => setActiveTab('actions')}
+                aria-label="Tab 1: Muscle Actions - GIF search and study requirements"
                 className={`px-6 py-3 rounded-xl font-bold text-sm transition-all flex items-center gap-2 ${
                   activeTab === 'actions'
                     ? 'bg-brand-500 text-white shadow-lg'
                     : `${theme.cardBg} ${theme.text} border ${theme.border} hover:border-brand-400`
                 }`}
               >
-                <span className="flex items-center justify-center w-6 h-6 rounded-full bg-white/20 font-bold">1</span>
+                <span className="flex items-center justify-center w-6 h-6 rounded-full bg-white/20 font-bold" aria-hidden="true">1</span>
                 Muscle Actions
               </button>
               <button
                 onClick={() => setActiveTab('guides')}
+                aria-label="Tab 2: Study Guides - Learning aids and resources"
                 className={`px-6 py-3 rounded-xl font-bold text-sm transition-all flex items-center gap-2 ${
                   activeTab === 'guides'
                     ? 'bg-brand-500 text-white shadow-lg'
                     : `${theme.cardBg} ${theme.text} border ${theme.border} hover:border-brand-400`
                 }`}
               >
-                <span className="flex items-center justify-center w-6 h-6 rounded-full bg-white/20 font-bold">2</span>
+                <span className="flex items-center justify-center w-6 h-6 rounded-full bg-white/20 font-bold" aria-hidden="true">2</span>
                 Study Guides
               </button>
             </div>
