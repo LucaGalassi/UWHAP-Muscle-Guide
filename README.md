@@ -28,3 +28,25 @@ View your app in AI Studio: https://ai.studio/apps/drive/1Cr_IBWJ19pE25MdcvfcCQF
   - Use Three.js/WebGL with rigged skeletons (GLTF) for articulated motion.
   - Parameterize joint axes and ranges per region.
   - Overlay labels, angles, and dynamic guidance.
+
+## Advanced 3D Animation Viewer (Experimental)
+- Purpose: A more accurate, articulated visualization using `react-three-fiber`.
+- Access: Click the `Target` icon in the muscle header to open the Advanced Viewer.
+- Install deps:
+
+```zsh
+npm install three @react-three/fiber @react-three/drei
+```
+
+- Capabilities:
+   - Articulated limb rig (shoulder, elbow, forearm, hip) with parameterized axes.
+   - Motion presets (Elbow Flexion/Extension, Shoulder Abd/Add, Medial/Lateral Rot, Forearm Pro/Sup, Hip Flex/Ext).
+   - Camera presets (Front/Side/Top) + Orbit controls.
+   - Angle readout and basic axis helpers.
+- Limitations:
+   - Approximations only; not a medical simulation. No GLTF skeleton/bones yet.
+   - Axes and ranges simplified; coupling motions not modeled.
+- Roadmap:
+   - Load rigged GLTF skeleton, map bones to anatomical joints.
+   - Joint constraints per anatomical axes and region.
+   - Dynamic overlays: labels, angle arcs, axes, ranges.
