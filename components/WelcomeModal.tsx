@@ -131,6 +131,8 @@ const WelcomeModal: React.FC<WelcomeModalProps> = ({ onDismiss, onResume, daysUn
             </div>
           </div>
         </div>
+      )
+    },
     {
       title: "Who are you?",
       subtitle: "Personalize your experience",
@@ -156,8 +158,6 @@ const WelcomeModal: React.FC<WelcomeModalProps> = ({ onDismiss, onResume, daysUn
         </div>
       )
     },
-    {
-      title: "How to Study",
     {
       title: "How to Study",
       subtitle: "Smart Guide, Flashcards & More",
