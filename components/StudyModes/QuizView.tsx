@@ -20,7 +20,7 @@ const QuizView: React.FC<QuizViewProps> = ({ onComplete, questionCount, currentT
   const [sessionScore, setSessionScore] = useState(0);
 
   const theme = THEME_CONFIG[currentTheme];
-  const isDarkTheme = currentTheme === 'midnight' || currentTheme === 'blueprint';
+  const isDarkTheme = currentTheme === 'midnight';
 
   const loadNextQuestion = () => {
     // If we have a target count and reached it, finish

@@ -85,7 +85,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   }, [showSettingsModal, examDate]);
 
   const theme = THEME_CONFIG[currentTheme];
-  const isDarkTheme = currentTheme === 'midnight' || currentTheme === 'blueprint';
+  const isDarkTheme = currentTheme === 'midnight';
 
   const filteredMuscles = useMemo(() => {
     return MUSCLE_DATA.filter((muscle) => {
@@ -308,12 +308,12 @@ const Sidebar: React.FC<SidebarProps> = ({
 
               {/* Smart Learning Stats */}
               <div className={`p-4 rounded-xl flex items-center gap-4 border ${
-                currentTheme === 'midnight' || currentTheme === 'blueprint' 
+                currentTheme === 'midnight'
                 ? 'bg-red-900/20 border-red-700/30' 
                 : 'bg-red-50 border-red-100'
               }`}>
                 <div className={`p-2 rounded-lg shadow-sm ${
-                  currentTheme === 'midnight' || currentTheme === 'blueprint'
+                  currentTheme === 'midnight'
                   ? 'bg-red-800/30 text-red-300'
                   : 'bg-white text-red-600'
                 }`}>
@@ -322,7 +322,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                 <div>
                   <h4 className={`text-sm font-bold ${theme.sidebarText}`}>{dueCount} Muscles</h4>
                   <p className={`text-xs font-medium ${
-                    currentTheme === 'midnight' || currentTheme === 'blueprint'
+                    currentTheme === 'midnight'
                     ? 'text-red-300'
                     : 'text-red-600'
                   }`}>Due for spaced repetition</p>
@@ -372,8 +372,6 @@ const Sidebar: React.FC<SidebarProps> = ({
                             <CheckCircle2 className={`w-4 h-4 ${
                               currentTheme === 'midnight'
                               ? 'text-green-400 fill-green-900/30'
-                              : currentTheme === 'blueprint'
-                              ? 'text-green-300 fill-green-900/20'
                               : 'text-green-500 fill-green-50'
                             }`} />
                           ) : (
@@ -563,22 +561,20 @@ const Sidebar: React.FC<SidebarProps> = ({
       {showSettingsModal && (
         <div
           className={`fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-sm animate-in fade-in duration-200 ${
-            currentTheme === 'blueprint'
-              ? 'bg-[#0d1a2f]/70'
-              : isDarkTheme
-                ? 'bg-slate-900/50'
-                : 'bg-slate-900/30'
+            isDarkTheme
+              ? 'bg-slate-900/50'
+              : 'bg-slate-900/30'
           }`}
         >
           <div className={`rounded-2xl shadow-2xl w-full max-w-md overflow-hidden border ${theme.border} ${theme.cardBg} ${theme.text}`}>
             <div
               className={`p-4 border-b ${theme.border} flex items-center justify-between sticky top-0 z-10 ${
-                currentTheme === 'blueprint'
-                  ? 'bg-[#0d1a2f]/70'
-                  : isDarkTheme
-                    ? 'bg-slate-900/70'
-                    : currentTheme === 'nature'
-                      ? 'bg-[#f5f5f4]/80'
+                isDarkTheme
+                  ? 'bg-slate-900/70'
+                  : currentTheme === 'nature'
+                    ? 'bg-[#f5f5f4]/80'
+                    : currentTheme === 'blueprint'
+                      ? 'bg-blue-50/80'
                       : 'bg-slate-50/80'
               }`}
             >
@@ -625,7 +621,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                     </button>
                     <button
                       onClick={() => onSetTheme('blueprint')}
-                      className={`p-3 rounded-xl border flex flex-col items-center gap-2 transition-all ${currentTheme === 'blueprint' ? 'bg-[#0f2038] border-blue-400 text-slate-100 shadow-sm' : isDarkTheme ? 'bg-slate-900 border-slate-700 text-slate-200 hover:bg-slate-800' : 'bg-white border-slate-200 text-slate-400 hover:bg-slate-50'}`}
+                      className={`p-3 rounded-xl border flex flex-col items-center gap-2 transition-all ${currentTheme === 'blueprint' ? 'bg-blue-50 border-blue-500 text-blue-700 shadow-sm' : isDarkTheme ? 'bg-slate-900 border-slate-700 text-slate-200 hover:bg-slate-800' : 'bg-white border-slate-200 text-slate-400 hover:bg-slate-50'}`}
                     >
                       <DraftingCompass className="w-5 h-5" />
                       <span className="text-[10px] font-bold">Print</span>

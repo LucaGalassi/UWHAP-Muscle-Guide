@@ -23,7 +23,7 @@ const LightningRoundView: React.FC<LightningRoundViewProps> = ({ onExit, current
 
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const theme = THEME_CONFIG[currentTheme];
-  const isDarkTheme = currentTheme === 'midnight' || currentTheme === 'blueprint';
+  const isDarkTheme = currentTheme === 'midnight';
 
   // Timer Logic
   useEffect(() => {

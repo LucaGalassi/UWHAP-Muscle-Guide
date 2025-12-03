@@ -83,7 +83,7 @@ const StudyDashboard: React.FC<StudyDashboardProps> = ({ onSelectTool, learnedCo
           <p className={`text-sm leading-relaxed mb-6 ${theme.subText}`}>
             Multiple choice challenges generated dynamically from your curriculum.
           </p>
-          <span className={`${currentTheme === 'blueprint' || currentTheme === 'midnight' ? 'text-blue-400' : 'text-blue-600'} text-xs font-bold uppercase tracking-wider flex items-center gap-1 group-hover:gap-2 transition-all`}>
+          <span className={`${currentTheme === 'midnight' ? 'text-blue-400' : 'text-blue-600'} text-xs font-bold uppercase tracking-wider flex items-center gap-1 group-hover:gap-2 transition-all`}>
             Start Quiz <ArrowRight className="w-3 h-3" />
           </span>
         </button>
@@ -95,7 +95,7 @@ const StudyDashboard: React.FC<StudyDashboardProps> = ({ onSelectTool, learnedCo
             currentTheme === 'midnight'
               ? 'bg-slate-900 hover:bg-slate-800 text-white'
               : currentTheme === 'blueprint'
-                ? 'bg-[#132a4a] hover:bg-[#163158] text-slate-50 border border-blue-400/60'
+                ? 'bg-blue-600 hover:bg-blue-700 text-white border border-blue-400'
                 : currentTheme === 'nature'
                   ? 'bg-gradient-to-br from-emerald-700 to-teal-700 text-white border border-emerald-200/70'
                   : 'bg-slate-900 hover:bg-slate-800 text-white'
@@ -126,7 +126,7 @@ const StudyDashboard: React.FC<StudyDashboardProps> = ({ onSelectTool, learnedCo
           <p className={`text-sm leading-relaxed mb-6 ${theme.subText}`}>
             8-question speed drill with instant scoring. Perfect for quick daily streaks.
           </p>
-          <span className={`${currentTheme === 'blueprint' || currentTheme === 'midnight' ? 'text-emerald-400' : 'text-emerald-600'} text-xs font-bold uppercase tracking-wider flex items-center gap-1 group-hover:gap-2 transition-all`}>
+          <span className={`${currentTheme === 'midnight' ? 'text-emerald-400' : 'text-emerald-600'} text-xs font-bold uppercase tracking-wider flex items-center gap-1 group-hover:gap-2 transition-all`}>
             Start Lightning Round <ArrowRight className="w-3 h-3" />
           </span>
         </button>
