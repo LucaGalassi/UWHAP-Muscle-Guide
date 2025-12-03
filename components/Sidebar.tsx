@@ -21,6 +21,8 @@ interface SidebarProps {
   currentTheme: AppTheme;
   onSetTheme: (theme: AppTheme) => void;
   daysUntilExam: number;
+  studentName: string;
+  onSetStudentName: (name: string) => void;
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ 
@@ -40,7 +42,9 @@ const Sidebar: React.FC<SidebarProps> = ({
   onResetProgress,
   currentTheme,
   onSetTheme,
-  daysUntilExam
+  daysUntilExam,
+  studentName,
+  onSetStudentName
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterGroup, setFilterGroup] = useState<'ALL' | 'A' | 'B'>('ALL');
@@ -49,7 +53,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   const [copyFeedback, setCopyFeedback] = useState(false);
   const [copyCodeFeedback, setCopyCodeFeedback] = useState(false);
   const [tempKey, setTempKey] = useState(apiKey);
-  const [shareName, setShareName] = useState('');
+  // Removed local shareName state in favor of prop
 
   const theme = THEME_CONFIG[currentTheme];
 
@@ -78,13 +82,13 @@ const Sidebar: React.FC<SidebarProps> = ({
   const dueCount = (Object.values(progressMap) as MuscleProgress[]).filter(p => p.dueDate <= Date.now()).length;
 
   const handleCopyLink = () => {
-    navigator.clipboard.writeText(getShareLink(shareName));
+    navigator.clipboard.writeText(getShareLink(studentName));
     setCopyFeedback(true);
     setTimeout(() => setCopyFeedback(false), 2000);
   };
 
   const handleCopyCode = () => {
-    navigator.clipboard.writeText(getSaveCode(shareName));
+    navigator.clipboard.writeText(getSaveCode(studentName));
     setCopyCodeFeedback(true);
     setTimeout(() => setCopyCodeFeedback(false), 2000);
   };
@@ -114,6 +118,11 @@ const Sidebar: React.FC<SidebarProps> = ({
                 <h1 className={`text-lg font-black tracking-tight leading-none ${theme.sidebarText}`}>
                   Muscle<br/>Guide
                 </h1>
+                {studentName && (
+                  <p className={`text-[10px] font-bold uppercase tracking-wider mt-1 ${theme.sidebarSubText}`}>
+                    Welcome, {studentName}
+                  </p>
+                )}
               </div>
             </div>
             <button 
@@ -353,8 +362,8 @@ const Sidebar: React.FC<SidebarProps> = ({
                  <input 
                     type="text" 
                     placeholder="Add a label (e.g. Dr. Muscle)" 
-                    value={shareName}
-                    onChange={(e) => setShareName(e.target.value)}
+                    value={studentName}
+                    onChange={(e) => onSetStudentName(e.target.value)}
                     className="w-full pl-3 pr-3 py-3 bg-white border-2 border-slate-100 rounded-xl text-sm font-semibold focus:outline-none focus:border-brand-500 focus:ring-4 focus:ring-brand-500/10 transition-all placeholder:font-normal"
                  />
                </div>
@@ -371,7 +380,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                    </div>
                    <textarea
                       readOnly 
-                      value={getSaveCode(shareName)} 
+                      value={getSaveCode(studentName)} 
                       rows={4}
                       className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-[11px] text-emerald-400 font-mono focus:outline-none resize-none"
                       onClick={(e) => e.currentTarget.select()}
@@ -400,7 +409,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                    </div>
                    <input 
                     readOnly 
-                    value={getShareLink(shareName)} 
+                    value={getShareLink(studentName)} 
                     className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-[11px] text-slate-600 font-mono focus:outline-none truncate cursor-text hover:bg-slate-100 transition-colors"
                     onClick={(e) => e.currentTarget.select()}
                    />

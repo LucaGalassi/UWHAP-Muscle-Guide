@@ -110,7 +110,7 @@ const WelcomeModal: React.FC<WelcomeModalProps> = ({ onDismiss, onResume, daysUn
               <div className="w-6 h-6 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center font-bold text-xs shrink-0">3</div>
               <div>
                 <span className="block font-bold text-slate-900">Lightning Round</span>
-                <span>A fast-paced game to identify muscles quickly. Great for testing your speed and recognition.</span>
+                <span>A fast-paced game! Start with 60 seconds. Correct answers add time, wrong answers subtract it. How long can you last?</span>
               </div>
             </li>
             <li className="flex gap-3">

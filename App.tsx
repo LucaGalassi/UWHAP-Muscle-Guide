@@ -233,7 +233,17 @@ const App: React.FC = () => {
       console.error('Failed to load theme from localStorage', e);
     }
 
-    // 4. Load URL Params (Overrides local)
+    // 4. Load Student Name
+    try {
+      const storedName = localStorage.getItem('student_name');
+      if (storedName) {
+        setStudentName(storedName);
+      }
+    } catch (e) {
+      console.error('Failed to load student name from localStorage', e);
+    }
+
+    // 5. Load URL Params (Overrides local)
     if (window.location.search) {
       parseUrlParams(window.location.search);
     }
@@ -259,6 +269,17 @@ const App: React.FC = () => {
       console.error('Failed to save theme to localStorage', e);
     }
   }, [theme]);
+
+  // Save Student Name whenever it changes
+  useEffect(() => {
+    try {
+      if (studentName) {
+        localStorage.setItem('student_name', studentName);
+      }
+    } catch (e) {
+      console.error('Failed to save student name to localStorage', e);
+    }
+  }, [studentName]);
 
   const handleSetApiKey = (key: string) => {
     setApiKey(key);
@@ -508,6 +529,8 @@ const App: React.FC = () => {
           currentTheme={theme}
           onSetTheme={setTheme}
           daysUntilExam={daysUntilExam}
+          studentName={studentName}
+          onSetStudentName={setStudentName}
         />
 
         {/* Main Content */}

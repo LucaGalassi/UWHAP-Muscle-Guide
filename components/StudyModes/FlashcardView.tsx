@@ -76,11 +76,22 @@ const FlashcardView: React.FC<FlashcardViewProps> = ({ muscle, onRate, onNext, a
       <div 
         className="flashcard-flip-container relative w-full h-[65vh] md:h-[70vh] cursor-pointer group mb-6"
         onClick={() => setIsFlipped(!isFlipped)}
+        style={{ perspective: '1000px' }}
       >
-        <div className={`flashcard-inner shadow-2xl rounded-3xl ${isFlipped ? 'flashcard-flipped' : ''}`}>
+        <div 
+          className={`flashcard-inner shadow-2xl rounded-3xl ${isFlipped ? 'flashcard-flipped' : ''}`}
+          style={{ 
+            transformStyle: 'preserve-3d',
+            transition: 'transform 0.6s',
+            transform: isFlipped ? 'rotateY(180deg)' : 'rotateY(0deg)'
+          }}
+        >
           
           {/* Front (Question) */}
-          <div className={`flashcard-face rounded-3xl flex flex-col items-center justify-center p-6 md:p-10 text-center border overflow-hidden ring-1 ring-black/5 transition-colors duration-300 ${theme.cardBg} ${theme.border}`}>
+          <div 
+            className={`flashcard-face rounded-3xl flex flex-col items-center justify-center p-6 md:p-10 text-center border overflow-hidden ring-1 ring-black/5 transition-colors duration-300 ${theme.cardBg} ${theme.border}`}
+            style={{ backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden', position: 'absolute', width: '100%', height: '100%', zIndex: 2 }}
+          >
             {/* Decoration */}
             <div className={`absolute top-0 left-0 w-full h-3 ${theme.accent}`}></div>
             
@@ -136,7 +147,17 @@ const FlashcardView: React.FC<FlashcardViewProps> = ({ muscle, onRate, onNext, a
           </div>
 
           {/* Back (Answer) - Now uses Theme Config! */}
-          <div className={`flashcard-face flashcard-back rounded-3xl flex flex-col overflow-hidden border shadow-2xl transition-colors duration-300 ${theme.cardBg} ${theme.border}`}>
+          <div 
+            className={`flashcard-face flashcard-back rounded-3xl flex flex-col overflow-hidden border shadow-2xl transition-colors duration-300 ${theme.cardBg} ${theme.border}`}
+            style={{ 
+              backfaceVisibility: 'hidden', 
+              WebkitBackfaceVisibility: 'hidden', 
+              position: 'absolute', 
+              width: '100%', 
+              height: '100%', 
+              transform: 'rotateY(180deg)' 
+            }}
+          >
             <div className="flex-1 overflow-y-auto custom-scrollbar p-8 md:p-12 space-y-8">
                <div className={`flex items-center justify-between border-b pb-6 sticky top-0 z-10 pt-2 ${theme.cardBg} ${currentTheme === 'midnight' ? 'border-slate-800' : 'border-slate-100'}`}>
                  <div>
