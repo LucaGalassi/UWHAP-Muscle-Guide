@@ -7,6 +7,7 @@ import QuizView from './components/StudyModes/QuizView';
 import SmartGuideView from './components/StudyModes/SmartGuideView';
 import LightningRoundView from './components/StudyModes/LightningRoundView';
 import WelcomeModal from './components/WelcomeModal';
+import SplashScreen from './components/SplashScreen';
 import { MuscleItem, StudyMode, LearningTool, MuscleProgress, AppTheme } from './types';
 import { MUSCLE_DATA, THEME_CONFIG } from './constants';
 import { Menu, ArrowLeft, AlertTriangle, Timer } from 'lucide-react';
@@ -126,6 +127,9 @@ const App: React.FC = () => {
 
   // Welcome Modal State
   const [showWelcome, setShowWelcome] = useState(true);
+  
+  // Splash Screen State
+  const [showSplash, setShowSplash] = useState(true);
 
   // Exam Date Logic
   const [daysUntilExam, setDaysUntilExam] = useState(0);
@@ -447,6 +451,8 @@ const App: React.FC = () => {
   return (
     <div className={`flex flex-col h-screen overflow-hidden transition-colors duration-500 ${currentThemeConfig.appBg} relative`}>
       
+      {showSplash && <SplashScreen onFinish={() => setShowSplash(false)} />}
+
       {/* Background Blobs */}
       <div className={`absolute top-[-20%] left-[-10%] w-[50%] h-[50%] rounded-full mix-blend-multiply filter blur-[100px] animate-blob ${currentThemeConfig.blobColor1} ${currentThemeConfig.blobOpacity}`}></div>
       <div className={`absolute bottom-[-20%] right-[-10%] w-[50%] h-[50%] rounded-full mix-blend-multiply filter blur-[100px] animate-blob animation-delay-2000 ${currentThemeConfig.blobColor2} ${currentThemeConfig.blobOpacity}`}></div>
