@@ -173,7 +173,7 @@ const AnimationBrowser: React.FC<AnimationBrowserProps> = ({ currentTheme, onClo
                             {motion.joint.minDeg}° to {motion.joint.maxDeg}°
                           </span>
                           <span className={theme.subText}>
-                            {motion.duration}s
+                            {motion.joint.axis || 'Multi-axis'}
                           </span>
                         </div>
                         <div className="mt-2 flex flex-wrap gap-2 text-[11px] font-semibold">
@@ -224,7 +224,7 @@ const AnimationBrowser: React.FC<AnimationBrowserProps> = ({ currentTheme, onClo
                             {motion.joint.minDeg}° to {motion.joint.maxDeg}°
                           </span>
                           <span className={`text-xs ${theme.subText}`}>
-                            Duration: {motion.duration}s
+                            {motion.joint.name}
                           </span>
                         </div>
                       </button>

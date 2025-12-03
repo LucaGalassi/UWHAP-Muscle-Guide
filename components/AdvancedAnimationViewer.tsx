@@ -211,8 +211,8 @@ const AdvancedAnimationViewer: React.FC<AdvancedAnimationViewerProps> = ({
                   </p>
                 </div>
                 <div className="rounded-lg px-3 py-2 border border-dashed border-current/20">
-                  <p className="font-semibold text-[11px] text-brand-600">Duration</p>
-                  <p className={theme.text}>{selectedMotion.duration}s</p>
+                  <p className="font-semibold text-[11px] text-brand-600">Axis</p>
+                  <p className={theme.text}>{selectedMotion.joint.axis || 'Multi-axis'}</p>
                 </div>
                 <div className="rounded-lg px-3 py-2 border border-dashed border-current/20">
                   <p className="font-semibold text-[11px] text-brand-600">Joint</p>
@@ -273,7 +273,7 @@ const AdvancedAnimationViewer: React.FC<AdvancedAnimationViewerProps> = ({
                       {selectedMotion.region}
                     </span>
                     <span className={`px-2 py-1 rounded-full border ${theme.border} ${theme.subText}`}>
-                      {selectedMotion.duration}s
+                      {selectedMotion.joint.minDeg}° – {selectedMotion.joint.maxDeg}°
                     </span>
                   </div>
                 </div>
@@ -345,6 +345,53 @@ const AdvancedAnimationViewer: React.FC<AdvancedAnimationViewerProps> = ({
                       </button>
                     </div>
 
+                    {/* Google GIF Search */}
+                    <div className={`p-3 rounded-lg border ${theme.border} ${theme.infoBox}`}>
+                      <p className={`text-[11px] uppercase tracking-wider ${theme.subText} mb-2`}>Google GIF Search</p>
+                      <div className="grid grid-cols-3 gap-2">
+                        <button
+                          onClick={() =>
+                            window.open(
+                              `https://www.google.com/search?tbm=isch&q=${encodeURIComponent(
+                                browserMode 
+                                  ? `${selectedMotion.displayName} anatomy animation gif`
+                                  : `${muscleName} muscle action animation gif`
+                              )}`,
+                              '_blank'
+                            )
+                          }
+                          className={`px-3 py-2.5 rounded-lg border ${theme.border} ${theme.cardBg} text-xs font-medium hover:border-brand-400 hover:bg-brand-50/50 transition-colors flex flex-col items-center justify-center gap-1.5 ${theme.text}`}
+                        >
+                          <Search className="w-4 h-4 text-brand-500 flex-shrink-0" />
+                          <span className="truncate text-center">{browserMode ? selectedMotion.displayName : muscleName}</span>
+                        </button>
+                        <button
+                          onClick={() =>
+                            window.open(
+                              `https://www.google.com/search?tbm=isch&q=${encodeURIComponent(`${selectedMotion.displayName} movement anatomy gif`)}`,
+                              '_blank'
+                            )
+                          }
+                          className={`px-3 py-2.5 rounded-lg border ${theme.border} ${theme.cardBg} text-xs font-medium hover:border-brand-400 hover:bg-brand-50/50 transition-colors flex flex-col items-center justify-center gap-1.5 ${theme.text}`}
+                        >
+                          <PlayCircle className="w-4 h-4 text-brand-500 flex-shrink-0" />
+                          <span className="truncate text-center">{selectedMotion.displayName}</span>
+                        </button>
+                        <button
+                          onClick={() =>
+                            window.open(
+                              `https://www.google.com/search?tbm=isch&q=${encodeURIComponent(`${selectedMotion.joint.name} joint movements gif`)}`,
+                              '_blank'
+                            )
+                          }
+                          className={`px-3 py-2.5 rounded-lg border ${theme.border} ${theme.cardBg} text-xs font-medium hover:border-brand-400 hover:bg-brand-50/50 transition-colors flex flex-col items-center justify-center gap-1.5 ${theme.text}`}
+                        >
+                          <Activity className="w-4 h-4 text-brand-500 flex-shrink-0" />
+                          <span className="truncate text-center">{selectedMotion.joint.name}</span>
+                        </button>
+                      </div>
+                    </div>
+
                     {/* YouTube Animation Search */}
                     <div className={`p-3 rounded-lg border ${theme.border} ${theme.infoBox}`}>
                       <p className={`text-[11px] uppercase tracking-wider ${theme.subText} mb-2`}>YouTube Animation Search</p>
@@ -352,19 +399,23 @@ const AdvancedAnimationViewer: React.FC<AdvancedAnimationViewerProps> = ({
                         <button
                           onClick={() =>
                             window.open(
-                              `https://www.youtube.com/results?search_query=${encodeURIComponent(`${muscleName} muscle anatomy animation`)}`,
+                              `https://www.youtube.com/results?search_query=${encodeURIComponent(
+                                browserMode 
+                                  ? `${selectedMotion.displayName} anatomy tutorial`
+                                  : `${muscleName} muscle anatomy animation`
+                              )}`,
                               '_blank'
                             )
                           }
                           className={`px-3 py-2.5 rounded-lg border ${theme.border} ${theme.cardBg} text-xs font-medium hover:border-red-400 hover:bg-red-50/50 transition-colors flex flex-col items-center justify-center gap-1.5 ${theme.text}`}
                         >
                           <ExternalLink className="w-4 h-4 text-red-500 flex-shrink-0" />
-                          <span className="truncate text-center">{browserMode ? 'Selected Motion' : muscleName}</span>
+                          <span className="truncate text-center">{browserMode ? selectedMotion.displayName : muscleName}</span>
                         </button>
                         <button
                           onClick={() =>
                             window.open(
-                              `https://www.youtube.com/results?search_query=${encodeURIComponent(`${selectedMotion.displayName} anatomy tutorial`)}`,
+                              `https://www.youtube.com/results?search_query=${encodeURIComponent(`${selectedMotion.displayName} motion demonstration`)}`,
                               '_blank'
                             )
                           }
@@ -376,7 +427,7 @@ const AdvancedAnimationViewer: React.FC<AdvancedAnimationViewerProps> = ({
                         <button
                           onClick={() =>
                             window.open(
-                              `https://www.youtube.com/results?search_query=${encodeURIComponent(`${selectedMotion.joint.name} movements anatomy`)}`,
+                              `https://www.youtube.com/results?search_query=${encodeURIComponent(`${selectedMotion.joint.name} joint movements anatomy`)}`,
                               '_blank'
                             )
                           }
