@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState, Suspense } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls, useGLTF } from '@react-three/drei';
 import { AppTheme } from '../types';
@@ -194,12 +194,16 @@ function ArmRig({ motion, playing, angleOut, skeleton }: { motion: MotionName; p
   );
 }
 
+type ModelEntry = { label: string; url: string };
+
 export const AdvancedAnimationViewer: React.FC<AdvancedAnimationViewerProps> = ({ muscleName, currentTheme, defaultMotion='Elbow Flexion', onClose }) => {
   const theme = THEME_CONFIG[currentTheme];
   const [motion, setMotion] = useState<MotionName>(defaultMotion as MotionName);
   const [playing, setPlaying] = useState(true);
   const [angle, setAngle] = useState(0);
   const [cameraPreset, setCameraPreset] = useState<'Front'|'Side'|'Top'>('Side');
+  const [models, setModels] = useState<ModelEntry[]>([]);
+  const [selectedModelUrl, setSelectedModelUrl] = useState<string | null>(null);
 
   const cameraPosition = useMemo(() => {
     switch (cameraPreset) {
@@ -210,14 +214,24 @@ export const AdvancedAnimationViewer: React.FC<AdvancedAnimationViewerProps> = (
     }
   }, [cameraPreset]);
 
-  // Try loading a GLTF skeleton from public/models (optional)
-  let gltf: any = null;
-  try {
-    // This path assumes a file placed at public/models/skeleton.glb
-    // If missing, viewer falls back to box-based rig.
-    gltf = useGLTF('/models/skeleton.glb');
-  } catch (e) {
-    gltf = null;
+  useEffect(() => {
+    fetch('/models/manifest.json')
+      .then(r => r.ok ? r.json() : Promise.reject())
+      .then((json) => {
+        if (Array.isArray(json.models)) {
+          setModels(json.models);
+          if (json.models.length && !selectedModelUrl) setSelectedModelUrl(json.models[0].url);
+        }
+      })
+      .catch(() => {
+        setModels([{ label: 'Skeleton (Default Path)', url: '/models/skeleton.glb' }]);
+        if (!selectedModelUrl) setSelectedModelUrl('/models/skeleton.glb');
+      });
+  }, []);
+
+  function GLTFArmRig({ url }: { url: string }) {
+    const gltf = useGLTF(url);
+    return <ArmRig motion={motion} playing={playing} angleOut={setAngle} skeleton={gltf} />;
   }
 
   return (
@@ -240,6 +254,10 @@ export const AdvancedAnimationViewer: React.FC<AdvancedAnimationViewerProps> = (
               <p className={`text-xs ${theme.subText}`}>Motion: {motion} • Angle: {angle.toFixed(0)}°</p>
             </div>
             <div className="flex items-center gap-2">
+              <select value={selectedModelUrl ?? ''} onChange={(e)=> setSelectedModelUrl(e.target.value || null)} className={`px-3 py-2 rounded-lg border ${theme.border} text-sm ${theme.text} ${theme.inputBg}`}>
+                {models.map(m => <option key={m.url} value={m.url}>{m.label}</option>)}
+                {!models.length && <option value=''>Box Rig (No Model)</option>}
+              </select>
               <select value={motion} onChange={(e)=>setMotion(e.target.value as MotionName)} className={`px-3 py-2 rounded-lg border ${theme.border} text-sm ${theme.text} ${theme.inputBg}`}>
                 {MOTIONS.map(m => <option key={m} value={m}>{m}</option>)}
               </select>
@@ -259,7 +277,13 @@ export const AdvancedAnimationViewer: React.FC<AdvancedAnimationViewerProps> = (
               <ambientLight intensity={0.7} />
               <directionalLight position={[5,5,5]} intensity={0.8} />
               <gridHelper args={[10, 20]} />
-              <ArmRig motion={motion} playing={playing} angleOut={setAngle} skeleton={gltf} />
+              {selectedModelUrl ? (
+                <Suspense fallback={null}>
+                  <GLTFArmRig url={selectedModelUrl} />
+                </Suspense>
+              ) : (
+                <ArmRig motion={motion} playing={playing} angleOut={setAngle} />
+              )}
               <OrbitControls enablePan={true} enableZoom={true} enableRotate={true} />
             </Canvas>
           </div>

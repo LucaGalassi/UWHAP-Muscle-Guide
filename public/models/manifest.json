@@ -1,0 +1,9 @@
+{
+  "models": [
+    { "label": "Overview Skeleton", "url": "/models/overview-skeleton.glb" },
+    { "label": "Upper Limb", "url": "/models/upper-limb.glb" },
+    { "label": "Lower Limb", "url": "/models/lower-limb.glb" },
+    { "label": "Hand", "url": "/models/hand.glb" },
+    { "label": "Vertebrae", "url": "/models/vertebrae.glb" }
+  ]
+}
