@@ -129,7 +129,7 @@ const FlashcardView: React.FC<FlashcardViewProps> = ({ muscle, onRate, onNext, a
                 </div>
               </div>
 
-              <div className={`mt-8 flex items-center gap-2 text-xs font-bold uppercase tracking-widest animate-pulse opacity-50 ${theme.text}`}>
+              <div className={`mt-8 flex items-center gap-2 text-xs font-bold uppercase tracking-widest animate-pulse ${currentTheme === 'midnight' || currentTheme === 'blueprint' ? 'opacity-80' : 'opacity-50'} ${theme.text}`}>
                 <RotateCw className="w-3.5 h-3.5" /> Tap card to flip
               </div>
             </div>
@@ -169,7 +169,7 @@ const FlashcardView: React.FC<FlashcardViewProps> = ({ muscle, onRate, onNext, a
                  </div>
                </div>
             </div>
-            <div className={`p-4 border-t text-center text-[10px] uppercase tracking-wider font-bold ${currentTheme === 'midnight' ? 'bg-slate-950 border-slate-800 text-slate-600' : 'bg-slate-50 border-slate-100 text-slate-400'}`}>
+            <div className={`p-4 border-t text-center text-[10px] uppercase tracking-wider font-bold ${currentTheme === 'midnight' ? 'bg-slate-950 border-slate-800 text-slate-400' : currentTheme === 'blueprint' ? 'bg-[#0f172a] border-blue-800 text-blue-300' : 'bg-slate-50 border-slate-100 text-slate-400'}`}>
                Tap card to flip back
             </div>
           </div>

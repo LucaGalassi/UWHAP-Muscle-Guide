@@ -45,7 +45,7 @@ export const THEME_CONFIG: Record<AppTheme, ThemeConfig> = {
     border: 'border-slate-800',
     accent: 'bg-gradient-to-r from-indigo-500 to-purple-600',
     badge: 'bg-slate-800 text-indigo-300 border-slate-700 shadow-lg',
-    infoBox: 'bg-slate-800/60 border-slate-700 text-slate-300',
+    infoBox: 'bg-slate-800/60 border-slate-700 text-slate-200',
     iconLoc: 'bg-emerald-900/50 text-emerald-300',
     iconFunc: 'bg-blue-900/50 text-blue-300',
 
@@ -72,7 +72,7 @@ export const THEME_CONFIG: Record<AppTheme, ThemeConfig> = {
     border: 'border-blue-800',
     accent: 'bg-blue-500',
     badge: 'bg-blue-900/50 text-blue-200 border-blue-700 shadow-lg',
-    infoBox: 'bg-blue-900/30 border-blue-800 text-blue-200',
+    infoBox: 'bg-blue-900/30 border-blue-800 text-blue-100',
     iconLoc: 'bg-blue-500/20 text-blue-200',
     iconFunc: 'bg-blue-500/20 text-blue-200',
 
