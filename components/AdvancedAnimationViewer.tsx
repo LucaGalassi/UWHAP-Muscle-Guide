@@ -217,19 +217,19 @@ const AdvancedAnimationViewer: React.FC<AdvancedAnimationViewerProps> = ({
                   <button
                     key={motion.id}
                     onClick={() => setSelectedMotion(motion)}
-                    className={`w-full text-left px-3 py-2 rounded-lg border ${theme.border} transition-all ${
+                    className={`w-full text-left px-3 py-2 rounded-lg border ${theme.border} transition-all overflow-hidden ${
                       selectedMotion.id === motion.id
                         ? 'bg-brand-500 text-white border-brand-500 shadow-sm'
                         : `${theme.cardBg} ${theme.text} hover:border-brand-300`
                     }`}
                   >
-                    <div className="flex items-center justify-between">
-                      <span className="font-semibold text-sm">{motion.displayName}</span>
-                      <span className="text-[10px] opacity-80">
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="font-semibold text-sm break-words flex-1">{motion.displayName}</span>
+                      <span className="text-[10px] opacity-80 flex-shrink-0">
                         {motion.joint.minDeg}°–{motion.joint.maxDeg}°
                       </span>
                     </div>
-                    <div className={`text-[11px] ${selectedMotion.id === motion.id ? 'text-white/90' : theme.subText}`}>
+                    <div className={`text-[11px] break-words ${selectedMotion.id === motion.id ? 'text-white/90' : theme.subText}`}>
                       {motion.description}
                     </div>
                   </button>
@@ -266,17 +266,17 @@ const AdvancedAnimationViewer: React.FC<AdvancedAnimationViewerProps> = ({
           </aside>
 
           <div className="flex-1 overflow-y-auto p-6 space-y-6 custom-scrollbar">
-            <section className={`rounded-xl border ${theme.border} ${theme.cardBg} p-4 shadow-sm`}>
+            <section className={`rounded-xl border ${theme.border} ${theme.cardBg} p-4 shadow-sm overflow-hidden`}>
               <div className="flex items-start justify-between gap-4 flex-wrap">
-                <div>
+                <div className="flex-1 min-w-0">
                   <p className={`text-xs uppercase tracking-wider ${theme.subText} flex items-center gap-2`}>
                     <Activity className="w-4 h-4" />
                     Selected Motion
                   </p>
-                  <h2 className={`text-xl font-bold ${theme.text}`}>{selectedMotion.displayName}</h2>
-                  <p className={`${theme.subText} mt-1`}>{selectedMotion.description}</p>
+                  <h2 className={`text-xl font-bold ${theme.text} break-words`}>{selectedMotion.displayName}</h2>
+                  <p className={`${theme.subText} mt-1 break-words`}>{selectedMotion.description}</p>
                   <div className="mt-3 flex flex-wrap gap-2 text-[11px] font-semibold">
-                    <span className={`px-2 py-1 rounded-full border ${theme.border} ${theme.subText}`}>
+                    <span className={`px-2 py-1 rounded-full border ${theme.border} ${theme.subText} break-words`}>
                       {selectedMotion.joint.name}
                     </span>
                     <span className={`px-2 py-1 rounded-full border ${theme.border} ${theme.subText}`}>
@@ -320,7 +320,7 @@ const AdvancedAnimationViewer: React.FC<AdvancedAnimationViewerProps> = ({
             </section>
 
             <section className="grid md:grid-cols-2 gap-4">
-              <div className={`p-4 rounded-xl border ${theme.border} ${theme.infoBox}`}>
+              <div className={`p-4 rounded-xl border ${theme.border} ${theme.infoBox} overflow-hidden`}>
                 <p className={`text-[11px] uppercase tracking-wider ${theme.subText} flex items-center gap-2 mb-2`}>
                   <MapPin className="w-4 h-4" />
                   Anatomy Images
@@ -335,9 +335,9 @@ const AdvancedAnimationViewer: React.FC<AdvancedAnimationViewerProps> = ({
                         '_blank'
                       )
                     }
-                      className={`px-3 py-2 rounded-lg border ${theme.border} ${theme.cardBg} text-xs font-medium hover:border-emerald-400 transition-colors ${theme.text}`}
+                      className={`px-3 py-2 rounded-lg border ${theme.border} ${theme.cardBg} text-xs font-medium hover:border-emerald-400 transition-colors ${theme.text} overflow-hidden`}
                   >
-                    <span className="text-blue-600 font-semibold">Origin</span>
+                    <span className="text-blue-600 font-semibold truncate">Origin</span>
                   </button>
                     <button
                       onClick={() =>
@@ -348,9 +348,9 @@ const AdvancedAnimationViewer: React.FC<AdvancedAnimationViewerProps> = ({
                         '_blank'
                       )
                     }
-                      className={`px-3 py-2 rounded-lg border ${theme.border} ${theme.cardBg} text-xs font-medium hover:border-rose-400 transition-colors ${theme.text}`}
+                      className={`px-3 py-2 rounded-lg border ${theme.border} ${theme.cardBg} text-xs font-medium hover:border-rose-400 transition-colors ${theme.text} overflow-hidden`}
                   >
-                    <span className="text-rose-600 font-semibold">Insertion</span>
+                    <span className="text-rose-600 font-semibold truncate">Insertion</span>
                   </button>
                   <button
                     onClick={() =>
@@ -361,14 +361,14 @@ const AdvancedAnimationViewer: React.FC<AdvancedAnimationViewerProps> = ({
                         '_blank'
                       )
                     }
-                    className={`px-3 py-2 rounded-lg border ${theme.border} ${theme.cardBg} text-xs font-medium hover:border-brand-400 transition-colors ${theme.text}`}
+                    className={`px-3 py-2 rounded-lg border ${theme.border} ${theme.cardBg} text-xs font-medium hover:border-brand-400 transition-colors ${theme.text} overflow-hidden`}
                   >
-                    Labeled diagram
+                    <span className="truncate">Labeled diagram</span>
                   </button>
                 </div>
               </div>
 
-              <div className={`p-4 rounded-xl border ${theme.border} ${theme.infoBox}`}>
+              <div className={`p-4 rounded-xl border ${theme.border} ${theme.infoBox} overflow-hidden`}>
                 <p className={`text-[11px] uppercase tracking-wider ${theme.subText} flex items-center gap-2 mb-2`}>
                   <Activity className="w-4 h-4" />
                   Motion GIF Shortcuts
@@ -386,10 +386,10 @@ const AdvancedAnimationViewer: React.FC<AdvancedAnimationViewerProps> = ({
                           '_blank'
                         )
                       }
-                      className={`px-3 py-2 rounded-full border ${theme.border} ${theme.cardBg} text-[11px] font-medium capitalize hover:border-brand-400 transition-colors flex items-center gap-2 ${theme.text}`}
+                      className={`px-3 py-2 rounded-full border ${theme.border} ${theme.cardBg} text-[11px] font-medium capitalize hover:border-brand-400 transition-colors flex items-center gap-2 ${theme.text} max-w-full`}
                     >
-                      <Zap className="w-3 h-3 text-amber-500" />
-                      {motion}
+                      <Zap className="w-3 h-3 text-amber-500 flex-shrink-0" />
+                      <span className="truncate">{motion}</span>
                     </button>
                   ))}
                 </div>
@@ -404,15 +404,15 @@ const AdvancedAnimationViewer: React.FC<AdvancedAnimationViewerProps> = ({
                     <p className={`text-sm font-semibold ${theme.text}`}>Study requirements</p>
                   </div>
                   {actionString && (
-                    <div className={`p-3 rounded-lg border ${theme.border} ${theme.infoBox}`}>
+                    <div className={`p-3 rounded-lg border ${theme.border} ${theme.infoBox} overflow-hidden`}>
                       <p className="text-[11px] font-bold text-blue-600 uppercase tracking-wider mb-1">Required actions</p>
-                      <p className={`text-sm leading-relaxed ${theme.text}`}>{actionString}</p>
+                      <p className={`text-sm leading-relaxed ${theme.text} break-words`}>{actionString}</p>
                     </div>
                   )}
                   {demonstrationText && (
-                    <div className={`p-3 rounded-lg border ${theme.border} ${theme.infoBox}`}>
+                    <div className={`p-3 rounded-lg border ${theme.border} ${theme.infoBox} overflow-hidden`}>
                       <p className="text-[11px] font-bold text-emerald-600 uppercase tracking-wider mb-1">Demonstration</p>
-                      <p className={`text-sm leading-relaxed ${theme.text}`}>{demonstrationText}</p>
+                      <p className={`text-sm leading-relaxed ${theme.text} break-words`}>{demonstrationText}</p>
                     </div>
                   )}
                 </div>
@@ -426,15 +426,15 @@ const AdvancedAnimationViewer: React.FC<AdvancedAnimationViewerProps> = ({
                   </div>
                   <div className="space-y-2 text-sm">
                     {originString && (
-                      <div className={`p-3 rounded-lg border ${theme.border} ${theme.infoBox}`}>
+                      <div className={`p-3 rounded-lg border ${theme.border} ${theme.infoBox} overflow-hidden`}>
                         <p className="text-[11px] font-bold uppercase tracking-wider text-blue-600 mb-1">Origin</p>
-                        <p className={`${theme.text} text-blue-600`}>{originString}</p>
+                        <p className={`${theme.text} text-blue-600 break-words`}>{originString}</p>
                       </div>
                     )}
                     {insertionString && (
-                      <div className={`p-3 rounded-lg border ${theme.border} ${theme.infoBox}`}>
+                      <div className={`p-3 rounded-lg border ${theme.border} ${theme.infoBox} overflow-hidden`}>
                         <p className="text-[11px] font-bold uppercase tracking-wider text-rose-600 mb-1">Insertion</p>
-                        <p className={`${theme.text} text-rose-600`}>{insertionString}</p>
+                        <p className={`${theme.text} text-rose-600 break-words`}>{insertionString}</p>
                       </div>
                     )}
                   </div>
@@ -448,15 +448,15 @@ const AdvancedAnimationViewer: React.FC<AdvancedAnimationViewerProps> = ({
                 <p className={`text-sm font-semibold ${theme.text}`}>Learning aids</p>
               </div>
               {getLearningTipsForMotion(selectedMotion.id).length > 0 && (
-                <div className={`p-3 rounded-lg ${theme.infoBox}`}>
+                <div className={`p-3 rounded-lg ${theme.infoBox} overflow-hidden`}>
                   <p className="text-[11px] font-bold uppercase tracking-wider text-emerald-600 mb-2">
                     Key points
                   </p>
                   <ul className={`text-sm ${theme.text} space-y-1`}>
                     {getLearningTipsForMotion(selectedMotion.id).map((tip, i) => (
                       <li key={i} className="flex gap-2">
-                        <span className="text-emerald-500">•</span>
-                        <span>{tip}</span>
+                        <span className="text-emerald-500 flex-shrink-0">•</span>
+                        <span className="break-words">{tip}</span>
                       </li>
                     ))}
                   </ul>
@@ -464,20 +464,20 @@ const AdvancedAnimationViewer: React.FC<AdvancedAnimationViewerProps> = ({
               )}
 
               {getClinicalRelevanceForMotion(selectedMotion.id) && (
-                <div className={`p-3 rounded-lg ${currentTheme === 'midnight' || currentTheme === 'blueprint' ? 'bg-blue-900/30' : 'bg-blue-50'} border border-blue-400/30`}>
+                <div className={`p-3 rounded-lg ${currentTheme === 'midnight' || currentTheme === 'blueprint' ? 'bg-blue-900/30' : 'bg-blue-50'} border border-blue-400/30 overflow-hidden`}>
                   <p className="text-[11px] font-bold uppercase tracking-wider text-blue-600 mb-1">Clinical relevance</p>
-                  <p className={`text-sm ${theme.text}`}>{getClinicalRelevanceForMotion(selectedMotion.id)}</p>
+                  <p className={`text-sm ${theme.text} break-words`}>{getClinicalRelevanceForMotion(selectedMotion.id)}</p>
                 </div>
               )}
 
               {getCommonErrorsForMotion(selectedMotion.id).length > 0 && (
-                <div className={`p-3 rounded-lg ${currentTheme === 'midnight' || currentTheme === 'blueprint' ? 'bg-amber-900/30' : 'bg-amber-50'} border border-amber-400/30`}>
+                <div className={`p-3 rounded-lg ${currentTheme === 'midnight' || currentTheme === 'blueprint' ? 'bg-amber-900/30' : 'bg-amber-50'} border border-amber-400/30 overflow-hidden`}>
                   <p className="text-[11px] font-bold uppercase tracking-wider text-amber-600 mb-1">Common mistakes</p>
                   <ul className={`text-sm ${theme.text} space-y-1`}>
                     {getCommonErrorsForMotion(selectedMotion.id).map((error, i) => (
                       <li key={i} className="flex gap-2">
-                        <span className="text-amber-500">✗</span>
-                        <span>{error}</span>
+                        <span className="text-amber-500 flex-shrink-0">✗</span>
+                        <span className="break-words">{error}</span>
                       </li>
                     ))}
                   </ul>

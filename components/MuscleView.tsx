@@ -262,7 +262,7 @@ const MuscleView: React.FC<MuscleViewProps> = ({ muscle, onSelectMuscle, isLearn
                 <Activity className={`w-5 h-5 ${theme.subText}`} />
                 Demonstration
               </h3>
-              <div className={`${theme.text} leading-relaxed text-base whitespace-pre-line`}>
+              <div className={`${theme.text} leading-relaxed text-base break-words`}>
                 {content.demonstration}
               </div>
               <p className={`mt-6 text-xs font-medium flex items-center gap-1.5 p-2 rounded-lg inline-block ${
@@ -292,7 +292,7 @@ const MuscleView: React.FC<MuscleViewProps> = ({ muscle, onSelectMuscle, isLearn
                       <span className="flex-shrink-0 w-6 h-6 rounded-full bg-amber-100 text-amber-700 flex items-center justify-center text-xs font-bold">
                         {idx + 1}
                       </span>
-                      <span className="leading-relaxed pt-0.5">{tip}</span>
+                      <span className="leading-relaxed pt-0.5 break-words">{tip}</span>
                     </li>
                   ))}
                 </ul>
@@ -306,8 +306,8 @@ const MuscleView: React.FC<MuscleViewProps> = ({ muscle, onSelectMuscle, isLearn
                     <Info className="w-4 h-4" />
                     Clinical Connection
                   </h3>
-                  <div className={`p-5 ${theme.cardBg} border ${theme.border} rounded-xl shadow-sm`}>
-                    <p className={`text-sm ${theme.text} leading-relaxed`}>
+                  <div className={`p-5 ${theme.cardBg} border ${theme.border} rounded-xl shadow-sm overflow-hidden`}>
+                    <p className={`text-sm ${theme.text} leading-relaxed break-words`}>
                       {content.clinicalConnection}
                     </p>
                   </div>
@@ -426,14 +426,14 @@ const InfoCard: React.FC<InfoCardProps> = ({ title, icon, content, className, on
   };
   
   return (
-    <div className={`p-6 rounded-2xl border ${theme.border} shadow-sm flex flex-col h-full hover:border-brand-400/50 transition-colors ${theme.cardBg} ${className}`}>
+    <div className={`p-6 rounded-2xl border ${theme.border} shadow-sm flex flex-col h-full hover:border-brand-400/50 transition-colors ${theme.cardBg} ${className} overflow-hidden`}>
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2.5">
           <div className={`p-1.5 rounded-md ${theme.inputBg}`}>{icon}</div>
           <h3 className={`font-bold ${theme.text} text-sm uppercase tracking-wide`}>{title}</h3>
         </div>
       </div>
-      <div className={`text-sm ${theme.text} leading-relaxed whitespace-pre-line flex-1 mb-4 opacity-90`}>
+      <div className={`text-sm ${theme.text} leading-relaxed break-words flex-1 mb-4 opacity-90`}>
         {content}
       </div>
       
