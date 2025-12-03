@@ -20,9 +20,10 @@ const LightningRoundView: React.FC<LightningRoundViewProps> = ({ onExit, current
   const [question, setQuestion] = useState<QuizQuestion | null>(null);
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [feedback, setFeedback] = useState<'CORRECT' | 'WRONG' | null>(null);
-  
+
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const theme = THEME_CONFIG[currentTheme];
+  const isDarkTheme = currentTheme === 'midnight' || currentTheme === 'blueprint';
 
   // Timer Logic
   useEffect(() => {
@@ -89,7 +90,7 @@ const LightningRoundView: React.FC<LightningRoundViewProps> = ({ onExit, current
 
   if (gameState === 'START') {
     return (
-      <div className="h-full flex flex-col items-center justify-center p-6 text-center space-y-8 max-w-md mx-auto">
+      <div className={`h-full flex flex-col items-center justify-center p-6 text-center space-y-8 max-w-md mx-auto ${theme.cardBg} rounded-3xl shadow-sm border ${theme.border}`}>
         <div className={`w-24 h-24 rounded-full flex items-center justify-center shadow-xl ${theme.iconFunc} animate-bounce`}>
           <Zap className="w-12 h-12 text-amber-500" />
         </div>
@@ -99,15 +100,15 @@ const LightningRoundView: React.FC<LightningRoundViewProps> = ({ onExit, current
             Race against the clock! Answer correctly to gain time. Wrong answers cost you time.
           </p>
         </div>
-        
+
         <div className="grid grid-cols-2 gap-4 w-full">
            <div className={`p-4 rounded-2xl border ${theme.border} ${theme.cardBg}`}>
               <div className="text-2xl font-bold text-green-500 mb-1">+{TIME_BONUS}s</div>
-              <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Correct</div>
+              <div className={`text-[10px] font-bold uppercase tracking-wider ${theme.subText}`}>Correct</div>
            </div>
            <div className={`p-4 rounded-2xl border ${theme.border} ${theme.cardBg}`}>
               <div className="text-2xl font-bold text-red-500 mb-1">-{TIME_PENALTY}s</div>
-              <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Wrong</div>
+              <div className={`text-[10px] font-bold uppercase tracking-wider ${theme.subText}`}>Wrong</div>
            </div>
         </div>
 
@@ -123,7 +124,7 @@ const LightningRoundView: React.FC<LightningRoundViewProps> = ({ onExit, current
 
   if (gameState === 'GAME_OVER') {
     return (
-      <div className="h-full flex flex-col items-center justify-center p-6 text-center space-y-6 animate-in zoom-in duration-300">
+      <div className={`h-full flex flex-col items-center justify-center p-6 text-center space-y-6 animate-in zoom-in duration-300 ${theme.cardBg} rounded-3xl shadow-sm border ${theme.border}`}>
         <div className={`w-20 h-20 rounded-full flex items-center justify-center shadow-inner ${theme.iconLoc} mb-4`}>
           <Trophy className="w-10 h-10 text-yellow-500" />
         </div>
@@ -157,7 +158,7 @@ const LightningRoundView: React.FC<LightningRoundViewProps> = ({ onExit, current
   if (!question) return <div>Loading...</div>;
 
   return (
-    <div className="h-full flex flex-col max-w-3xl mx-auto p-4 md:p-6">
+    <div className={`h-full flex flex-col max-w-3xl mx-auto p-4 md:p-6 ${theme.cardBg} rounded-3xl shadow-sm border ${theme.border}`}>
       {/* Header Bar */}
       <div className="flex items-center justify-between mb-6">
          <div className={`flex items-center gap-2 px-4 py-2 rounded-full border ${theme.border} ${theme.cardBg}`}>
@@ -172,7 +173,7 @@ const LightningRoundView: React.FC<LightningRoundViewProps> = ({ onExit, current
       </div>
 
       {/* Timer Bar */}
-      <div className="w-full h-2 bg-slate-100 rounded-full mb-8 overflow-hidden">
+      <div className={`w-full h-2 ${isDarkTheme ? 'bg-slate-800/60' : 'bg-slate-100'} rounded-full mb-8 overflow-hidden`}>
          <div 
             className={`h-full transition-all duration-1000 ease-linear ${timeLeft < 10 ? 'bg-red-500' : 'bg-brand-500'}`}
             style={{ width: `${(timeLeft / 60) * 100}%` }}

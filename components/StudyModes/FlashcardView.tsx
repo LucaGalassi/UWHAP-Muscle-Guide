@@ -56,9 +56,9 @@ const FlashcardView: React.FC<FlashcardViewProps> = ({ muscle, onRate, onNext, a
 
   if (loading || !content) {
     return (
-      <div className="h-full flex flex-col items-center justify-center p-8 space-y-6">
-        <Activity className="w-10 h-10 text-brand-300 animate-pulse" />
-        <p className="text-slate-400 text-sm font-medium">Preparing flashcard...</p>
+      <div className={`h-full flex flex-col items-center justify-center p-8 space-y-6 ${theme.cardBg}`}>
+        <Activity className={`w-10 h-10 ${theme.subText} animate-pulse`} />
+        <p className={`text-sm font-medium ${theme.subText}`}>Preparing flashcard...</p>
       </div>
     );
   }
@@ -111,7 +111,7 @@ const FlashcardView: React.FC<FlashcardViewProps> = ({ muscle, onRate, onNext, a
             <p className={`max-w-xl text-base ${theme.subText}`}>
               Think about the muscle's origin, insertion, and primary action before flipping.
             </p>
-            <div className="text-xs font-semibold uppercase tracking-widest text-slate-400">Tap to flip</div>
+            <div className={`text-xs font-semibold uppercase tracking-widest ${theme.subText}`}>Tap to flip</div>
           </div>
 
           <div
