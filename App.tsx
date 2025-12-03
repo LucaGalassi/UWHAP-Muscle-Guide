@@ -139,6 +139,7 @@ const App: React.FC = () => {
   // Settings flags
   const [autoResume, setAutoResume] = useState<boolean>(false);
   const [hideSplashAlways, setHideSplashAlways] = useState<boolean>(false);
+  const [hasSavedSession, setHasSavedSession] = useState<boolean>(false);
 
   // Animation Browser State
   const [showAnimationBrowser, setShowAnimationBrowser] = useState(false);
@@ -226,6 +227,21 @@ const App: React.FC = () => {
 
   // Initialize state from URL params and LocalStorage on mount
   useEffect(() => {
+    // Detect whether we have meaningful saved data (not just defaults)
+    try {
+      const rawProgress = localStorage.getItem('srs_progress');
+      let hasProgress = false;
+      if (rawProgress) {
+        try {
+          const parsed = JSON.parse(rawProgress);
+          hasProgress = parsed && typeof parsed === 'object' && Object.keys(parsed).length > 0;
+        } catch {}
+      }
+      const storedName = localStorage.getItem('student_name');
+      const storedKey = localStorage.getItem('user_gemini_key');
+      setHasSavedSession(!!(hasProgress || storedName || storedKey));
+    } catch {}
+
     // Load settings
     try {
       const _auto = localStorage.getItem('settings_auto_resume');
@@ -334,6 +350,10 @@ const App: React.FC = () => {
         // Could show user notification here in production
       }
     }
+    // Mark that we now have data worth resuming
+    if (Object.keys(progressMap).length > 0) {
+      setHasSavedSession(true);
+    }
   }, [progressMap]);
 
   // Save Theme whenever it changes
@@ -355,6 +375,9 @@ const App: React.FC = () => {
       }
     } catch (e) {
       console.error('Failed to save student name to localStorage', e);
+    }
+    if (studentName) {
+      setHasSavedSession(true);
     }
   }, [studentName]);
 
@@ -593,7 +616,7 @@ const App: React.FC = () => {
         <SplashScreen 
           onFinish={() => setShowSplash(false)} 
           studentName={studentName}
-          hasSavedSession={!!(localStorage.getItem('srs_progress') || localStorage.getItem('student_name') || localStorage.getItem('app_theme'))}
+          hasSavedSession={hasSavedSession}
           autoResume={autoResume}
           onResume={() => {
             // State already loaded from localStorage
@@ -613,6 +636,7 @@ const App: React.FC = () => {
             setApiKey('');
             setIsNewUser(true);
             setShowWelcome(true);
+            setHasSavedSession(false);
           }}
           onImport={(input) => {
             try {
