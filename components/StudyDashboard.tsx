@@ -14,10 +14,10 @@ const StudyDashboard: React.FC<StudyDashboardProps> = ({ onSelectTool, learnedCo
   const theme = THEME_CONFIG[currentTheme];
 
   return (
-    <div className="p-8 max-w-5xl mx-auto">
-      <div className="mb-10 text-center">
-        <h1 className={`text-3xl font-extrabold ${theme.text} mb-3`}>Learning Center</h1>
-        <p className={`${theme.subText}`}>Choose a mode to accelerate your anatomy mastery.</p>
+    <div className="p-4 md:p-8 max-w-5xl mx-auto overflow-y-auto h-full">
+      <div className="mb-6 md:mb-10 text-center">
+        <h1 className={`text-2xl md:text-3xl font-extrabold ${theme.text} mb-2 md:mb-3`}>Learning Center</h1>
+        <p className={`text-sm md:text-base ${theme.subText}`}>Choose a mode to accelerate your anatomy mastery.</p>
       </div>
 
       <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">

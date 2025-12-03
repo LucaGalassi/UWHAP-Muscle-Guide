@@ -185,29 +185,29 @@ const WelcomeModal: React.FC<WelcomeModalProps> = ({ onDismiss, onResume, daysUn
 
     return (
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/90 backdrop-blur-md animate-in fade-in duration-300">
-        <div className="w-full max-w-lg bg-white rounded-3xl shadow-2xl overflow-hidden flex flex-col relative min-h-[500px]">
+        <div className="w-full max-w-lg bg-white rounded-3xl shadow-2xl overflow-hidden flex flex-col relative h-[80vh] md:h-auto md:min-h-[500px]">
           
           {/* Progress Bar */}
-          <div className="flex gap-1 p-2">
+          <div className="flex gap-1 p-2 shrink-0">
              {TUTORIAL_STEPS.map((_, i) => (
                <div key={i} className={`h-1 flex-1 rounded-full transition-all duration-300 ${i <= stepIndex ? 'bg-brand-600' : 'bg-slate-100'}`} />
              ))}
           </div>
 
-          <div className="flex-1 p-8 flex flex-col items-center text-center animate-in slide-in-from-right-4 duration-300 key={stepIndex}">
-             <div className="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mb-6 shadow-sm border border-slate-100">
+          <div className="flex-1 p-4 md:p-8 flex flex-col items-center text-center animate-in slide-in-from-right-4 duration-300 key={stepIndex} overflow-y-auto">
+             <div className="w-16 h-16 md:w-20 md:h-20 bg-slate-50 rounded-full flex items-center justify-center mb-4 md:mb-6 shadow-sm border border-slate-100 shrink-0">
                {step.icon}
              </div>
              
-             <h2 className="text-2xl font-black text-slate-900 mb-1">{step.title}</h2>
-             <p className="text-brand-600 font-bold text-xs uppercase tracking-widest mb-8">{step.subtitle}</p>
+             <h2 className="text-xl md:text-2xl font-black text-slate-900 mb-1">{step.title}</h2>
+             <p className="text-brand-600 font-bold text-xs uppercase tracking-widest mb-6 md:mb-8">{step.subtitle}</p>
              
              <div className="w-full text-left bg-white rounded-xl">
                {step.content}
              </div>
           </div>
 
-          <div className="p-6 border-t border-slate-100 bg-slate-50 flex justify-between items-center">
+          <div className="p-4 md:p-6 border-t border-slate-100 bg-slate-50 flex justify-between items-center shrink-0">
              <button 
                onClick={() => {
                  if (stepIndex === 0) setTutorialStep(0);
