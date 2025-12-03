@@ -19,6 +19,16 @@ View your app in AI Studio: https://ai.studio/apps/drive/1Cr_IBWJ19pE25MdcvfcCQF
 3. Run the app:
    `npm run dev`
 
+## Deployment
+
+This project auto-deploys to GitHub Pages using the modern Pages workflow.
+
+- Trigger: any push to `main` (and `workflow_dispatch` from the Actions tab).
+- Workflow: `.github/workflows/deploy.yml` builds the app (`npm run build`), uploads the `dist` artifact, and publishes with `actions/deploy-pages@v4`.
+- No `gh-pages` branch is used anymore; deployments happen directly from the build artifact.
+
+To deploy manually without pushing, open the Actions tab and run the "Deploy to GitHub Pages" workflow via "Run workflow".
+
 ## Beta Animation Viewer (V6.5)
 - Purpose: Preview simple, in-app animations for common motions (flexion, extension, abduction, etc.) without relying on external image search.
 - Access: In any muscle view header, click the `Beta Animation` (sparkles) button.
