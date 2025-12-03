@@ -12,6 +12,7 @@ interface AdvancedAnimationViewerProps {
   defaultMotion?: string; // accept string from popup mapping
   onClose: () => void;
   referenceText?: string;
+  actionString?: string;
 }
 
 type MotionName =
@@ -88,6 +89,27 @@ function ArmRig({ motion, playing, angleOut, skeleton }: { motion: MotionName; p
   const spec = motionToTargets(motion);
   const axisNorm = useMemo(() => spec.joint.axis.clone().normalize(), [spec.joint.axis]);
 
+  // Map bones if skeleton is provided
+  const bones = useMemo(() => {
+    if (!skeleton?.nodes) return {};
+    const find = (patterns: string[]) => {
+      const keys = Object.keys(skeleton.nodes);
+      const lower = keys.map(k => ({ k, l: k.toLowerCase() }));
+      for (const p of patterns) {
+        const pl = p.toLowerCase();
+        const hit = lower.find(({ l }) => l.includes(pl));
+        if (hit) return (skeleton.nodes as any)[hit.k];
+      }
+      return null;
+    };
+    return {
+      shoulder: find(['shoulder_r', 'r_shoulder', 'shoulder', 'upperarm_r', 'humerus_r', 'rightarm', 'mixamorigrightarm']),
+      elbow: find(['elbow_r', 'r_elbow', 'lowerarm_r', 'ulna_r', 'radius_r', 'forearm_r', 'rightforearm', 'mixamorigrightforearm']),
+      forearm: find(['forearm_r', 'radius_r', 'ulna_r', 'r_forearm', 'rightforearm', 'mixamorigrightforearm']),
+      hip: find(['hip_r', 'r_hip', 'thigh_r', 'femur_r', 'pelvis', 'rightupleg', 'mixamorigrightupleg']),
+    };
+  }, [skeleton]);
+
   useFrame((state) => {
     // Auto-oscillate smoothly within joint range when playing
     const range = (spec.joint.maxDeg - spec.joint.minDeg) / 2;
@@ -102,31 +124,25 @@ function ArmRig({ motion, playing, angleOut, skeleton }: { motion: MotionName; p
       obj.quaternion.setFromAxisAngle(axisNorm, rad);
     };
 
-    if (spec.joint === JOINTS.ElbowFlexExt) setQuat(elbow.current);
-    if (spec.joint === JOINTS.ShoulderAbdAdd || spec.joint === JOINTS.ShoulderMedLatRot) setQuat(shoulder.current);
-    if (spec.joint === JOINTS.ForearmProSup) setQuat(forearm.current);
-    if (spec.joint === JOINTS.HipFlexExt) setQuat(hip.current);
+    if (spec.joint === JOINTS.ElbowFlexExt) {
+      setQuat(elbow.current);
+      setQuat(bones.elbow);
+    }
+    if (spec.joint === JOINTS.ShoulderAbdAdd || spec.joint === JOINTS.ShoulderMedLatRot) {
+      setQuat(shoulder.current);
+      setQuat(bones.shoulder);
+    }
+    if (spec.joint === JOINTS.ForearmProSup) {
+      setQuat(forearm.current);
+      setQuat(bones.forearm);
+    }
+    if (spec.joint === JOINTS.HipFlexExt) {
+      setQuat(hip.current);
+      setQuat(bones.hip);
+    }
   });
 
-  // If a GLTF skeleton is provided, try to map bones by fuzzy name matching
-  const findBone = (patterns: string[]) => {
-    if (!skeleton?.nodes) return null;
-    const keys = Object.keys(skeleton.nodes);
-    const lower = keys.map(k => ({ k, l: k.toLowerCase() }));
-    for (const p of patterns) {
-      const pl = p.toLowerCase();
-      const hit = lower.find(({ l }) => l.includes(pl));
-      if (hit) return (skeleton.nodes as any)[hit.k];
-    }
-    return null;
-  };
-  const shoulderBone = findBone(['shoulder_r', 'r_shoulder', 'shoulder', 'upperarm_r', 'humerus_r']);
-  const elbowBone = findBone(['elbow_r', 'r_elbow', 'lowerarm_r', 'ulna_r', 'radius_r', 'forearm_r']);
-  const forearmBone = findBone(['forearm_r', 'radius_r', 'ulna_r', 'r_forearm']);
-  const hipBone = findBone(['hip_r', 'r_hip', 'thigh_r', 'femur_r', 'pelvis']);
-
   if (skeleton && skeleton.scene) {
-    // Render the skeleton; bone driving occurs via the same R3F frame approach on nodes (if needed)
     return (
       <primitive object={skeleton.scene} />
     );
@@ -180,7 +196,7 @@ function ArmRig({ motion, playing, angleOut, skeleton }: { motion: MotionName; p
 
 type ModelEntry = { label: string; url: string };
 
-export const AdvancedAnimationViewer: React.FC<AdvancedAnimationViewerProps> = ({ muscleName, currentTheme, defaultMotion='Elbow Flexion', onClose, referenceText }) => {
+export const AdvancedAnimationViewer: React.FC<AdvancedAnimationViewerProps> = ({ muscleName, currentTheme, defaultMotion='Elbow Flexion', onClose, referenceText, actionString }) => {
   const theme = THEME_CONFIG[currentTheme];
   const [motion, setMotion] = useState<MotionName>(defaultMotion as MotionName);
   const [playing, setPlaying] = useState(true);
@@ -226,7 +242,7 @@ export const AdvancedAnimationViewer: React.FC<AdvancedAnimationViewerProps> = (
         }
       })
       .catch(() => {
-        const fallback = toUrl('models/skeleton.glb');
+        const fallback = toUrl('models/overview-skeleton.glb');
         setModels([{ label: 'Skeleton (Default Path)', url: fallback }]);
         if (!selectedModelUrl) setSelectedModelUrl(fallback);
       });
@@ -237,9 +253,15 @@ export const AdvancedAnimationViewer: React.FC<AdvancedAnimationViewerProps> = (
     return <ArmRig motion={motion} playing={playing} angleOut={setAngle} skeleton={gltf} />;
   }
 
+  const actionList = useMemo(() => {
+    if (!actionString) return [];
+    // Split by common delimiters and clean up
+    return actionString.split(/[;,\.]/).map(s => s.trim()).filter(s => s.length > 3);
+  }, [actionString]);
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-      <div className={`w-full max-w-6xl h-[85vh] rounded-2xl border ${theme.border} ${theme.cardBg} shadow-2xl overflow-hidden flex flex-col`}>
+      <div className={`w-full max-w-[95vw] h-[90vh] rounded-2xl border ${theme.border} ${theme.cardBg} shadow-2xl overflow-hidden flex flex-col`}>
         <div className={`px-5 py-4 border-b ${theme.border} flex items-center justify-between`}>
           <div className="flex items-center gap-2">
             <PlayCircle className="w-5 h-5" />
@@ -291,7 +313,7 @@ export const AdvancedAnimationViewer: React.FC<AdvancedAnimationViewerProps> = (
                 <OrbitControls enablePan={true} enableZoom={true} enableRotate={true} />
               </Canvas>
             </div>
-            <aside className={`w-72 rounded-2xl border ${theme.border} ${theme.inputBg} p-4 flex flex-col`}>
+            <aside className={`w-80 rounded-2xl border ${theme.border} ${theme.inputBg} p-4 flex flex-col overflow-y-auto`}>
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-2">
                   <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${theme.cardBg} border ${theme.border}`}>
@@ -303,22 +325,47 @@ export const AdvancedAnimationViewer: React.FC<AdvancedAnimationViewerProps> = (
                   </div>
                 </div>
               </div>
+              
+              {/* Alert Box */}
+              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 mb-4">
+                <p className="text-xs text-yellow-800 font-medium">
+                  ⚠️ Note: 3D animations are approximations. Verify with textbook resources.
+                </p>
+              </div>
+
               {referenceText ? (
-                <div className={`text-sm ${theme.subText} whitespace-pre-line overflow-y-auto custom-scrollbar`} style={{ maxHeight: '40vh' }}>
-                  {referenceText}
+                <div className={`text-sm ${theme.subText} whitespace-pre-line mb-4`}>
+                  <strong>Action:</strong> {referenceText}
                 </div>
               ) : (
-                <div className={`text-sm ${theme.subText}`}>
-                  No precise action reference provided. Use the motion selector above, or consider a quick GIF search for this muscle and action.
+                <div className={`text-sm ${theme.subText} mb-4`}>
+                  No precise action reference provided.
                 </div>
               )}
-              <div className="mt-3">
+
+              <div className="space-y-2">
+                <p className={`text-xs font-semibold ${theme.text} uppercase tracking-wider`}>Search Animations</p>
+                
+                {/* Current Motion Search */}
                 <button
                   onClick={() => window.open(`https://www.google.com/search?tbm=isch&q=${encodeURIComponent(muscleName + ' ' + motion + ' animation gif')}`, '_blank')}
-                  className={`w-full px-3 py-2 rounded-lg border ${theme.border} ${theme.cardBg} text-sm ${theme.text}`}
+                  className={`w-full px-3 py-2 rounded-lg border ${theme.border} ${theme.cardBg} text-sm ${theme.text} hover:bg-slate-50 text-left flex items-center gap-2`}
                 >
-                  Search GIF for {motion}
+                  <Camera className="w-4 h-4" />
+                  Search GIF for "{motion}"
                 </button>
+
+                {/* Action List Searches */}
+                {actionList.map((action, i) => (
+                  <button
+                    key={i}
+                    onClick={() => window.open(`https://www.google.com/search?tbm=isch&q=${encodeURIComponent(muscleName + ' ' + action + ' animation gif')}`, '_blank')}
+                    className={`w-full px-3 py-2 rounded-lg border ${theme.border} ${theme.cardBg} text-sm ${theme.text} hover:bg-slate-50 text-left flex items-center gap-2`}
+                  >
+                    <Camera className="w-4 h-4" />
+                    Search GIF for "{action}"
+                  </button>
+                ))}
               </div>
             </aside>
           </div>
@@ -328,7 +375,7 @@ export const AdvancedAnimationViewer: React.FC<AdvancedAnimationViewerProps> = (
               Axes legend — X: Med/Lat Rotation, Y: Pro/Supination, Z: Abd/Add, Flex/Ext
             </p>
             <p>
-              Beta: 3D animations are approximations for educational visualization. Joint axes, ranges, and coupling are simplified and may not reflect exact biomechanics. If a GLTF skeleton is placed at <code>public/models/skeleton.glb</code> it will be loaded and bones will be driven when available.
+              Beta: 3D animations are approximations for educational visualization. Joint axes, ranges, and coupling are simplified and may not reflect exact biomechanics. If a GLTF skeleton is placed at <code>public/models/overview-skeleton.glb</code> it will be loaded and bones will be driven when available.
             </p>
             <p>
               Next steps: load rigged GLTF skeletons, map joints to bones, constrain rotations per anatomical axes, and annotate with dynamic labels/angles.

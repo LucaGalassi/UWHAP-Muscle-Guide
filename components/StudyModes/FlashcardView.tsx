@@ -33,7 +33,11 @@ const FlashcardView: React.FC<FlashcardViewProps> = ({ muscle, onRate, onNext, a
       setLoading(true);
       try {
         const data = await fetchMuscleDetails(muscle, apiKey);
-        if (mounted) setContent(data);
+        if (mounted) {
+          setContent(data);
+          // Auto-open 3D viewer if we have content
+          setShowAdvancedAnim(true);
+        }
       } catch (e) {
         console.error('Failed to load muscle details:', e);
       } finally {
@@ -63,11 +67,11 @@ const FlashcardView: React.FC<FlashcardViewProps> = ({ muscle, onRate, onNext, a
       <div className="h-full flex flex-col items-center justify-center p-8 space-y-6">
         <Activity className="w-10 h-10 text-brand-300 animate-pulse" />
         <p className="text-slate-400 text-sm font-medium">Preparing flashcard...</p>
-      </div>
-    );
-  }
-
   return (
+    <>
+    <div className="flex flex-col items-center justify-center h-full w-full max-w-[95vw] mx-auto p-2 md:p-4 relative">
+      
+      {showAiPrompt && (
     <>
     <div className="flex flex-col items-center justify-center h-full max-w-6xl mx-auto p-4 md:p-6 relative">
       
@@ -82,7 +86,7 @@ const FlashcardView: React.FC<FlashcardViewProps> = ({ muscle, onRate, onNext, a
 
       {/* Card Container - Widened */}
       <div 
-        className="flashcard-flip-container relative w-full h-[65vh] md:h-[70vh] cursor-pointer group mb-6"
+        className="flashcard-flip-container relative w-full h-[75vh] md:h-[80vh] cursor-pointer group mb-4"
         onClick={() => setIsFlipped(!isFlipped)}
         style={{ perspective: '1000px' }}
       >
@@ -349,6 +353,8 @@ const FlashcardView: React.FC<FlashcardViewProps> = ({ muscle, onRate, onNext, a
         currentTheme={currentTheme}
         defaultMotion={selectedMotion || 'Elbow Flexion'}
         onClose={() => setShowAdvancedAnim(false)}
+        referenceText={content?.action}
+        actionString={content?.action}
       />
     )}
     </>
