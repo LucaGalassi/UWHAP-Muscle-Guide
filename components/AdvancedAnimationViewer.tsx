@@ -132,6 +132,10 @@ function ArmRig({ motion, playing, angleOut, skeleton }: { motion: MotionName; p
       hip: find(['Femurr', 'femur_r', 'hip_r', 'r_hip', 'thigh_r', 'pelvis', 'rightupleg', 'mixamorigrightupleg', 'right_leg', 'leg_r']),
       knee: find(['Tibiar', 'tibia_r', 'knee_r', 'r_knee', 'shin_r', 'calf_r', 'rightleg', 'mixamorigrightleg', 'right_shin', 'shin_r']),
       ankle: find(['Talusr', 'talus_r', 'ankle_r', 'r_ankle', 'foot_r', 'rightfoot', 'mixamorigrightfoot', 'right_foot', 'foot_r', 'toe_r']),
+      // Random bones for "flying around" effect (mapped to unused joints for now)
+      random1: find(['Clavicler', 'Scapular', 'Rib_(1st)r', 'Rib_(2nd)r', 'Rib_(3rd)r']),
+      random2: find(['Manubrium_of_sternum', 'Body_of_sternum', 'Xiphoid_process']),
+      random3: find(['Cervical_vertebra_(C3)', 'Cervical_vertebra_(C4)', 'Cervical_vertebra_(C5)', 'Cervical_vertebra_(C6)', 'Cervical_vertebra_(C7)']),
     };
   }, [skeleton]);
 
@@ -165,13 +169,17 @@ function ArmRig({ motion, playing, angleOut, skeleton }: { motion: MotionName; p
       setQuat(hip.current);
       setQuat(bones.hip);
     }
-    if (spec.joint === JOINTS.KneeFlexExt) {
-      setQuat(knee.current);
-      setQuat(bones.knee);
-    }
     if (spec.joint === JOINTS.AnkleFlexExt) {
       setQuat(ankle.current);
       setQuat(bones.ankle);
+    }
+    
+    // "Flying Around" Effect for Random Bones (Subtle breathing/floating motion)
+    if (playing && bones.random1) {
+       bones.random1.position.y += Math.sin(t * 0.5) * 0.0005;
+    }
+    if (playing && bones.random2) {
+       bones.random2.rotation.z = Math.sin(t * 0.2) * 0.02;
     }
   });
 
@@ -267,10 +275,10 @@ export const AdvancedAnimationViewer: React.FC<AdvancedAnimationViewerProps> = (
 
   const cameraPosition = useMemo(() => {
     switch (cameraPreset) {
-      case 'Front': return [0, 0.3, 2];
-      case 'Top': return [0, 2, 0.1];
+      case 'Front': return [0, 0.5, 2.5];
+      case 'Top': return [0, 2.5, 0.1];
       case 'Side':
-      default: return [2, 0.3, 0];
+      default: return [2.5, 0.5, 0];
     }
   }, [cameraPreset]);
 
