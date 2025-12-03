@@ -11,6 +11,7 @@ interface AdvancedAnimationViewerProps {
   currentTheme: AppTheme;
   defaultMotion?: string; // accept string from popup mapping
   onClose: () => void;
+  referenceText?: string;
 }
 
 type MotionName =
@@ -179,7 +180,7 @@ function ArmRig({ motion, playing, angleOut, skeleton }: { motion: MotionName; p
 
 type ModelEntry = { label: string; url: string };
 
-export const AdvancedAnimationViewer: React.FC<AdvancedAnimationViewerProps> = ({ muscleName, currentTheme, defaultMotion='Elbow Flexion', onClose }) => {
+export const AdvancedAnimationViewer: React.FC<AdvancedAnimationViewerProps> = ({ muscleName, currentTheme, defaultMotion='Elbow Flexion', onClose, referenceText }) => {
   const theme = THEME_CONFIG[currentTheme];
   const [motion, setMotion] = useState<MotionName>(defaultMotion as MotionName);
   const [playing, setPlaying] = useState(true);
@@ -274,21 +275,52 @@ export const AdvancedAnimationViewer: React.FC<AdvancedAnimationViewerProps> = (
             </div>
           </div>
 
-          <div className={`rounded-2xl border ${theme.border} ${theme.inputBg} p-2 flex-1`}>
-            <Canvas camera={{ position: cameraPosition as any, fov: 45 }} dpr={[1, 2]} frameloop="always">
-              <ambientLight intensity={0.7} />
-              <directionalLight position={[5,5,5]} intensity={0.8} />
-              <gridHelper args={[10, 20]} />
-              {/* Axes legend as DOM overlay inside Canvas would require Html; keeping legend in footer below instead to avoid R3F hook errors */}
-              {selectedModelUrl ? (
-                <Suspense fallback={null}>
-                  <GLTFArmRig url={selectedModelUrl} />
-                </Suspense>
+          <div className="flex gap-4 flex-1 min-h-0">
+            <div className={`rounded-2xl border ${theme.border} ${theme.inputBg} p-2 flex-1 min-h-0`}>
+              <Canvas camera={{ position: cameraPosition as any, fov: 45 }} dpr={[1, 2]} frameloop="always">
+                <ambientLight intensity={0.7} />
+                <directionalLight position={[5,5,5]} intensity={0.8} />
+                <gridHelper args={[10, 20]} />
+                {selectedModelUrl ? (
+                  <Suspense fallback={null}>
+                    <GLTFArmRig url={selectedModelUrl} />
+                  </Suspense>
+                ) : (
+                  <ArmRig motion={motion} playing={playing} angleOut={setAngle} />
+                )}
+                <OrbitControls enablePan={true} enableZoom={true} enableRotate={true} />
+              </Canvas>
+            </div>
+            <aside className={`w-72 rounded-2xl border ${theme.border} ${theme.inputBg} p-4 flex flex-col`}>
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-2">
+                  <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${theme.cardBg} border ${theme.border}`}>
+                    <span className="text-sm">💪</span>
+                  </div>
+                  <div>
+                    <p className={`text-sm font-semibold ${theme.text}`}>{muscleName}</p>
+                    <p className={`text-xs ${theme.subText}`}>{motion}</p>
+                  </div>
+                </div>
+              </div>
+              {referenceText ? (
+                <div className={`text-sm ${theme.subText} whitespace-pre-line overflow-y-auto custom-scrollbar`} style={{ maxHeight: '40vh' }}>
+                  {referenceText}
+                </div>
               ) : (
-                <ArmRig motion={motion} playing={playing} angleOut={setAngle} />
+                <div className={`text-sm ${theme.subText}`}>
+                  No precise action reference provided. Use the motion selector above, or consider a quick GIF search for this muscle and action.
+                </div>
               )}
-              <OrbitControls enablePan={true} enableZoom={true} enableRotate={true} />
-            </Canvas>
+              <div className="mt-3">
+                <button
+                  onClick={() => window.open(`https://www.google.com/search?tbm=isch&q=${encodeURIComponent(muscleName + ' ' + motion + ' animation gif')}`, '_blank')}
+                  className={`w-full px-3 py-2 rounded-lg border ${theme.border} ${theme.cardBg} text-sm ${theme.text}`}
+                >
+                  Search GIF for {motion}
+                </button>
+              </div>
+            </aside>
           </div>
 
           <div className={`text-xs ${theme.subText} space-y-2`}>

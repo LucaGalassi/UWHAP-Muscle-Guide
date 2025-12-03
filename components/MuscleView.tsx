@@ -54,6 +54,7 @@ const MuscleView: React.FC<MuscleViewProps> = ({ muscle, onSelectMuscle, isLearn
   const [showActionPopup, setShowActionPopup] = useState(false);
   const [showAdvancedAnim, setShowAdvancedAnim] = useState(false);
   const [selectedMotion, setSelectedMotion] = useState<string | null>(null);
+  const [selectedActionRef, setSelectedActionRef] = useState<string | null>(null);
   const theme = THEME_CONFIG[currentTheme];
 
   // Check if we have static data for this muscle
@@ -449,7 +450,14 @@ const MuscleView: React.FC<MuscleViewProps> = ({ muscle, onSelectMuscle, isLearn
                   const motions = Array.from(new Set(lines.map(detectMotion).filter(Boolean) as string[]));
                   if (motions.length) {
                     return motions.map(motion => (
-                      <button key={motion} onClick={() => { setSelectedMotion(motion); setShowActionPopup(false); setShowAdvancedAnim(true); }}
+                      <button key={motion} onClick={() => {
+                          // find first line that maps to this motion for reference
+                          const refLine = lines.find(ln => detectMotion(ln) === motion) || null;
+                          setSelectedActionRef(refLine);
+                          setSelectedMotion(motion);
+                          setShowActionPopup(false);
+                          setShowAdvancedAnim(true);
+                        }}
                         className={`flex items-center justify-between p-3 rounded-xl border ${theme.border} hover:border-brand-500 hover:bg-brand-50 transition-all group text-left`}>
                         <span className={`font-medium ${theme.text} group-hover:text-brand-700`}>{motion}</span>
                         <ArrowRight className="w-4 h-4 text-slate-300 group-hover:text-brand-500 transition-colors" />
@@ -459,6 +467,11 @@ const MuscleView: React.FC<MuscleViewProps> = ({ muscle, onSelectMuscle, isLearn
                   // Fallback: offer GIF search using the full action text and a direct 3D viewer open
                   return (
                     <div className="space-y-2">
+                      <div className={`p-3 rounded-xl border ${theme.border} ${theme.inputBg}`}>
+                        <p className={`text-sm ${theme.subText}`}>
+                          No precise 3D action match found. For a clearer visual, try a quick GIF search first.
+                        </p>
+                      </div>
                       <button
                         onClick={() => { openSearchPopup(`${muscle.name} ${actionText} animation gif`); setShowActionPopup(false); }}
                         className={`w-full p-3 rounded-xl border ${theme.border} hover:border-brand-500 hover:bg-brand-50 text-left`}
@@ -466,7 +479,12 @@ const MuscleView: React.FC<MuscleViewProps> = ({ muscle, onSelectMuscle, isLearn
                         <span className={`font-medium ${theme.text}`}>Search GIF: {muscle.name} {actionText}</span>
                       </button>
                       <button
-                        onClick={() => { setSelectedMotion('Elbow Flexion'); setShowActionPopup(false); setShowAdvancedAnim(true); }}
+                        onClick={() => {
+                          setSelectedActionRef(actionText);
+                          setSelectedMotion('Elbow Flexion');
+                          setShowActionPopup(false);
+                          setShowAdvancedAnim(true);
+                        }}
                         className={`w-full p-3 rounded-xl border ${theme.border} hover:border-brand-500 hover:bg-brand-50 text-left`}
                       >
                         <span className={`font-medium ${theme.text}`}>Open Advanced 3D Viewer</span>
@@ -486,6 +504,7 @@ const MuscleView: React.FC<MuscleViewProps> = ({ muscle, onSelectMuscle, isLearn
           muscleName={muscle.name}
           currentTheme={currentTheme}
           defaultMotion={selectedMotion || "Elbow Flexion"}
+          referenceText={selectedActionRef || undefined}
           onClose={() => setShowAdvancedAnim(false)}
         />
       )}
