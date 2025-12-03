@@ -21,7 +21,6 @@ import {
   Move
 } from 'lucide-react';
 import { GROUP_A_REQUIREMENTS, GROUP_B_REQUIREMENTS } from '../constants';
-import BetaAnimationViewer from './BetaAnimationViewer';
 import AdvancedAnimationViewer from './AdvancedAnimationViewer';
 
 const STANDARD_MOTIONS = [
@@ -53,7 +52,6 @@ const MuscleView: React.FC<MuscleViewProps> = ({ muscle, onSelectMuscle, isLearn
   const [isBannerDismissed, setIsBannerDismissed] = useState(false);
   const [showMotionPopup, setShowMotionPopup] = useState(false);
   const [showActionPopup, setShowActionPopup] = useState(false);
-  const [showBetaAnim, setShowBetaAnim] = useState(false);
   const [showAdvancedAnim, setShowAdvancedAnim] = useState(false);
   const [selectedMotion, setSelectedMotion] = useState<string | null>(null);
   const theme = THEME_CONFIG[currentTheme];
@@ -66,7 +64,6 @@ const MuscleView: React.FC<MuscleViewProps> = ({ muscle, onSelectMuscle, isLearn
     setIsBannerDismissed(false);
     setShowMotionPopup(false);
     setShowActionPopup(false);
-    setShowBetaAnim(false);
     setShowAdvancedAnim(false);
     
     let mounted = true;
@@ -196,20 +193,7 @@ const MuscleView: React.FC<MuscleViewProps> = ({ muscle, onSelectMuscle, isLearn
               >
                 <PlayCircle className="w-5 h-5" />
               </button>
-              <button
-                onClick={() => setShowBetaAnim(true)}
-                className={`p-2.5 rounded-xl border transition-all ${theme.inputBg} ${theme.border} ${theme.text} hover:scale-105 active:scale-95`}
-                title="Beta Animation Viewer"
-              >
-                <Sparkles className="w-5 h-5" />
-              </button>
-              <button
-                onClick={() => setShowAdvancedAnim(true)}
-                className={`p-2.5 rounded-xl border transition-all ${theme.inputBg} ${theme.border} ${theme.text} hover:scale-105 active:scale-95`}
-                title="Advanced 3D Viewer"
-              >
-                <Target className="w-5 h-5" />
-              </button>
+              {/* Advanced viewer opens via action selection popup only */}
             </div>
           </div>
         </div>
@@ -433,25 +417,35 @@ const MuscleView: React.FC<MuscleViewProps> = ({ muscle, onSelectMuscle, isLearn
                 {(() => {
                   const actionText = content?.action || MUSCLE_DETAILS[muscle.id]?.action || '';
                   const lines = actionText.split('\n').map(l => l.replace(/^\d+\.\s*/, '').trim());
-                  const mapping: Record<string, string> = {
-                    'flexes': 'Elbow Flexion',
-                    'extends': 'Elbow Extension',
-                    'abducts': 'Shoulder Abduction',
-                    'adducts': 'Shoulder Adduction',
-                    'medially rotates': 'Shoulder Medial Rotation',
-                    'laterally rotates': 'Shoulder Lateral Rotation',
-                    'supinates': 'Forearm Supination',
-                    'pronates': 'Forearm Pronation',
-                    'dorsiflexes': 'Dorsiflexion',
-                    'plantarflexes': 'Plantarflexion'
-                  };
-                  const motions = Array.from(new Set(lines.map(l => {
-                    const lower = l.toLowerCase();
-                    for (const key of Object.keys(mapping)) {
-                      if (lower.includes(key)) return mapping[key];
+                  const detectMotion = (line: string): string | null => {
+                    const l = line.toLowerCase();
+                    const joint = (
+                      l.includes('shoulder') || l.includes('glenohumeral') ? 'Shoulder' :
+                      l.includes('elbow') ? 'Elbow' :
+                      l.includes('forearm') ? 'Forearm' :
+                      l.includes('hip') ? 'Hip' : null
+                    );
+                    if (l.includes('abduction')) return 'Shoulder Abduction';
+                    if (l.includes('adduction')) return 'Shoulder Adduction';
+                    if (l.includes('medial rotation') || l.includes('internal rotation')) return 'Shoulder Medial Rotation';
+                    if (l.includes('lateral rotation') || l.includes('external rotation')) return 'Shoulder Lateral Rotation';
+                    if (l.includes('supination') || l.includes('supinates')) return 'Forearm Supination';
+                    if (l.includes('pronation') || l.includes('pronates')) return 'Forearm Pronation';
+                    if (l.includes('dorsiflex')) return 'Dorsiflexion';
+                    if (l.includes('plantarflex')) return 'Plantarflexion';
+                    if (l.includes('flexion') || l.includes('flexes')) {
+                      if (joint === 'Elbow') return 'Elbow Flexion';
+                      if (joint === 'Shoulder') return 'Shoulder Flexion';
+                      if (joint === 'Hip') return 'Hip Flexion';
+                    }
+                    if (l.includes('extension') || l.includes('extends')) {
+                      if (joint === 'Elbow') return 'Elbow Extension';
+                      if (joint === 'Shoulder') return 'Shoulder Extension';
+                      if (joint === 'Hip') return 'Hip Extension';
                     }
                     return null;
-                  }).filter(Boolean) as string[]));
+                  };
+                  const motions = Array.from(new Set(lines.map(detectMotion).filter(Boolean) as string[]));
                   return motions.length ? motions.map(motion => (
                     <button key={motion} onClick={() => { setSelectedMotion(motion); setShowActionPopup(false); setShowAdvancedAnim(true); }}
                       className={`flex items-center justify-between p-3 rounded-xl border ${theme.border} hover:border-brand-500 hover:bg-brand-50 transition-all group text-left`}>
@@ -466,16 +460,6 @@ const MuscleView: React.FC<MuscleViewProps> = ({ muscle, onSelectMuscle, isLearn
             </div>
           </div>
         </div>
-      )}
-
-      {/* Beta Animation Viewer (non-Google, in-app) */}
-      {showBetaAnim && (
-        <BetaAnimationViewer 
-          muscleName={muscle.name}
-          currentTheme={currentTheme}
-          defaultMotion={"Flexion"}
-          onClose={() => setShowBetaAnim(false)}
-        />
       )}
 
       {/* Advanced 3D Viewer (react-three-fiber) */}

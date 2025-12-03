@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState, Suspense } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
-import { OrbitControls, useGLTF, Html } from '@react-three/drei';
+import { OrbitControls, useGLTF } from '@react-three/drei';
 import { AppTheme } from '../types';
 import { THEME_CONFIG } from '../constants';
 import { X, PlayCircle, PauseCircle, Compass, Camera } from 'lucide-react';
@@ -17,11 +17,13 @@ type MotionName =
   | 'Elbow Flexion' | 'Elbow Extension'
   | 'Shoulder Abduction' | 'Shoulder Adduction'
   | 'Shoulder Medial Rotation' | 'Shoulder Lateral Rotation'
+  | 'Shoulder Flexion' | 'Shoulder Extension'
   | 'Forearm Pronation' | 'Forearm Supination'
   | 'Hip Flexion' | 'Hip Extension';
 
 const MOTIONS: MotionName[] = [
   'Elbow Flexion','Elbow Extension',
+  'Shoulder Flexion','Shoulder Extension',
   'Shoulder Abduction','Shoulder Adduction',
   'Shoulder Medial Rotation','Shoulder Lateral Rotation',
   'Forearm Pronation','Forearm Supination',
@@ -48,6 +50,8 @@ function motionToTargets(motion: MotionName) {
   switch (motion) {
     case 'Elbow Flexion': return { joint: JOINTS.ElbowFlexExt, targetDeg: 120 };
     case 'Elbow Extension': return { joint: JOINTS.ElbowFlexExt, targetDeg: 10 };
+    case 'Shoulder Flexion': return { joint: JOINTS.ShoulderAbdAdd, targetDeg: 80 };
+    case 'Shoulder Extension': return { joint: JOINTS.ShoulderAbdAdd, targetDeg: 0 };
     case 'Shoulder Abduction': return { joint: JOINTS.ShoulderAbdAdd, targetDeg: 80 };
     case 'Shoulder Adduction': return { joint: JOINTS.ShoulderAbdAdd, targetDeg: 0 };
     case 'Shoulder Medial Rotation': return { joint: JOINTS.ShoulderMedLatRot, targetDeg: -30 };
@@ -226,18 +230,22 @@ export const AdvancedAnimationViewer: React.FC<AdvancedAnimationViewerProps> = (
   }, [cameraPreset]);
 
   useEffect(() => {
-    fetch('/models/manifest.json')
+    const base = (import.meta as any).env?.BASE_URL || '/';
+    const toUrl = (p: string) => base + (p.startsWith('/') ? p.slice(1) : p);
+    fetch(toUrl('models/manifest.json'))
       .then(r => r.ok ? r.json() : Promise.reject())
       .then((json) => {
         if (Array.isArray(json.models)) {
-          setModels(json.models);
-          if (json.models.length && !selectedModelUrl) setSelectedModelUrl(json.models[0].url);
+          // map model URLs to respect base path
+          const mapped = json.models.map((m: any) => ({ label: m.label, url: toUrl(m.url) }));
+          setModels(mapped);
+          if (mapped.length && !selectedModelUrl) setSelectedModelUrl(mapped[0].url);
         }
       })
       .catch(() => {
-        setModels([{ label: 'Skeleton (Default Path)', url: '/models/skeleton.glb' }]);
-        if (!selectedModelUrl) setSelectedModelUrl('/models/skeleton.glb');
-                {/* Model selector injected earlier via manifest in previous patch */}
+        const fallback = toUrl('models/skeleton.glb');
+        setModels([{ label: 'Skeleton (Default Path)', url: fallback }]);
+        if (!selectedModelUrl) setSelectedModelUrl(fallback);
       });
   }, []);
 
@@ -265,18 +273,6 @@ export const AdvancedAnimationViewer: React.FC<AdvancedAnimationViewerProps> = (
               <p className={`${theme.text} text-sm font-semibold`}>{muscleName}</p>
               <p className={`text-xs ${theme.subText}`}>Motion: {motion} • Angle: {angle.toFixed(0)}°</p>
             </div>
-                {/* HUD overlays for axes legend */}
-                <Html position={[0, -0.6, 0]} center>
-                  <div style={{
-                    background: 'rgba(0,0,0,0.4)', color: 'white', padding: '6px 8px', borderRadius: 8,
-                    fontSize: 10, lineHeight: 1.2, textAlign: 'center'
-                  }}>
-                    <div><strong>Axes Legend</strong></div>
-                    <div><span style={{color:'#ef4444'}}>X</span>= Med/Lat Rotation</div>
-                    <div><span style={{color:'#22c55e'}}>Y</span>= Pro/Supination</div>
-                    <div><span style={{color:'#3b82f6'}}>Z</span>= Abd/Add, Flex/Ext</div>
-                  </div>
-                </Html>
             <div className="flex items-center gap-2">
               <select value={selectedModelUrl ?? ''} onChange={(e)=> setSelectedModelUrl(e.target.value || null)} className={`px-3 py-2 rounded-lg border ${theme.border} text-sm ${theme.text} ${theme.inputBg}`}>
                 {models.map(m => <option key={m.url} value={m.url}>{m.label}</option>)}
@@ -284,9 +280,6 @@ export const AdvancedAnimationViewer: React.FC<AdvancedAnimationViewerProps> = (
               </select>
               <select value={motion} onChange={(e)=>setMotion(e.target.value as MotionName)} className={`px-3 py-2 rounded-lg border ${theme.border} text-sm ${theme.text} ${theme.inputBg}`}>
                 {MOTIONS.map(m => <option key={m} value={m}>{m}</option>)}
-              <p>
-                Tip: Switch camera presets for clearer views. The model selector (if present) can load different regions (upper limb, lower limb, hand, vertebrae) to match the motion being studied.
-              </p>
               </select>
               <button onClick={()=>setPlaying(p=>!p)} className={`px-3 py-2 rounded-lg border ${theme.border} ${theme.inputBg} ${theme.text} text-sm font-semibold`}>
                 {playing ? <PauseCircle className="w-4 h-4 inline-block mr-1" /> : <PlayCircle className="w-4 h-4 inline-block mr-1" />} {playing ? 'Pause' : 'Play'}
@@ -304,6 +297,7 @@ export const AdvancedAnimationViewer: React.FC<AdvancedAnimationViewerProps> = (
               <ambientLight intensity={0.7} />
               <directionalLight position={[5,5,5]} intensity={0.8} />
               <gridHelper args={[10, 20]} />
+              {/* Axes legend as DOM overlay inside Canvas would require Html; keeping legend in footer below instead to avoid R3F hook errors */}
               {selectedModelUrl ? (
                 <Suspense fallback={null}>
                   <GLTFArmRig url={selectedModelUrl} />
@@ -316,6 +310,9 @@ export const AdvancedAnimationViewer: React.FC<AdvancedAnimationViewerProps> = (
           </div>
 
           <div className={`text-xs ${theme.subText} space-y-2`}>
+            <p>
+              Axes legend — X: Med/Lat Rotation, Y: Pro/Supination, Z: Abd/Add, Flex/Ext
+            </p>
             <p>
               Beta: 3D animations are approximations for educational visualization. Joint axes, ranges, and coupling are simplified and may not reflect exact biomechanics. If a GLTF skeleton is placed at <code>public/models/skeleton.glb</code> it will be loaded and bones will be driven when available.
             </p>

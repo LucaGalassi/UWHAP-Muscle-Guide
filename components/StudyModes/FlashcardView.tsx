@@ -283,25 +283,35 @@ const FlashcardView: React.FC<FlashcardViewProps> = ({ muscle, onRate, onNext, a
               {(() => {
                 const actionText = content?.action || '';
                 const lines = actionText.split('\n').map(l => l.replace(/^\d+\.\s*/, '').trim());
-                const mapping: Record<string, string> = {
-                  'flexes': 'Elbow Flexion',
-                  'extends': 'Elbow Extension',
-                  'abducts': 'Shoulder Abduction',
-                  'adducts': 'Shoulder Adduction',
-                  'medially rotates': 'Shoulder Medial Rotation',
-                  'laterally rotates': 'Shoulder Lateral Rotation',
-                  'supinates': 'Forearm Supination',
-                  'pronates': 'Forearm Pronation',
-                  'dorsiflexes': 'Dorsiflexion',
-                  'plantarflexes': 'Plantarflexion'
-                };
-                const motions = Array.from(new Set(lines.map(l => {
-                  const lower = l.toLowerCase();
-                  for (const key of Object.keys(mapping)) {
-                    if (lower.includes(key)) return mapping[key];
+                const detectMotion = (line: string): string | null => {
+                  const l = line.toLowerCase();
+                  const joint = (
+                    l.includes('shoulder') || l.includes('glenohumeral') ? 'Shoulder' :
+                    l.includes('elbow') ? 'Elbow' :
+                    l.includes('forearm') ? 'Forearm' :
+                    l.includes('hip') ? 'Hip' : null
+                  );
+                  if (l.includes('abduction')) return 'Shoulder Abduction';
+                  if (l.includes('adduction')) return 'Shoulder Adduction';
+                  if (l.includes('medial rotation') || l.includes('internal rotation')) return 'Shoulder Medial Rotation';
+                  if (l.includes('lateral rotation') || l.includes('external rotation')) return 'Shoulder Lateral Rotation';
+                  if (l.includes('supination') || l.includes('supinates')) return 'Forearm Supination';
+                  if (l.includes('pronation') || l.includes('pronates')) return 'Forearm Pronation';
+                  if (l.includes('dorsiflex')) return 'Dorsiflexion';
+                  if (l.includes('plantarflex')) return 'Plantarflexion';
+                  if (l.includes('flexion') || l.includes('flexes')) {
+                    if (joint === 'Elbow') return 'Elbow Flexion';
+                    if (joint === 'Shoulder') return 'Shoulder Flexion';
+                    if (joint === 'Hip') return 'Hip Flexion';
+                  }
+                  if (l.includes('extension') || l.includes('extends')) {
+                    if (joint === 'Elbow') return 'Elbow Extension';
+                    if (joint === 'Shoulder') return 'Shoulder Extension';
+                    if (joint === 'Hip') return 'Hip Extension';
                   }
                   return null;
-                }).filter(Boolean) as string[]));
+                };
+                const motions = Array.from(new Set(lines.map(detectMotion).filter(Boolean) as string[]));
                 return motions.length ? motions.map(motion => (
                   <button key={motion} onClick={() => { setSelectedMotion(motion); setShowActionPopup(false); setShowAdvancedAnim(true); }}
                     className={`flex items-center justify-between p-3 rounded-xl border ${theme.border} hover:border-brand-500 hover:bg-brand-50 transition-all group text-left`}>
