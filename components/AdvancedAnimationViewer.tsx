@@ -13,6 +13,7 @@ import {
   getModelTypeForMotion
 } from '../services/animationService';
 import { StickFigureAnimation } from './StickFigureAnimation';
+import { MapPin, Zap, ExternalLink, Image, BookOpen, Activity } from 'lucide-react';
 
 interface AdvancedAnimationViewerProps {
   muscleName: string;
@@ -22,6 +23,8 @@ interface AdvancedAnimationViewerProps {
   // Context from muscle card
   actionString?: string;
   demonstrationText?: string;
+  originString?: string;
+  insertionString?: string;
   // Mode
   browserMode?: boolean; // If true, show all animations; if false, show muscle-specific
 }
@@ -48,6 +51,8 @@ const AdvancedAnimationViewer: React.FC<AdvancedAnimationViewerProps> = ({
   onClose,
   actionString,
   demonstrationText,
+  originString,
+  insertionString,
   browserMode = false
 }) => {
   const theme = THEME_CONFIG[currentTheme];
@@ -77,14 +82,34 @@ const AdvancedAnimationViewer: React.FC<AdvancedAnimationViewerProps> = ({
     }
   }, [model3DFailed, viewMode]);
 
-  // Action list parsing
+  // Action list parsing - clean up numbered lists and extract meaningful actions
   const actionList = useMemo(() => {
     if (!actionString) return [];
     return actionString
-      .split(/[;,\.]/)
-      .map(s => s.trim())
-      .filter(s => s.length > 3);
+      .split(/[\n;]/)
+      .map(s => s.replace(/^\d+\.\s*/, '').trim()) // Remove leading numbers like "1. "
+      .filter(s => s.length > 3 && !s.match(/^\d+$/)); // Remove empty and number-only strings
   }, [actionString]);
+
+  // Extract motion keywords from actions for targeted searches
+  const extractedMotions = useMemo(() => {
+    const motionKeywords = [
+      'flexion', 'extension', 'abduction', 'adduction', 'rotation',
+      'pronation', 'supination', 'dorsiflexion', 'plantarflexion',
+      'elevation', 'depression', 'protraction', 'retraction',
+      'inversion', 'eversion', 'circumduction'
+    ];
+    const found: string[] = [];
+    actionList.forEach(action => {
+      const lower = action.toLowerCase();
+      motionKeywords.forEach(keyword => {
+        if (lower.includes(keyword) && !found.includes(keyword)) {
+          found.push(keyword);
+        }
+      });
+    });
+    return found;
+  }, [actionList]);
 
   // Filter motions by region
   const [regionFilter, setRegionFilter] = useState<string>('all');
@@ -312,35 +337,107 @@ const AdvancedAnimationViewer: React.FC<AdvancedAnimationViewerProps> = ({
                   </div>
                 </div>
 
-                {/* GIF Search Buttons */}
-                <div>
-                  <label className={`text-xs font-bold uppercase tracking-wider ${theme.subText} mb-2 block`}>
-                    External Resources
+                {/* Learning Resources - Comprehensive Section */}
+                <div className="space-y-3">
+                  <label className={`text-xs font-bold uppercase tracking-wider ${theme.subText} flex items-center gap-2`}>
+                    <BookOpen className="w-3 h-3" />
+                    Learning Resources
                   </label>
-                  <div className="space-y-2">
+                  
+                  {/* Anatomy Images */}
+                  <div className={`p-3 rounded-lg ${theme.infoBox} space-y-2`}>
+                    <p className={`text-[10px] font-bold uppercase tracking-wider ${theme.subText} flex items-center gap-1`}>
+                      <MapPin className="w-3 h-3" /> Anatomy Images
+                    </p>
+                    <div className="grid grid-cols-2 gap-2">
+                      <button
+                        onClick={() => window.open(`https://www.google.com/search?tbm=isch&q=${encodeURIComponent(`${muscleName} muscle origin anatomy diagram`)}`, '_blank')}
+                        className={`px-2 py-2 rounded-lg border ${theme.border} ${theme.cardBg} text-xs font-medium hover:border-emerald-400 hover:bg-emerald-50/10 transition-all flex items-center justify-center gap-1 ${theme.text}`}
+                      >
+                        <span className="text-emerald-500">●</span> Origin
+                      </button>
+                      <button
+                        onClick={() => window.open(`https://www.google.com/search?tbm=isch&q=${encodeURIComponent(`${muscleName} muscle insertion anatomy diagram`)}`, '_blank')}
+                        className={`px-2 py-2 rounded-lg border ${theme.border} ${theme.cardBg} text-xs font-medium hover:border-rose-400 hover:bg-rose-50/10 transition-all flex items-center justify-center gap-1 ${theme.text}`}
+                      >
+                        <span className="text-rose-500">●</span> Insertion
+                      </button>
+                    </div>
+                    <button
+                      onClick={() => window.open(`https://www.google.com/search?tbm=isch&q=${encodeURIComponent(`${muscleName} muscle anatomy labeled diagram`)}`, '_blank')}
+                      className={`w-full px-2 py-2 rounded-lg border ${theme.border} ${theme.cardBg} text-xs font-medium hover:border-brand-400 transition-all flex items-center justify-center gap-2 ${theme.text}`}
+                    >
+                      <Image className="w-3 h-3" /> Full Anatomy Diagram
+                    </button>
+                  </div>
+
+                  {/* Motion GIF Searches */}
+                  <div className={`p-3 rounded-lg ${theme.infoBox} space-y-2`}>
+                    <p className={`text-[10px] font-bold uppercase tracking-wider ${theme.subText} flex items-center gap-1`}>
+                      <Activity className="w-3 h-3" /> Motion Animations
+                    </p>
+                    
+                    {/* Current Selected Motion */}
                     <button
                       onClick={() => {
                         const query = generateGifSearchQuery(muscleId || '', muscleName, selectedMotion.id);
-                        window.open(`https://www.google.com/search?tbm=isch&q=${encodeURIComponent(query + ' gif')}`, '_blank');
+                        window.open(`https://www.google.com/search?tbm=isch&q=${encodeURIComponent(query + ' animation gif')}`, '_blank');
                       }}
-                      className={`w-full px-3 py-2 rounded-lg border ${theme.border} ${theme.cardBg} ${theme.text} text-sm hover:border-brand-300 transition-all flex items-center gap-2`}
+                      className={`w-full px-3 py-2 rounded-lg bg-brand-500 text-white text-sm font-semibold hover:bg-brand-600 transition-all flex items-center justify-center gap-2`}
                     >
                       <Search className="w-4 h-4" />
-                      Search GIF: {selectedMotion.name}
+                      {selectedMotion.displayName} GIF
                     </button>
                     
-                    {actionList.slice(0, 3).map((action, i) => (
-                      <button
-                        key={i}
-                        onClick={() => {
-                          window.open(`https://www.google.com/search?tbm=isch&q=${encodeURIComponent(`${muscleName} ${action} animation gif`)}`, '_blank');
-                        }}
-                        className={`w-full px-3 py-2 rounded-lg border ${theme.border} ${theme.cardBg} ${theme.text} text-xs hover:border-brand-300 transition-all flex items-center gap-2`}
-                      >
-                        <Camera className="w-3 h-3" />
-                        {action}
-                      </button>
-                    ))}
+                    {/* All Extracted Motions as Buttons */}
+                    {extractedMotions.length > 0 && (
+                      <div className="flex flex-wrap gap-1">
+                        {extractedMotions.map((motion, i) => (
+                          <button
+                            key={i}
+                            onClick={() => window.open(`https://www.google.com/search?tbm=isch&q=${encodeURIComponent(`${muscleName} ${motion} animation gif`)}`, '_blank')}
+                            className={`px-2 py-1 rounded-full border ${theme.border} ${theme.cardBg} text-[10px] font-medium capitalize hover:border-brand-400 hover:bg-brand-50/10 transition-all flex items-center gap-1 ${theme.text}`}
+                          >
+                            <Zap className="w-2.5 h-2.5 text-amber-500" />
+                            {motion}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                    
+                    {/* All Available Motions for this muscle */}
+                    {availableMotions.length > 1 && (
+                      <div className="pt-2 border-t border-dashed border-current/20">
+                        <p className={`text-[9px] uppercase tracking-wider mb-1 ${theme.subText}`}>All Available Motions</p>
+                        <div className="flex flex-wrap gap-1">
+                          {availableMotions.filter(m => m.id !== selectedMotion.id).slice(0, 6).map((motion) => (
+                            <button
+                              key={motion.id}
+                              onClick={() => window.open(`https://www.google.com/search?tbm=isch&q=${encodeURIComponent(`${motion.displayName} animation gif anatomy`)}`, '_blank')}
+                              className={`px-2 py-1 rounded-full border ${theme.border} ${theme.cardBg} text-[10px] font-medium hover:border-blue-400 transition-all ${theme.text}`}
+                            >
+                              {motion.displayName}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Quick External Links */}
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => window.open(`https://www.google.com/search?q=${encodeURIComponent(`${muscleName} muscle kinesiology`)}`, '_blank')}
+                      className={`flex-1 px-2 py-2 rounded-lg border ${theme.border} ${theme.cardBg} text-[10px] font-medium hover:border-brand-300 transition-all flex items-center justify-center gap-1 ${theme.text}`}
+                    >
+                      <ExternalLink className="w-3 h-3" /> Learn More
+                    </button>
+                    <button
+                      onClick={() => window.open(`https://www.youtube.com/results?search_query=${encodeURIComponent(`${muscleName} muscle anatomy tutorial`)}`, '_blank')}
+                      className={`flex-1 px-2 py-2 rounded-lg border ${theme.border} ${theme.cardBg} text-[10px] font-medium hover:border-red-400 transition-all flex items-center justify-center gap-1 ${theme.text}`}
+                    >
+                      <PlayCircle className="w-3 h-3 text-red-500" /> YouTube
+                    </button>
                   </div>
                 </div>
 
@@ -611,9 +708,8 @@ const AnimatedModel: React.FC<AnimatedModelProps> = ({
 };
 
 // ============================================================================
-// ANIMATION RIG - Simplified for full anatomical models
-// Instead of trying to find specific bones, just rotate the entire model
-// to showcase the anatomy. The stick figure provides motion demonstration.
+// ANIMATION RIG - Anatomically Accurate Joint Animation System v8.2
+// Uses procedural bone animations with correct anatomical planes
 // ============================================================================
 
 interface AnimationRigProps {
@@ -623,6 +719,69 @@ interface AnimationRigProps {
   onAngleUpdate: (angle: number) => void;
 }
 
+// Bone name patterns for different models
+const BONE_PATTERNS = {
+  // Upper body
+  shoulder: ['shoulder', 'clavicle', 'humerus', 'arm_upper', 'upperarm', 'l_arm', 'r_arm'],
+  upperArm: ['upperarm', 'upper_arm', 'humerus', 'arm.upper', 'arm_upper'],
+  forearm: ['forearm', 'lower_arm', 'radius', 'ulna', 'arm.lower', 'arm_lower'],
+  hand: ['hand', 'wrist', 'carpal'],
+  elbow: ['elbow', 'forearm', 'lower_arm'],
+  
+  // Lower body
+  hip: ['hip', 'pelvis', 'thigh', 'femur', 'leg_upper', 'upperleg'],
+  knee: ['knee', 'shin', 'tibia', 'leg_lower', 'lowerleg', 'calf'],
+  ankle: ['ankle', 'foot', 'tarsal'],
+  
+  // Trunk
+  spine: ['spine', 'back', 'torso', 'trunk', 'lumbar', 'thoracic'],
+  scapula: ['scapula', 'shoulder_blade', 'clavicle']
+};
+
+// Find bones in scene matching patterns
+const findBones = (scene: THREE.Object3D, patterns: string[]): THREE.Object3D[] => {
+  const bones: THREE.Object3D[] = [];
+  scene.traverse((obj) => {
+    const name = obj.name.toLowerCase();
+    if (patterns.some(p => name.includes(p.toLowerCase()))) {
+      bones.push(obj);
+    }
+  });
+  return bones;
+};
+
+// Get appropriate bones for a motion
+const getBonesForMotion = (scene: THREE.Object3D, motion: MotionDefinition): THREE.Object3D[] => {
+  const jointId = motion.joint.id.toLowerCase();
+  
+  if (jointId.includes('shoulder') || jointId.includes('scapula')) {
+    return findBones(scene, [...BONE_PATTERNS.shoulder, ...BONE_PATTERNS.upperArm]);
+  }
+  if (jointId.includes('elbow')) {
+    return findBones(scene, BONE_PATTERNS.forearm);
+  }
+  if (jointId.includes('forearm')) {
+    return findBones(scene, [...BONE_PATTERNS.forearm, ...BONE_PATTERNS.hand]);
+  }
+  if (jointId.includes('wrist')) {
+    return findBones(scene, BONE_PATTERNS.hand);
+  }
+  if (jointId.includes('hip')) {
+    return findBones(scene, [...BONE_PATTERNS.hip, ...BONE_PATTERNS.knee]);
+  }
+  if (jointId.includes('knee')) {
+    return findBones(scene, BONE_PATTERNS.knee);
+  }
+  if (jointId.includes('ankle')) {
+    return findBones(scene, BONE_PATTERNS.ankle);
+  }
+  if (jointId.includes('spine')) {
+    return findBones(scene, BONE_PATTERNS.spine);
+  }
+  
+  return [];
+};
+
 const AnimationRig: React.FC<AnimationRigProps> = ({
   scene,
   motion,
@@ -630,42 +789,225 @@ const AnimationRig: React.FC<AnimationRigProps> = ({
   onAngleUpdate
 }) => {
   const groupRef = useRef<THREE.Group>(null);
-  const baseRotation = useRef<THREE.Euler | null>(null);
+  const bonesRef = useRef<THREE.Object3D[]>([]);
+  const initialRotationsRef = useRef<Map<string, THREE.Euler>>(new Map());
+  const animatedGroupRef = useRef<THREE.Group | null>(null);
 
-  // Store base rotation on first render
+  // Initialize: find bones and store initial rotations
   useEffect(() => {
-    if (groupRef.current && !baseRotation.current) {
-      baseRotation.current = groupRef.current.rotation.clone();
-    }
-  }, []);
+    bonesRef.current = getBonesForMotion(scene, motion);
+    initialRotationsRef.current.clear();
+    
+    bonesRef.current.forEach((bone) => {
+      initialRotationsRef.current.set(bone.uuid, bone.rotation.clone());
+    });
+  }, [scene, motion]);
 
   useFrame((state) => {
     if (!groupRef.current) return;
     
     const t = state.clock.getElapsedTime();
     
-    // Calculate animation angle for display
-    const range = (motion.joint.maxDeg - motion.joint.minDeg) / 2;
-    const mid = (motion.joint.maxDeg + motion.joint.minDeg) / 2;
+    // Calculate smooth oscillating angle
+    const neutralDeg = motion.joint.neutralDeg || 0;
+    const targetDeg = motion.targetDeg;
+    const range = Math.abs(targetDeg - neutralDeg);
+    
+    // Smooth sine wave for natural motion
+    const progress = Math.sin(t * (Math.PI / motion.duration));
     const currentAngle = playing 
-      ? mid + range * Math.sin(t * (1 / motion.duration) * Math.PI * 2)
-      : mid;
+      ? neutralDeg + (targetDeg - neutralDeg) * Math.abs(progress)
+      : neutralDeg;
     
     onAngleUpdate(currentAngle);
 
-    // Gently rotate the entire model for showcase (not bone-specific animation)
-    // This provides a nice 3D view of the anatomy without random parts flying around
     if (playing) {
-      // Slow gentle rotation to showcase the model
-      groupRef.current.rotation.y = t * 0.3; // Slow turntable rotation
+      const angleRad = THREE.MathUtils.degToRad(currentAngle);
+      const axis = motion.joint.axis;
+      
+      // If we found bones, animate them
+      if (bonesRef.current.length > 0) {
+        bonesRef.current.forEach((bone, index) => {
+          const initial = initialRotationsRef.current.get(bone.uuid);
+          if (initial) {
+            // Apply animation relative to initial rotation
+            // Use different weights for chain of bones
+            const weight = 1 / (index + 1);
+            bone.rotation.x = initial.x + axis.x * angleRad * weight;
+            bone.rotation.y = initial.y + axis.y * angleRad * weight;
+            bone.rotation.z = initial.z + axis.z * angleRad * weight;
+          }
+        });
+      }
+      
+      // Create animated limb visualization if no bones found
+      if (bonesRef.current.length === 0 && animatedGroupRef.current) {
+        animatedGroupRef.current.rotation.x = axis.x * angleRad;
+        animatedGroupRef.current.rotation.y = axis.y * angleRad;
+        animatedGroupRef.current.rotation.z = axis.z * angleRad;
+      }
+    } else {
+      // Reset to initial positions when paused
+      bonesRef.current.forEach((bone) => {
+        const initial = initialRotationsRef.current.get(bone.uuid);
+        if (initial) {
+          bone.rotation.copy(initial);
+        }
+      });
     }
   });
+
+  // Determine if we need to show the built-in animated limb
+  const showAnimatedLimb = bonesRef.current.length === 0;
 
   return (
     <group ref={groupRef}>
       <primitive object={scene} scale={1} />
+      
+      {/* Fallback animated limb visualization when bones not found */}
+      {showAnimatedLimb && (
+        <AnimatedLimbOverlay
+          motion={motion}
+          playing={playing}
+          onGroupRef={(ref) => { animatedGroupRef.current = ref; }}
+        />
+      )}
     </group>
   );
+};
+
+// Animated limb overlay for when bones aren't found in models
+interface AnimatedLimbOverlayProps {
+  motion: MotionDefinition;
+  playing: boolean;
+  onGroupRef: (ref: THREE.Group | null) => void;
+}
+
+const AnimatedLimbOverlay: React.FC<AnimatedLimbOverlayProps> = ({ motion, playing, onGroupRef }) => {
+  const limbRef = useRef<THREE.Group>(null);
+  
+  useEffect(() => {
+    if (limbRef.current) {
+      onGroupRef(limbRef.current);
+    }
+    return () => onGroupRef(null);
+  }, [onGroupRef]);
+
+  useFrame((state) => {
+    if (!limbRef.current || !playing) return;
+    
+    const t = state.clock.getElapsedTime();
+    const neutralDeg = motion.joint.neutralDeg || 0;
+    const targetDeg = motion.targetDeg;
+    const progress = Math.sin(t * (Math.PI / motion.duration));
+    const currentAngle = neutralDeg + (targetDeg - neutralDeg) * Math.abs(progress);
+    const angleRad = THREE.MathUtils.degToRad(currentAngle);
+    
+    const axis = motion.joint.axis;
+    limbRef.current.rotation.set(
+      axis.x * angleRad,
+      axis.y * angleRad,
+      axis.z * angleRad
+    );
+  });
+
+  // Determine visual style based on motion region
+  const getVisualization = () => {
+    const region = motion.region;
+    const jointId = motion.joint.id.toLowerCase();
+    
+    if (region === 'upper' || region === 'hand') {
+      // Arm visualization
+      return (
+        <group position={[0.8, 1.2, 0]}>
+          {/* Fixed upper segment */}
+          <mesh position={[0, 0, 0]}>
+            <capsuleGeometry args={[0.06, 0.4, 8, 16]} />
+            <meshStandardMaterial color="#64748b" transparent opacity={0.8} />
+          </mesh>
+          
+          {/* Animated segment */}
+          <group ref={limbRef} position={[0, -0.25, 0]}>
+            <mesh position={[0, -0.25, 0]}>
+              <capsuleGeometry args={[0.05, 0.4, 8, 16]} />
+              <meshStandardMaterial color="#3b82f6" transparent opacity={0.9} />
+            </mesh>
+            {/* Hand/end indicator */}
+            <mesh position={[0, -0.55, 0]}>
+              <sphereGeometry args={[0.08, 16, 16]} />
+              <meshStandardMaterial color="#60a5fa" />
+            </mesh>
+          </group>
+          
+          {/* Joint indicator */}
+          <mesh position={[0, -0.25, 0]}>
+            <sphereGeometry args={[0.07, 16, 16]} />
+            <meshStandardMaterial color="#f97316" />
+          </mesh>
+        </group>
+      );
+    }
+    
+    if (region === 'lower' || region === 'foot') {
+      // Leg visualization
+      return (
+        <group position={[0.3, 0.8, 0]}>
+          {/* Fixed upper segment (thigh) */}
+          <mesh position={[0, 0, 0]}>
+            <capsuleGeometry args={[0.08, 0.5, 8, 16]} />
+            <meshStandardMaterial color="#64748b" transparent opacity={0.8} />
+          </mesh>
+          
+          {/* Animated segment (lower leg) */}
+          <group ref={limbRef} position={[0, -0.3, 0]}>
+            <mesh position={[0, -0.3, 0]}>
+              <capsuleGeometry args={[0.06, 0.5, 8, 16]} />
+              <meshStandardMaterial color="#22c55e" transparent opacity={0.9} />
+            </mesh>
+            {/* Foot indicator */}
+            <mesh position={[0.1, -0.65, 0]} rotation={[0, 0, Math.PI / 6]}>
+              <boxGeometry args={[0.2, 0.06, 0.1]} />
+              <meshStandardMaterial color="#4ade80" />
+            </mesh>
+          </group>
+          
+          {/* Joint indicator */}
+          <mesh position={[0, -0.3, 0]}>
+            <sphereGeometry args={[0.08, 16, 16]} />
+            <meshStandardMaterial color="#f97316" />
+          </mesh>
+        </group>
+      );
+    }
+    
+    // Axial/trunk visualization
+    return (
+      <group position={[0, 1, 0]}>
+        {/* Pelvis base */}
+        <mesh position={[0, -0.3, 0]}>
+          <boxGeometry args={[0.4, 0.15, 0.2]} />
+          <meshStandardMaterial color="#64748b" transparent opacity={0.8} />
+        </mesh>
+        
+        {/* Animated spine */}
+        <group ref={limbRef} position={[0, 0, 0]}>
+          {[0, 0.15, 0.3, 0.45].map((y, i) => (
+            <mesh key={i} position={[0, y, 0]}>
+              <cylinderGeometry args={[0.06 - i * 0.01, 0.06 - i * 0.01, 0.12, 16]} />
+              <meshStandardMaterial color={i < 2 ? '#8b5cf6' : '#a78bfa'} transparent opacity={0.9} />
+            </mesh>
+          ))}
+          {/* Head indicator */}
+          <mesh position={[0, 0.65, 0]}>
+            <sphereGeometry args={[0.12, 16, 16]} />
+            <meshStandardMaterial color="#c4b5fd" />
+          </mesh>
+        </group>
+      </group>
+    );
+  };
+
+  return getVisualization();
 };
 
 // ============================================================================

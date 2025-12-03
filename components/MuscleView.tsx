@@ -53,7 +53,6 @@ const MuscleView: React.FC<MuscleViewProps> = ({ muscle, onSelectMuscle, isLearn
   const [error, setError] = useState<string | null>(null);
   const [isBannerDismissed, setIsBannerDismissed] = useState(false);
   const [showMotionPopup, setShowMotionPopup] = useState(false);
-  const [showActionPopup, setShowActionPopup] = useState(false);
   const [showAdvancedAnim, setShowAdvancedAnim] = useState(false);
   const [selectedMotion, setSelectedMotion] = useState<string | null>(null);
   const [selectedActionRef, setSelectedActionRef] = useState<string | null>(null);
@@ -66,7 +65,6 @@ const MuscleView: React.FC<MuscleViewProps> = ({ muscle, onSelectMuscle, isLearn
     // Reset banner dismissal when muscle changes
     setIsBannerDismissed(false);
     setShowMotionPopup(false);
-    setShowActionPopup(false);
     setShowAdvancedAnim(false);
     
     let mounted = true;
@@ -276,7 +274,7 @@ const MuscleView: React.FC<MuscleViewProps> = ({ muscle, onSelectMuscle, isLearn
               title="Action" 
               icon={<Play className="w-4 h-4 text-blue-600" />}
               content={content.action}
-              onSearch={() => setShowActionPopup(true)}
+              onSearch={() => setShowAdvancedAnim(true)}
               isAction={true}
               currentTheme={currentTheme}
             />
@@ -412,100 +410,6 @@ const MuscleView: React.FC<MuscleViewProps> = ({ muscle, onSelectMuscle, isLearn
         </div>
       )}
 
-      {/* Action Animation Popup (filtered to card actions) */}
-      {showActionPopup && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className={`w-full max-w-md rounded-2xl shadow-2xl overflow-hidden ${theme.cardBg} border ${theme.border} animate-in zoom-in-95 duration-200`}>
-            <div className={`p-4 border-b ${theme.border} flex items-center justify-between`}>
-              <h3 className={`font-bold ${theme.text}`}>Select Action to Animate</h3>
-              <button onClick={() => setShowActionPopup(false)} className={`p-2 rounded-full hover:bg-slate-100 ${theme.subText}`}>
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-            <div className="p-4 max-h-[60vh] overflow-y-auto custom-scrollbar">
-              <div className="grid grid-cols-1 gap-2">
-                {(() => {
-                  const actionText = content?.action || MUSCLE_DETAILS[muscle.id]?.action || '';
-                  const lines = actionText.split('\n').map(l => l.replace(/^\d+\.\s*/, '').trim());
-                  const detectMotion = (line: string): string | null => {
-                    const l = line.toLowerCase();
-                    const joint = (
-                      l.includes('shoulder') || l.includes('glenohumeral') ? 'Shoulder' :
-                      l.includes('elbow') ? 'Elbow' :
-                      l.includes('forearm') ? 'Forearm' :
-                      l.includes('hip') ? 'Hip' : null
-                    );
-                    if (l.includes('abduction')) return 'Shoulder Abduction';
-                    if (l.includes('adduction')) return 'Shoulder Adduction';
-                    if (l.includes('medial rotation') || l.includes('internal rotation')) return 'Shoulder Medial Rotation';
-                    if (l.includes('lateral rotation') || l.includes('external rotation')) return 'Shoulder Lateral Rotation';
-                    if (l.includes('supination') || l.includes('supinates')) return 'Forearm Supination';
-                    if (l.includes('pronation') || l.includes('pronates')) return 'Forearm Pronation';
-                    if (l.includes('dorsiflex')) return 'Dorsiflexion';
-                    if (l.includes('plantarflex')) return 'Plantarflexion';
-                    if (l.includes('flexion') || l.includes('flexes')) {
-                      if (joint === 'Elbow') return 'Elbow Flexion';
-                      if (joint === 'Shoulder') return 'Shoulder Flexion';
-                      if (joint === 'Hip') return 'Hip Flexion';
-                    }
-                    if (l.includes('extension') || l.includes('extends')) {
-                      if (joint === 'Elbow') return 'Elbow Extension';
-                      if (joint === 'Shoulder') return 'Shoulder Extension';
-                      if (joint === 'Hip') return 'Hip Extension';
-                    }
-                    return null;
-                  };
-                  const motions = Array.from(new Set(lines.map(detectMotion).filter(Boolean) as string[]));
-                  if (motions.length) {
-                    return motions.map(motion => (
-                      <button key={motion} onClick={() => {
-                          // find first line that maps to this motion for reference
-                          const refLine = lines.find(ln => detectMotion(ln) === motion) || null;
-                          setSelectedActionRef(refLine);
-                          setSelectedMotion(motion);
-                          setShowActionPopup(false);
-                          setShowAdvancedAnim(true);
-                        }}
-                        className={`flex items-center justify-between p-3 rounded-xl border ${theme.border} hover:border-brand-500 hover:bg-brand-50 transition-all group text-left`}>
-                        <span className={`font-medium ${theme.text} group-hover:text-brand-700`}>{motion}</span>
-                        <ArrowRight className="w-4 h-4 text-slate-300 group-hover:text-brand-500 transition-colors" />
-                      </button>
-                    ));
-                  }
-                  // Fallback: offer GIF search using the full action text and a direct 3D viewer open
-                  return (
-                    <div className="space-y-2">
-                      <div className={`p-3 rounded-xl border ${theme.border} ${theme.inputBg}`}>
-                        <p className={`text-sm ${theme.subText}`}>
-                          No precise 3D action match found. For a clearer visual, try a quick GIF search first.
-                        </p>
-                      </div>
-                      <button
-                        onClick={() => { openSearchPopup(`${muscle.name} ${actionText} animation gif`); setShowActionPopup(false); }}
-                        className={`w-full p-3 rounded-xl border ${theme.border} hover:border-brand-500 hover:bg-brand-50 text-left`}
-                      >
-                        <span className={`font-medium ${theme.text}`}>Search GIF: {muscle.name} {actionText}</span>
-                      </button>
-                      <button
-                        onClick={() => {
-                          setSelectedActionRef(actionText);
-                          setSelectedMotion('Elbow Flexion');
-                          setShowActionPopup(false);
-                          setShowAdvancedAnim(true);
-                        }}
-                        className={`w-full p-3 rounded-xl border ${theme.border} hover:border-brand-500 hover:bg-brand-50 text-left`}
-                      >
-                        <span className={`font-medium ${theme.text}`}>Open Advanced 3D Viewer</span>
-                      </button>
-                    </div>
-                  );
-                })()}
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* Advanced 3D Viewer (react-three-fiber) */}
       {showAdvancedAnim && (
         <AdvancedAnimationViewer 
@@ -514,6 +418,8 @@ const MuscleView: React.FC<MuscleViewProps> = ({ muscle, onSelectMuscle, isLearn
           currentTheme={currentTheme}
           actionString={content?.action}
           demonstrationText={content?.demonstration}
+          originString={content?.origin}
+          insertionString={content?.insertion}
           onClose={() => setShowAdvancedAnim(false)}
           browserMode={false}
         />
