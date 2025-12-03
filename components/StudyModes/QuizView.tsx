@@ -8,9 +8,10 @@ interface QuizViewProps {
   onComplete?: (score: number, total: number) => void;
   questionCount?: number; // Optional: If set, calls onComplete after this many questions
   currentTheme?: AppTheme;
+  targetMuscleId?: string; // Optional: If set, generates questions for this muscle
 }
 
-const QuizView: React.FC<QuizViewProps> = ({ onComplete, questionCount, currentTheme = 'modern' }) => {
+const QuizView: React.FC<QuizViewProps> = ({ onComplete, questionCount, currentTheme = 'modern', targetMuscleId }) => {
   const [question, setQuestion] = useState<QuizQuestion | null>(null);
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
@@ -28,7 +29,7 @@ const QuizView: React.FC<QuizViewProps> = ({ onComplete, questionCount, currentT
     }
 
     try {
-      setQuestion(generateQuizQuestion());
+      setQuestion(generateQuizQuestion(targetMuscleId));
       setSelectedOption(null);
       setIsCorrect(null);
     } catch (e) {

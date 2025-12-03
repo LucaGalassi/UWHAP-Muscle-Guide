@@ -185,7 +185,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                   className="w-full flex items-center justify-center gap-2 text-xs font-bold text-brand-700 hover:text-brand-800 py-2.5 bg-white/80 hover:bg-white border border-brand-200/50 rounded-xl shadow-sm hover:shadow transition-all backdrop-blur-sm"
                 >
                   <Save className="w-3.5 h-3.5" />
-                  Save & Share Stats
+                  Save Progress
                 </button>
               </div>
               
@@ -321,13 +321,13 @@ const Sidebar: React.FC<SidebarProps> = ({
       {/* Share Modal */}
       {showShareModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md animate-in fade-in duration-200">
-           <div className="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden transform transition-all scale-100 border border-slate-100">
+           <div className="bg-white rounded-3xl shadow-2xl w-full max-w-2xl overflow-hidden transform transition-all scale-100 border border-slate-100">
             <div className="p-4 border-b border-slate-100 flex items-center justify-between bg-gradient-to-r from-brand-50 to-blue-50">
               <div className="flex items-center gap-2">
                 <div className="bg-gradient-to-br from-brand-400 to-blue-600 p-1.5 rounded-lg shadow-sm">
                   <Share2 className="w-4 h-4 text-white" />
                 </div>
-                <h3 className="font-bold text-slate-900">Save Your Progress</h3>
+                <h3 className="font-bold text-slate-900">Save Progress</h3>
               </div>
               <button 
                 onClick={() => setShowShareModal(false)}
@@ -341,9 +341,9 @@ const Sidebar: React.FC<SidebarProps> = ({
                <div className="bg-gradient-to-r from-amber-50 to-yellow-50 p-4 rounded-xl border-2 border-amber-200 flex items-start gap-3">
                   <AlertTriangle className="w-5 h-5 text-amber-600 mt-0.5 shrink-0" />
                   <div>
-                    <p className="text-xs text-amber-900 font-bold mb-1">Privacy First!</p>
+                    <p className="text-xs text-amber-900 font-bold mb-1">No Account Required</p>
                     <p className="text-xs text-amber-800 leading-relaxed">
-                      No accounts needed. Choose a save code for notebooks or a shareable link for digital use—or both for backup.
+                      We don't store your data. Use a Save Code to backup your progress, or a Share Link to send it to another device.
                     </p>
                   </div>
                </div>

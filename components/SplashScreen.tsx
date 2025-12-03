@@ -3,9 +3,10 @@ import { Activity } from 'lucide-react';
 
 interface SplashScreenProps {
   onFinish: () => void;
+  studentName?: string;
 }
 
-const SplashScreen: React.FC<SplashScreenProps> = ({ onFinish }) => {
+const SplashScreen: React.FC<SplashScreenProps> = ({ onFinish, studentName }) => {
   const [isExiting, setIsExiting] = useState(false);
 
   useEffect(() => {
@@ -34,9 +35,15 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onFinish }) => {
         </div>
       </div>
 
-      <h1 className="relative z-10 text-4xl md:text-6xl font-black text-white tracking-tighter mb-6 animate-in slide-in-from-bottom-8 fade-in duration-1000">
+      <h1 className="relative z-10 text-4xl md:text-6xl font-black text-white tracking-tighter mb-6 animate-in slide-in-from-bottom-8 fade-in duration-1000 text-center px-4">
         <span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 via-blue-500 to-indigo-500">UWHAP</span> Muscle Guide
       </h1>
+      
+      {studentName && (
+        <div className="relative z-10 text-xl md:text-2xl font-bold text-slate-300 mb-8 animate-in fade-in slide-in-from-bottom-4 delay-300 duration-1000">
+          Welcome back, <span className="text-sky-400">{studentName}</span>
+        </div>
+      )}
       
       <div className="relative z-10 flex items-center gap-3 text-slate-400 text-xs md:text-sm font-bold uppercase tracking-[0.2em] animate-in fade-in delay-500 duration-1000">
         <Activity className="w-4 h-4 text-sky-500 animate-spin" />

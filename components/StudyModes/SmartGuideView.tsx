@@ -10,6 +10,7 @@ import { BookOpen, Brain, CheckCircle, ArrowRight, TrendingUp, Clock, Target, Re
 interface SmartGuideViewProps {
   progressMap: Record<string, MuscleProgress>;
   onUpdateProgress: (progress: MuscleProgress) => void;
+  onToggleLearned: (id: string) => void;
   apiKey: string;
   currentTheme: AppTheme;
 }
@@ -17,7 +18,7 @@ interface SmartGuideViewProps {
 type GuidePhase = 'DASHBOARD' | 'LEARN' | 'QUIZ' | 'REVIEW_CARD';
 type LearnFilter = 'ALL' | 'A' | 'B';
 
-const SmartGuideView: React.FC<SmartGuideViewProps> = ({ progressMap, onUpdateProgress, apiKey, currentTheme }) => {
+const SmartGuideView: React.FC<SmartGuideViewProps> = ({ progressMap, onUpdateProgress, onToggleLearned, apiKey, currentTheme }) => {
   const [sessionQueue, setSessionQueue] = useState<string[]>([]);
   const [currentMuscleId, setCurrentMuscleId] = useState<string | null>(null);
   const [phase, setPhase] = useState<GuidePhase>('DASHBOARD');
@@ -307,11 +308,11 @@ const SmartGuideView: React.FC<SmartGuideViewProps> = ({ progressMap, onUpdatePr
                    key={relatedMusclePopup.id}
                    muscle={relatedMusclePopup} 
                    onSelectMuscle={() => {}} 
-                   isLearned={false}
-                   toggleLearned={() => {}}
+                   isLearned={progressMap[relatedMusclePopup.id]?.status === 'MASTERED'}
+                   toggleLearned={() => onToggleLearned(relatedMusclePopup.id)}
                    apiKey={apiKey}
                    onRelatedMuscleClick={(m) => setRelatedMusclePopup(m)}
-                   currentTheme={'modern'}
+                   currentTheme={currentTheme}
                 />
              </div>
            </div>
@@ -344,11 +345,11 @@ const SmartGuideView: React.FC<SmartGuideViewProps> = ({ progressMap, onUpdatePr
                <MuscleView 
                  muscle={currentMuscle} 
                  onSelectMuscle={() => {}} 
-                 isLearned={false} 
-                 toggleLearned={() => {}} 
+                 isLearned={progressMap[currentMuscle.id]?.status === 'MASTERED'} 
+                 toggleLearned={() => onToggleLearned(currentMuscle.id)} 
                  apiKey={apiKey} 
                  onRelatedMuscleClick={(m) => setRelatedMusclePopup(m)}
-                 currentTheme={'modern'}
+                 currentTheme={currentTheme}
                />
                <div className="absolute bottom-8 right-8 z-20">
                  <button 
@@ -368,19 +369,22 @@ const SmartGuideView: React.FC<SmartGuideViewProps> = ({ progressMap, onUpdatePr
                 <QuizView 
                   questionCount={1}
                   onComplete={() => setPhase('REVIEW_CARD')} 
+                  targetMuscleId={currentMuscle.id}
+                  currentTheme={currentTheme}
                 />
               </div>
            </div>
         )}
 
         {phase === 'REVIEW_CARD' && (
-          <div className="h-full flex flex-col">
+          <div className="h-full flex flex-col perspective-1000">
              <FlashcardView 
                muscle={currentMuscle} 
                onRate={handleProgressUpdate} 
                onNext={() => {}} 
                apiKey={apiKey} 
                mode="SRS"
+               currentTheme={currentTheme}
              />
           </div>
         )}

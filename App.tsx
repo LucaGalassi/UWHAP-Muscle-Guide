@@ -439,6 +439,7 @@ const App: React.FC = () => {
             <SmartGuideView 
               progressMap={progressMap}
               onUpdateProgress={updateMuscleProgress}
+              onToggleLearned={toggleLearnedSimple}
               apiKey={apiKey}
               currentTheme={theme}
             />
@@ -451,7 +452,7 @@ const App: React.FC = () => {
   return (
     <div className={`flex flex-col h-screen overflow-hidden transition-colors duration-500 ${currentThemeConfig.appBg} relative`}>
       
-      {showSplash && <SplashScreen onFinish={() => setShowSplash(false)} />}
+      {showSplash && <SplashScreen onFinish={() => setShowSplash(false)} studentName={studentName} />}
 
       {/* Background Blobs */}
       <div className={`absolute top-[-20%] left-[-10%] w-[50%] h-[50%] rounded-full mix-blend-multiply filter blur-[100px] animate-blob ${currentThemeConfig.blobColor1} ${currentThemeConfig.blobOpacity}`}></div>
