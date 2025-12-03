@@ -526,6 +526,7 @@ const App: React.FC = () => {
           learnedCount={Object.values(progressMap).filter(p => p.status === 'MASTERED').length} 
           totalCount={MUSCLE_DATA.length} 
           currentTheme={theme}
+          stats={stats}
         />
       );
     }

@@ -265,7 +265,6 @@ const MuscleView: React.FC<MuscleViewProps> = ({ muscle, onSelectMuscle, isLearn
               title="Action" 
               icon={<Play className="w-4 h-4 text-blue-600" />}
               content={content.action}
-              className="md:col-span-1 bg-blue-50/50 border-blue-100"
               onSearch={() => setShowActionPopup(true)}
               isAction={true}
               currentTheme={currentTheme}
