@@ -90,7 +90,7 @@ const MuscleView: React.FC<MuscleViewProps> = ({ muscle, onSelectMuscle, isLearn
     const height = 800;
     const left = (window.screen.width - width) / 2;
     const top = (window.screen.height - height) / 2;
-    window.open(url, 'ImageSearch', `width=${width},height=${height},top=${top},left=${left},resizable=yes,scrollbars=yes,status=no,toolbar=no,menubar=no`);
+    window.open(url, 'ImageSearch', `width=${width},height=${height},top=${top},left=${left},resizable=yes,scrollbars=yes,status=no,toolbar=no,menubar=no,noopener,noreferrer`);
   };
 
 
@@ -251,6 +251,7 @@ const MuscleView: React.FC<MuscleViewProps> = ({ muscle, onSelectMuscle, isLearn
               onSearch={() => setShowAdvancedAnim(true)}
               isAction={true}
               currentTheme={currentTheme}
+              muscleName={muscle.name}
             />
           </div>
 
@@ -261,7 +262,7 @@ const MuscleView: React.FC<MuscleViewProps> = ({ muscle, onSelectMuscle, isLearn
                 <Activity className={`w-5 h-5 ${theme.subText}`} />
                 Demonstration
               </h3>
-              <div className={`${theme.text} leading-relaxed text-base whitespace-pre-line`}>
+              <div className={`${theme.text} leading-relaxed text-base break-words`}>
                 {content.demonstration}
               </div>
               <p className={`mt-6 text-xs font-medium flex items-center gap-1.5 p-2 rounded-lg inline-block ${
@@ -291,7 +292,7 @@ const MuscleView: React.FC<MuscleViewProps> = ({ muscle, onSelectMuscle, isLearn
                       <span className="flex-shrink-0 w-6 h-6 rounded-full bg-amber-100 text-amber-700 flex items-center justify-center text-xs font-bold">
                         {idx + 1}
                       </span>
-                      <span className="leading-relaxed pt-0.5">{tip}</span>
+                      <span className="leading-relaxed pt-0.5 break-words">{tip}</span>
                     </li>
                   ))}
                 </ul>
@@ -305,8 +306,8 @@ const MuscleView: React.FC<MuscleViewProps> = ({ muscle, onSelectMuscle, isLearn
                     <Info className="w-4 h-4" />
                     Clinical Connection
                   </h3>
-                  <div className={`p-5 ${theme.cardBg} border ${theme.border} rounded-xl shadow-sm`}>
-                    <p className={`text-sm ${theme.text} leading-relaxed`}>
+                  <div className={`p-5 ${theme.cardBg} border ${theme.border} rounded-xl shadow-sm overflow-hidden`}>
+                    <p className={`text-sm ${theme.text} leading-relaxed break-words`}>
                       {content.clinicalConnection}
                     </p>
                   </div>
@@ -378,21 +379,86 @@ interface InfoCardProps {
   onSearch: () => void;
   isAction?: boolean;
   currentTheme: AppTheme;
+  muscleName?: string;
 }
 
-const InfoCard: React.FC<InfoCardProps> = ({ title, icon, content, className, onSearch, isAction, currentTheme }) => {
+const InfoCard: React.FC<InfoCardProps> = ({ title, icon, content, className, onSearch, isAction, currentTheme, muscleName }) => {
   const theme = THEME_CONFIG[currentTheme];
+  
+  // Parse actions to extract individual movements for GIF search
+  const extractedMotions = React.useMemo(() => {
+    if (!isAction || !content) return [];
+    
+    const motionKeywords = [
+      'flexion', 'extension', 'abduction', 'adduction',
+      'rotation', 'medial rotation', 'lateral rotation',
+      'pronation', 'supination', 'dorsiflexion', 'plantarflexion',
+      'elevation', 'depression', 'protraction', 'retraction',
+      'inversion', 'eversion', 'circumduction', 'opposition'
+    ];
+    
+    const actionList = content
+      .split(/[\n;]/)
+      .map((s) => s.replace(/^\d+\.\s*/, '').trim())
+      .filter((s) => s.length > 3 && !s.match(/^\d+$/));
+    
+    const found: string[] = [];
+    actionList.forEach((action) => {
+      const lower = action.toLowerCase();
+      motionKeywords.forEach((keyword) => {
+        if (lower.includes(keyword) && !found.includes(keyword)) {
+          found.push(keyword);
+        }
+      });
+    });
+    
+    return found;
+  }, [isAction, content]);
+  
+  const openGifSearch = (motion: string) => {
+    const query = `${muscleName} ${motion} animation gif`;
+    const url = `https://www.google.com/search?tbm=isch&q=${encodeURIComponent(query)}`;
+    const width = 1000;
+    const height = 800;
+    const left = (window.screen.width - width) / 2;
+    const top = (window.screen.height - height) / 2;
+    window.open(url, 'GifSearch', `width=${width},height=${height},top=${top},left=${left},resizable=yes,scrollbars=yes,status=no,toolbar=no,menubar=no,noopener,noreferrer`);
+  };
+  
   return (
-    <div className={`p-6 rounded-2xl border ${theme.border} shadow-sm flex flex-col h-full hover:border-brand-400/50 transition-colors ${theme.cardBg} ${className}`}>
+    <div className={`p-6 rounded-2xl border ${theme.border} shadow-sm flex flex-col h-full hover:border-brand-400/50 transition-colors ${theme.cardBg} ${className} overflow-hidden`}>
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2.5">
           <div className={`p-1.5 rounded-md ${theme.inputBg}`}>{icon}</div>
           <h3 className={`font-bold ${theme.text} text-sm uppercase tracking-wide`}>{title}</h3>
         </div>
       </div>
-      <div className={`text-sm ${theme.text} leading-relaxed whitespace-pre-line flex-1 mb-4 opacity-90`}>
+      <div className={`text-sm ${theme.text} leading-relaxed break-words flex-1 mb-4 opacity-90`}>
         {content}
       </div>
+      
+      {/* GIF Search buttons for individual actions */}
+      {isAction && extractedMotions.length > 0 && (
+        <div className="mb-3">
+          <p className={`text-xs font-semibold ${theme.subText} uppercase tracking-wider mb-2 flex items-center gap-1.5`}>
+            <ImageIcon className="w-3 h-3" />
+            Quick GIF Search
+          </p>
+          <div className="flex flex-wrap gap-2">
+            {extractedMotions.map((motion, i) => (
+              <button
+                key={i}
+                onClick={() => openGifSearch(motion)}
+                className={`px-2.5 py-1.5 rounded-lg border ${theme.border} ${theme.inputBg} text-[11px] font-medium capitalize hover:border-blue-400 hover:bg-blue-50 transition-colors flex items-center gap-1.5 ${theme.text}`}
+              >
+                <Search className="w-3 h-3 text-blue-500" />
+                {motion} gif
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+      
       <button 
         onClick={onSearch}
         className={`w-full mt-auto py-2.5 px-3 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-2 active:scale-[0.98] ${
