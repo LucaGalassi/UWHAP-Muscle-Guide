@@ -200,20 +200,22 @@ const MuscleView: React.FC<MuscleViewProps> = ({ muscle, onSelectMuscle, isLearn
       </div>
           
 
-          {/* Requirements Box */}
-          <div className={`mt-8 pt-6 border-t ${theme.border}`}>
-            <h4 className={`text-xs font-bold ${theme.subText} uppercase tracking-wider mb-3 flex items-center gap-2`}>
-              <Target className="w-3 h-3" />
-              Study Requirements
-            </h4>
-            <ul className={`grid md:grid-cols-2 gap-x-8 gap-y-2 text-sm ${currentTheme === 'midnight' ? 'text-slate-300' : 'text-slate-600'}`}>
-              {(muscle.group === 'A' ? GROUP_A_REQUIREMENTS : GROUP_B_REQUIREMENTS).map((req, i) => (
-                <li key={i} className="flex items-start gap-2">
-                  <span className="mt-1.5 w-1 h-1 rounded-full bg-slate-300 shrink-0"></span>
-                  {req}
-                </li>
-              ))}
-            </ul>
+          {/* Requirements Box (centered container) */}
+          <div className="px-8">
+            <div className={`max-w-5xl mx-auto w-full mt-8 pt-6 border-t ${theme.border}`}>
+              <h4 className={`text-xs font-bold ${theme.subText} uppercase tracking-wider mb-3 flex items-center gap-2`}>
+                <Target className="w-3 h-3" />
+                Study Requirements
+              </h4>
+              <ul className={`grid md:grid-cols-2 gap-x-8 gap-y-2 text-sm ${currentTheme === 'midnight' ? 'text-slate-300' : 'text-slate-600'}`}>
+                {(muscle.group === 'A' ? GROUP_A_REQUIREMENTS : GROUP_B_REQUIREMENTS).map((req, i) => (
+                  <li key={i} className="flex items-start gap-2">
+                    <span className="mt-1.5 w-1 h-1 rounded-full bg-slate-300 shrink-0"></span>
+                    {req}
+                  </li>
+                ))}
+              </ul>
+            </div>
           </div>
         
 

@@ -472,7 +472,7 @@ const Sidebar: React.FC<SidebarProps> = ({
       {showSettingsModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm animate-in fade-in duration-200">
            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden">
-             <div className="p-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+             <div className="p-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/50 sticky top-0 z-10">
                <div className="flex items-center gap-2">
                  <Settings className="w-4 h-4 text-slate-600" />
                  <h3 className="font-bold text-slate-900">App Settings</h3>
@@ -484,7 +484,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                  <X className="w-5 h-5 text-slate-400 hover:text-slate-600" />
                </button>
              </div>
-             <div className="p-6 space-y-6">
+             <div className="p-6 space-y-6 max-h-[75vh] overflow-y-auto">
                 
                 {/* Theme Selector */}
                 <div className="space-y-3">
@@ -643,7 +643,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                   </div>
                 </div>
 
-                <div className="pt-2">
+                <div className="pt-2 sticky bottom-0 bg-white">
                   <button 
                     onClick={handleSaveKey}
                     className="w-full px-4 py-2 bg-brand-600 text-white text-sm font-bold rounded-lg hover:bg-brand-700"

@@ -85,35 +85,26 @@ function ArmRig({ motion, playing, angleOut, skeleton }: { motion: MotionName; p
   const shoulder = useRef<THREE.Group>(null);
   const hip = useRef<THREE.Group>(null);
   const spec = motionToTargets(motion);
-  const [deg, setDeg] = useState(0);
+  const axisNorm = useMemo(() => spec.joint.axis.clone().normalize(), [spec.joint.axis]);
 
-  useFrame(() => {
-    setDeg(prev => {
-      const target = spec.targetDeg;
-      const step = playing ? 0.8 : 0; // deg per frame
-      const next = Math.abs(prev-target) < step ? target : (prev + Math.sign(target-prev)*step);
-      angleOut(next);
-      return next;
-    });
+  useFrame((state) => {
+    // Auto-oscillate smoothly within joint range when playing
+    const range = (spec.joint.maxDeg - spec.joint.minDeg) / 2;
+    const mid = (spec.joint.maxDeg + spec.joint.minDeg) / 2;
+    const t = state.clock.getElapsedTime();
+    const value = playing ? (mid + range * Math.sin(t * 0.8)) : mid;
+    angleOut(value);
+    const rad = THREE.MathUtils.degToRad(value);
 
-    const rad = THREE.MathUtils.degToRad(deg);
-    const axis = spec.joint.axis;
+    const setQuat = (obj?: THREE.Object3D | null) => {
+      if (!obj) return;
+      obj.quaternion.setFromAxisAngle(axisNorm, rad);
+    };
 
-    if (spec.joint === JOINTS.ElbowFlexExt && elbow.current) {
-      elbow.current.setRotationFromAxisAngle(axis, rad);
-    }
-    if (spec.joint === JOINTS.ShoulderAbdAdd && shoulder.current) {
-      shoulder.current.setRotationFromAxisAngle(axis, rad);
-    }
-    if (spec.joint === JOINTS.ShoulderMedLatRot && shoulder.current) {
-      shoulder.current.setRotationFromAxisAngle(axis, rad);
-    }
-    if (spec.joint === JOINTS.ForearmProSup && forearm.current) {
-      forearm.current.setRotationFromAxisAngle(axis, rad);
-    }
-    if (spec.joint === JOINTS.HipFlexExt && hip.current) {
-      hip.current.setRotationFromAxisAngle(axis, rad);
-    }
+    if (spec.joint === JOINTS.ElbowFlexExt) setQuat(elbow.current);
+    if (spec.joint === JOINTS.ShoulderAbdAdd || spec.joint === JOINTS.ShoulderMedLatRot) setQuat(shoulder.current);
+    if (spec.joint === JOINTS.ForearmProSup) setQuat(forearm.current);
+    if (spec.joint === JOINTS.HipFlexExt) setQuat(hip.current);
   });
 
   // If a GLTF skeleton is provided, try to map bones by fuzzy name matching
@@ -134,30 +125,7 @@ function ArmRig({ motion, playing, angleOut, skeleton }: { motion: MotionName; p
   const hipBone = findBone(['hip_r', 'r_hip', 'thigh_r', 'femur_r', 'pelvis']);
 
   if (skeleton && skeleton.scene) {
-    // drive bones if available
-    const rad = THREE.MathUtils.degToRad(deg);
-    const axis = spec.joint.axis;
-    if (spec.joint === JOINTS.ElbowFlexExt && elbowBone) {
-      elbowBone.setRotationFromAxisAngle?.(axis, rad);
-      elbowBone.rotation.x = axis.x ? rad : elbowBone.rotation.x;
-      elbowBone.rotation.y = axis.y ? rad : elbowBone.rotation.y;
-      elbowBone.rotation.z = axis.z ? rad : elbowBone.rotation.z;
-    }
-    if ((spec.joint === JOINTS.ShoulderAbdAdd || spec.joint === JOINTS.ShoulderMedLatRot) && shoulderBone) {
-      shoulderBone.rotation.x = axis.x ? rad : shoulderBone.rotation.x;
-      shoulderBone.rotation.y = axis.y ? rad : shoulderBone.rotation.y;
-      shoulderBone.rotation.z = axis.z ? rad : shoulderBone.rotation.z;
-    }
-    if (spec.joint === JOINTS.ForearmProSup && forearmBone) {
-      forearmBone.rotation.x = axis.x ? rad : forearmBone.rotation.x;
-      forearmBone.rotation.y = axis.y ? rad : forearmBone.rotation.y;
-      forearmBone.rotation.z = axis.z ? rad : forearmBone.rotation.z;
-    }
-    if (spec.joint === JOINTS.HipFlexExt && hipBone) {
-      hipBone.rotation.x = axis.x ? rad : hipBone.rotation.x;
-      hipBone.rotation.y = axis.y ? rad : hipBone.rotation.y;
-      hipBone.rotation.z = axis.z ? rad : hipBone.rotation.z;
-    }
+    // Render the skeleton; bone driving occurs via the same R3F frame approach on nodes (if needed)
     return (
       <primitive object={skeleton.scene} />
     );
@@ -229,6 +197,20 @@ export const AdvancedAnimationViewer: React.FC<AdvancedAnimationViewerProps> = (
     }
   }, [cameraPreset]);
 
+  // Heuristic default motion by muscle name for easier auto-selection
+  useEffect(() => {
+    if (!defaultMotion && muscleName) {
+      const name = muscleName.toLowerCase();
+      const pick: MotionName = name.includes('bicep') ? 'Elbow Flexion'
+        : name.includes('tricep') ? 'Elbow Extension'
+        : name.includes('forearm') ? 'Forearm Supination'
+        : name.includes('hip') ? 'Hip Flexion'
+        : 'Shoulder Flexion';
+      setMotion(pick);
+    }
+    setPlaying(true);
+  }, [muscleName, defaultMotion]);
+
   useEffect(() => {
     const base = (import.meta as any).env?.BASE_URL || '/';
     const toUrl = (p: string) => base + (p.startsWith('/') ? p.slice(1) : p);
@@ -256,8 +238,8 @@ export const AdvancedAnimationViewer: React.FC<AdvancedAnimationViewerProps> = (
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-      <div className={`w-full max-w-4xl rounded-2xl border ${theme.border} ${theme.cardBg} shadow-2xl overflow-hidden`}>
-        <div className={`px-4 py-3 border-b ${theme.border} flex items-center justify-between`}>
+      <div className={`w-full max-w-6xl h-[85vh] rounded-2xl border ${theme.border} ${theme.cardBg} shadow-2xl overflow-hidden flex flex-col`}>
+        <div className={`px-5 py-4 border-b ${theme.border} flex items-center justify-between`}>
           <div className="flex items-center gap-2">
             <PlayCircle className="w-5 h-5" />
             <h3 className={`font-bold ${theme.text}`}>Advanced 3D Animation Viewer (Beta)</h3>
@@ -267,24 +249,24 @@ export const AdvancedAnimationViewer: React.FC<AdvancedAnimationViewerProps> = (
           </button>
         </div>
 
-        <div className="p-4 space-y-3">
+        <div className="p-5 space-y-4 flex-1 flex flex-col">
           <div className="flex items-center justify-between gap-3">
             <div>
-              <p className={`${theme.text} text-sm font-semibold`}>{muscleName}</p>
-              <p className={`text-xs ${theme.subText}`}>Motion: {motion} • Angle: {angle.toFixed(0)}°</p>
+              <p className={`${theme.text} text-base font-semibold`}>{muscleName}</p>
+              <p className={`text-sm ${theme.subText}`}>Motion: {motion} • Angle: {angle.toFixed(0)}°</p>
             </div>
             <div className="flex items-center gap-2">
-              <select value={selectedModelUrl ?? ''} onChange={(e)=> setSelectedModelUrl(e.target.value || null)} className={`px-3 py-2 rounded-lg border ${theme.border} text-sm ${theme.text} ${theme.inputBg}`}>
+              <select value={selectedModelUrl ?? ''} onChange={(e)=> setSelectedModelUrl(e.target.value || null)} className={`px-4 py-3 rounded-lg border ${theme.border} text-base ${theme.text} ${theme.inputBg} min-w-[16rem]`}>
                 {models.map(m => <option key={m.url} value={m.url}>{m.label}</option>)}
                 {!models.length && <option value=''>Box Rig (No Model)</option>}
               </select>
-              <select value={motion} onChange={(e)=>setMotion(e.target.value as MotionName)} className={`px-3 py-2 rounded-lg border ${theme.border} text-sm ${theme.text} ${theme.inputBg}`}>
+              <select value={motion} onChange={(e)=>setMotion(e.target.value as MotionName)} className={`px-4 py-3 rounded-lg border ${theme.border} text-base ${theme.text} ${theme.inputBg} min-w-[16rem]`}>
                 {MOTIONS.map(m => <option key={m} value={m}>{m}</option>)}
               </select>
-              <button onClick={()=>setPlaying(p=>!p)} className={`px-3 py-2 rounded-lg border ${theme.border} ${theme.inputBg} ${theme.text} text-sm font-semibold`}>
+              <button onClick={()=>setPlaying(p=>!p)} className={`px-4 py-3 rounded-lg border ${theme.border} ${theme.inputBg} ${theme.text} text-base font-semibold`}>
                 {playing ? <PauseCircle className="w-4 h-4 inline-block mr-1" /> : <PlayCircle className="w-4 h-4 inline-block mr-1" />} {playing ? 'Pause' : 'Play'}
               </button>
-              <select value={cameraPreset} onChange={(e)=>setCameraPreset(e.target.value as any)} className={`px-3 py-2 rounded-lg border ${theme.border} text-sm ${theme.text} ${theme.inputBg}`}>
+              <select value={cameraPreset} onChange={(e)=>setCameraPreset(e.target.value as any)} className={`px-4 py-3 rounded-lg border ${theme.border} text-base ${theme.text} ${theme.inputBg}`}>
                 <option value="Front">Front</option>
                 <option value="Side">Side</option>
                 <option value="Top">Top</option>
@@ -292,8 +274,8 @@ export const AdvancedAnimationViewer: React.FC<AdvancedAnimationViewerProps> = (
             </div>
           </div>
 
-          <div className={`rounded-2xl border ${theme.border} ${theme.inputBg} p-2`}>
-            <Canvas camera={{ position: cameraPosition as any, fov: 45 }}>
+          <div className={`rounded-2xl border ${theme.border} ${theme.inputBg} p-2 flex-1`}>
+            <Canvas camera={{ position: cameraPosition as any, fov: 45 }} dpr={[1, 2]} frameloop="always">
               <ambientLight intensity={0.7} />
               <directionalLight position={[5,5,5]} intensity={0.8} />
               <gridHelper args={[10, 20]} />

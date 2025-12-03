@@ -5,18 +5,24 @@ interface SplashScreenProps {
   onFinish: () => void;
   studentName?: string;
   hasSavedSession?: boolean;
+  autoResume?: boolean;
   onResume?: () => void;
   onReset?: () => void;
   onImport?: (input: string) => void;
 }
 
-const SplashScreen: React.FC<SplashScreenProps> = ({ onFinish, studentName, hasSavedSession=false, onResume, onReset, onImport }) => {
+const SplashScreen: React.FC<SplashScreenProps> = ({ onFinish, studentName, hasSavedSession=false, autoResume=false, onResume, onReset, onImport }) => {
   const [isExiting, setIsExiting] = useState(false);
   const [showPrompt, setShowPrompt] = useState(false);
   const [importValue, setImportValue] = useState('');
 
   useEffect(() => {
     if (hasSavedSession) {
+      if (autoResume) {
+        // brief pause for visual continuity
+        const t = setTimeout(() => { setIsExiting(true); setTimeout(() => { onResume?.(); onFinish(); }, 300); }, 400);
+        return () => clearTimeout(t);
+      }
       setShowPrompt(true);
       return;
     }

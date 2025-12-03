@@ -127,8 +127,7 @@ const App: React.FC = () => {
 
   // Welcome Modal State
   const [showWelcome, setShowWelcome] = useState(true);
-  // Resume prompt (new tab) state
-  const [showResumePrompt, setShowResumePrompt] = useState(false);
+  // Resume prompt moved into SplashScreen
   
   // Splash Screen State
   const [showSplash, setShowSplash] = useState(true);
@@ -227,19 +226,8 @@ const App: React.FC = () => {
       setHideSplashAlways(_hideSplash === '1');
     } catch {}
 
-    // Splash should only show once per tab session or never if user disabled
-    try {
-      if (hideSplashAlways) {
-        setShowSplash(false);
-      } else {
-        const seen = sessionStorage.getItem('splash_seen');
-        if (seen === '1') {
-          setShowSplash(false);
-        } else {
-        sessionStorage.setItem('splash_seen', '1');
-        }
-      }
-    } catch {}
+    // Splash: show unless user disabled in settings
+    setShowSplash(!hideSplashAlways);
 
     // Welcome dialog: honor prior dismissal
     try {
@@ -298,22 +286,7 @@ const App: React.FC = () => {
       parseUrlParams(window.location.search);
     }
 
-    // 6. If we have existing progress/theme/name and this is a fresh tab, offer resume prompt (or auto-resume if enabled)
-    try {
-      const hasProgress = !!localStorage.getItem('srs_progress');
-      const hasName = !!localStorage.getItem('student_name');
-      const hasTheme = !!localStorage.getItem('app_theme');
-      const promptShown = sessionStorage.getItem('resume_prompt_shown') === '1';
-      if (!promptShown && (hasProgress || hasName || hasTheme)) {
-        if (autoResume) {
-          setShowWelcome(false);
-          sessionStorage.setItem('resume_prompt_shown', '1');
-        } else {
-          setShowResumePrompt(true);
-          sessionStorage.setItem('resume_prompt_shown', '1');
-        }
-      }
-    } catch {}
+    // 6. Resume prompt handled on SplashScreen
 
     // 7. Stats: load, bump session count
     try {
@@ -580,7 +553,38 @@ const App: React.FC = () => {
   return (
     <div className={`flex flex-col h-screen overflow-hidden transition-colors duration-500 ${currentThemeConfig.appBg} relative`}>
       
-      {showSplash && <SplashScreen onFinish={() => setShowSplash(false)} studentName={studentName} />}
+      {showSplash && (
+        <SplashScreen 
+          onFinish={() => setShowSplash(false)} 
+          studentName={studentName}
+          hasSavedSession={!!(localStorage.getItem('srs_progress') || localStorage.getItem('student_name') || localStorage.getItem('app_theme'))}
+          autoResume={autoResume}
+          onResume={() => {
+            // State already loaded from localStorage
+            setShowWelcome(false);
+          }}
+          onReset={() => {
+            try {
+              localStorage.removeItem('srs_progress');
+              localStorage.removeItem('student_name');
+              localStorage.removeItem('app_theme');
+              localStorage.removeItem('user_gemini_key');
+              localStorage.removeItem('welcome_dismissed');
+            } catch {}
+            setProgressMap({});
+            setStudentName('');
+            setTheme('modern');
+            setApiKey('');
+            setShowWelcome(true);
+          }}
+          onImport={(input) => {
+            try {
+              handleResumeData(input);
+              setShowWelcome(false);
+            } catch {}
+          }}
+        />
+      )}
 
       {/* Background Blobs */}
       <div className={`absolute top-[-20%] left-[-10%] w-[50%] h-[50%] rounded-full mix-blend-multiply filter blur-[100px] animate-blob ${currentThemeConfig.blobColor1} ${currentThemeConfig.blobOpacity}`}></div>
@@ -644,34 +648,7 @@ const App: React.FC = () => {
         <main className="flex-1 relative w-full h-full flex flex-col">
           {renderMainContent()}
 
-          {/* Resume prior session prompt (new tab) */}
-          {showResumePrompt && (
-            <div className="fixed bottom-6 right-6 z-50 max-w-sm">
-              <div className={`rounded-2xl shadow-xl border ${currentThemeConfig.border} ${currentThemeConfig.cardBg} p-4`}> 
-                <div className="flex items-start gap-3">
-                  <div className="shrink-0 w-2 h-2 rounded-full bg-emerald-500 mt-2" />
-                  <div className="flex-1">
-                    <div className={`text-sm font-bold ${currentThemeConfig.text}`}>Found a previous session</div>
-                    <div className={`text-xs mt-1 ${currentThemeConfig.subText}`}>You have saved preferences and study progress in this browser. Load them now?</div>
-                    <div className="mt-3 flex gap-2">
-                      <button
-                        onClick={() => setShowResumePrompt(false)}
-                        className="px-3 py-1.5 text-xs rounded-lg border border-slate-200 hover:bg-slate-50"
-                      >Dismiss</button>
-                      <button
-                        onClick={() => { 
-                          // State is already loaded from localStorage at startup; this button simply hides prompt.
-                          setShowResumePrompt(false);
-                          setShowWelcome(false);
-                        }}
-                        className="px-3 py-1.5 text-xs rounded-lg bg-emerald-600 text-white hover:bg-emerald-700"
-                      >Load</button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
+          {/* Resume prompt now handled on SplashScreen */}
         </main>
       </div>
     </div>
