@@ -249,15 +249,6 @@ const WelcomeModal: React.FC<WelcomeModalProps> = ({ onDismiss, onResume, daysUn
                 <p className="text-blue-100 text-sm font-medium mt-1">UW Health RN Apprenticeship Edition</p>
               </div>
             </div>
-            
-            {/* Exam Countdown Badge */}
-            <div className="inline-flex items-center gap-3 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-4 py-2 mt-2">
-              <Timer className="w-4 h-4 text-red-300" />
-              <div>
-                <div className="text-[10px] font-bold text-blue-100 uppercase tracking-wider">Final Exam: Monday, Dec 8</div>
-                <div className="text-xl font-black text-white">{daysUntilExam} Days Remaining</div>
-              </div>
-            </div>
           </div>
         </div>
 
