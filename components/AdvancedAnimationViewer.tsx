@@ -8,7 +8,6 @@ import {
   Activity,
   ExternalLink,
   BookOpen,
-  Zap,
   Filter,
   PlayCircle,
   Brain,
@@ -16,7 +15,6 @@ import {
 } from 'lucide-react';
 import { AppTheme } from '../types';
 import { THEME_CONFIG } from '../constants';
-import { extractMotionKeywords, ACTION_SPLIT_PATTERN } from '../utils/motionParser';
 import {
   MotionDefinition,
   MOTIONS,
@@ -95,19 +93,6 @@ const AdvancedAnimationViewer: React.FC<AdvancedAnimationViewerProps> = ({
       return matchesRegion && matchesSearch;
     });
   }, [availableMotions, regionFilter, searchTerm]);
-
-  const actionList = useMemo(() => {
-    if (!actionString) return [];
-    return actionString
-      .split(ACTION_SPLIT_PATTERN)
-      .map((s) => s.replace(/^\d+\.\s*/, '').trim())
-      .filter((s) => s.length > 3 && !s.match(/^\d+$/));
-  }, [actionString]);
-
-  const extractedMotions = useMemo(() => {
-    if (!actionString) return [];
-    return extractMotionKeywords(actionString, 8);
-  }, [actionString]);
 
   const overlayBg =
     currentTheme === 'midnight' || currentTheme === 'blueprint'
@@ -360,41 +345,48 @@ const AdvancedAnimationViewer: React.FC<AdvancedAnimationViewerProps> = ({
                       </button>
                     </div>
 
-                    {/* Individual motion shortcuts */}
-                    {extractedMotions.length > 0 && (
-                      <div className={`p-3 rounded-lg border ${theme.border} ${theme.infoBox}`}>
-                        <p className={`text-[11px] uppercase tracking-wider ${theme.subText} mb-2`}>Quick Search by Motion</p>
-                        <div className="flex flex-wrap gap-2">
-                          {extractedMotions.map((motion, i) => (
-                            <button
-                              key={i}
-                              onClick={() =>
-                                window.open(
-                                  `https://www.google.com/search?tbm=isch&q=${encodeURIComponent(`${muscleName} ${motion} medical animation gif`)}`,
-                                  '_blank'
-                                )
-                              }
-                              className={`px-3 py-1.5 rounded-full border ${theme.border} ${theme.cardBg} text-xs font-medium capitalize hover:border-brand-400 hover:bg-brand-50 transition-colors flex items-center gap-1.5 ${theme.text}`}
-                            >
-                              <Zap className="w-3 h-3 text-amber-500 flex-shrink-0" />
-                              <span className="truncate">{motion}</span>
-                            </button>
-                          ))}
-                          <button
-                            onClick={() =>
-                              window.open(
-                                `https://www.google.com/search?tbm=isch&q=${encodeURIComponent(`${muscleName} muscle action medical animation gif`)}`,
-                                '_blank'
-                              )
-                            }
-                            className={`px-3 py-1.5 rounded-full border ${theme.border} ${theme.cardBg} text-xs font-medium hover:border-emerald-400 hover:bg-emerald-50 transition-colors flex items-center gap-1.5 ${theme.text}`}
-                          >
-                            <Activity className="w-3 h-3 text-emerald-500 flex-shrink-0" />
-                            All motions
-                          </button>
-                        </div>
+                    {/* YouTube Animation Search */}
+                    <div className={`p-3 rounded-lg border ${theme.border} ${theme.infoBox}`}>
+                      <p className={`text-[11px] uppercase tracking-wider ${theme.subText} mb-2`}>YouTube Animation Search</p>
+                      <div className="grid grid-cols-3 gap-2">
+                        <button
+                          onClick={() =>
+                            window.open(
+                              `https://www.youtube.com/results?search_query=${encodeURIComponent(`${muscleName} muscle anatomy animation`)}`,
+                              '_blank'
+                            )
+                          }
+                          className={`px-3 py-2.5 rounded-lg border ${theme.border} ${theme.cardBg} text-xs font-medium hover:border-red-400 hover:bg-red-50/50 transition-colors flex flex-col items-center justify-center gap-1.5 ${theme.text}`}
+                        >
+                          <ExternalLink className="w-4 h-4 text-red-500 flex-shrink-0" />
+                          <span className="truncate text-center">{browserMode ? 'Selected Motion' : muscleName}</span>
+                        </button>
+                        <button
+                          onClick={() =>
+                            window.open(
+                              `https://www.youtube.com/results?search_query=${encodeURIComponent(`${selectedMotion.displayName} anatomy tutorial`)}`,
+                              '_blank'
+                            )
+                          }
+                          className={`px-3 py-2.5 rounded-lg border ${theme.border} ${theme.cardBg} text-xs font-medium hover:border-red-400 hover:bg-red-50/50 transition-colors flex flex-col items-center justify-center gap-1.5 ${theme.text}`}
+                        >
+                          <PlayCircle className="w-4 h-4 text-red-500 flex-shrink-0" />
+                          <span className="truncate text-center">{selectedMotion.displayName}</span>
+                        </button>
+                        <button
+                          onClick={() =>
+                            window.open(
+                              `https://www.youtube.com/results?search_query=${encodeURIComponent(`${selectedMotion.joint.name} movements anatomy`)}`,
+                              '_blank'
+                            )
+                          }
+                          className={`px-3 py-2.5 rounded-lg border ${theme.border} ${theme.cardBg} text-xs font-medium hover:border-red-400 hover:bg-red-50/50 transition-colors flex flex-col items-center justify-center gap-1.5 ${theme.text}`}
+                        >
+                          <Activity className="w-4 h-4 text-red-500 flex-shrink-0" />
+                          <span className="truncate text-center">{selectedMotion.joint.name}</span>
+                        </button>
                       </div>
-                    )}
+                    </div>
                   </div>
                 </section>
 
