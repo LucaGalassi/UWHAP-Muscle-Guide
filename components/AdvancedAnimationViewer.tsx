@@ -69,6 +69,7 @@ const AdvancedAnimationViewer: React.FC<AdvancedAnimationViewerProps> = ({
   );
   const [regionFilter, setRegionFilter] = useState<string>('all');
   const [searchTerm, setSearchTerm] = useState<string>('');
+  const [activeTab, setActiveTab] = useState<'actions' | 'guides'>('actions');
 
   useEffect(() => {
     if (!initialMotionId) return;
@@ -241,6 +242,33 @@ const AdvancedAnimationViewer: React.FC<AdvancedAnimationViewerProps> = ({
           </aside>
 
           <div className="flex-1 overflow-y-auto p-6 space-y-6 custom-scrollbar min-h-0">
+            {/* Tab Navigation */}
+            <div className="flex items-center gap-2 mb-4">
+              <button
+                onClick={() => setActiveTab('actions')}
+                className={`px-6 py-3 rounded-xl font-bold text-sm transition-all flex items-center gap-2 ${
+                  activeTab === 'actions'
+                    ? 'bg-brand-500 text-white shadow-lg'
+                    : `${theme.cardBg} ${theme.text} border ${theme.border} hover:border-brand-400`
+                }`}
+              >
+                <span className="flex items-center justify-center w-6 h-6 rounded-full bg-white/20 font-bold">1</span>
+                Muscle Actions
+              </button>
+              <button
+                onClick={() => setActiveTab('guides')}
+                className={`px-6 py-3 rounded-xl font-bold text-sm transition-all flex items-center gap-2 ${
+                  activeTab === 'guides'
+                    ? 'bg-brand-500 text-white shadow-lg'
+                    : `${theme.cardBg} ${theme.text} border ${theme.border} hover:border-brand-400`
+                }`}
+              >
+                <span className="flex items-center justify-center w-6 h-6 rounded-full bg-white/20 font-bold">2</span>
+                Study Guides
+              </button>
+            </div>
+
+            {/* Selected Motion Info (Always visible) */}
             <section className={`rounded-xl border ${theme.border} ${theme.cardBg} p-4 shadow-sm overflow-hidden`}>
               <div className="flex items-start justify-between gap-4 flex-wrap">
                 <div className="flex-1 min-w-0">
@@ -262,301 +290,329 @@ const AdvancedAnimationViewer: React.FC<AdvancedAnimationViewerProps> = ({
                     </span>
                   </div>
                 </div>
-                <div className="flex flex-col gap-2 w-full md:w-64">
-                  <button
-                    onClick={() => {
-                      const query = generateGifSearchQuery(muscleId || '', muscleName, selectedMotion.id);
-                      window.open(
-                        `https://www.google.com/search?tbm=isch&q=${encodeURIComponent(query + ' animation gif')}`,
-                        '_blank'
-                      );
-                    }}
-                    className="w-full px-4 py-3 rounded-lg bg-brand-500 text-white font-semibold flex items-center justify-center gap-2 hover:bg-brand-600 transition-colors"
-                  >
-                    <PlayCircle className="w-5 h-5" />
-                    Search GIF/animation
-                  </button>
-                  <button
-                    onClick={() =>
-                      window.open(
-                        `https://www.youtube.com/results?search_query=${encodeURIComponent(
-                          `${selectedMotion.displayName} motion anatomy`
-                        )}`,
-                        '_blank'
-                      )
-                    }
-                    className={`w-full px-4 py-3 rounded-lg border ${theme.border} ${theme.cardBg} ${theme.text} font-semibold flex items-center justify-center gap-2 hover:border-brand-400 transition-colors`}
-                  >
-                    <ExternalLink className="w-4 h-4" />
-                    Watch videos
-                  </button>
-                </div>
               </div>
             </section>
 
-            <section className="grid md:grid-cols-2 gap-4">
-              <div className={`p-4 rounded-xl border ${theme.border} ${theme.infoBox} overflow-hidden`}>
-                <p className={`text-[11px] uppercase tracking-wider ${theme.subText} flex items-center gap-2 mb-2`}>
-                  <MapPin className="w-4 h-4" />
-                  Anatomy Images
-                </p>
-                  <div className="flex flex-wrap gap-2">
-                    <button
-                      onClick={() =>
-                        window.open(
-                          `https://www.google.com/search?tbm=isch&q=${encodeURIComponent(
-                          `${muscleName} muscle origin anatomy diagram`
-                        )}`,
-                        '_blank'
-                      )
-                    }
-                      className={`px-3 py-2 rounded-lg border ${theme.border} ${theme.cardBg} text-xs font-medium hover:border-emerald-400 transition-colors ${theme.text} overflow-hidden`}
-                  >
-                    <span className="text-blue-600 font-semibold truncate">Origin</span>
-                  </button>
-                    <button
-                      onClick={() =>
-                        window.open(
-                          `https://www.google.com/search?tbm=isch&q=${encodeURIComponent(
-                          `${muscleName} muscle insertion anatomy diagram`
-                        )}`,
-                        '_blank'
-                      )
-                    }
-                      className={`px-3 py-2 rounded-lg border ${theme.border} ${theme.cardBg} text-xs font-medium hover:border-rose-400 transition-colors ${theme.text} overflow-hidden`}
-                  >
-                    <span className="text-rose-600 font-semibold truncate">Insertion</span>
-                  </button>
-                  <button
-                    onClick={() =>
-                      window.open(
-                        `https://www.google.com/search?tbm=isch&q=${encodeURIComponent(
-                          `${muscleName} muscle anatomy labeled diagram`
-                        )}`,
-                        '_blank'
-                      )
-                    }
-                    className={`px-3 py-2 rounded-lg border ${theme.border} ${theme.cardBg} text-xs font-medium hover:border-brand-400 transition-colors ${theme.text} overflow-hidden`}
-                  >
-                    <span className="truncate">Labeled diagram</span>
-                  </button>
-                </div>
-              </div>
+            {/* Tab 1: Muscle Actions - GIF Search focused */}
+            {activeTab === 'actions' && (
+              <>
+                {/* Study Requirements (Priority) */}
+                {!browserMode && (actionString || demonstrationText) && (
+                  <section className={`p-5 rounded-xl border-2 ${theme.border} ${theme.cardBg} space-y-4`}>
+                    <div className="flex items-center gap-2">
+                      <Info className="w-5 h-5 text-blue-500" />
+                      <p className={`text-base font-bold ${theme.text}`}>Study Requirements</p>
+                    </div>
+                    {actionString && (
+                      <div className={`p-4 rounded-lg border ${theme.border} ${theme.infoBox} overflow-hidden`}>
+                        <p className="text-xs font-bold text-blue-600 uppercase tracking-wider mb-2">Required Actions</p>
+                        <p className={`text-sm leading-relaxed ${theme.text} break-words`}>{actionString}</p>
+                      </div>
+                    )}
+                    {demonstrationText && (
+                      <div className={`p-4 rounded-lg border ${theme.border} ${theme.infoBox} overflow-hidden`}>
+                        <p className="text-xs font-bold text-emerald-600 uppercase tracking-wider mb-2">Demonstration</p>
+                        <p className={`text-sm leading-relaxed ${theme.text} break-words`}>{demonstrationText}</p>
+                      </div>
+                    )}
+                  </section>
+                )}
 
-              <div className={`p-4 rounded-xl border ${theme.border} ${theme.infoBox} overflow-hidden`}>
-                <p className={`text-[11px] uppercase tracking-wider ${theme.subText} flex items-center gap-2 mb-2`}>
-                  <Activity className="w-4 h-4" />
-                  Motion GIF Shortcuts
-                </p>
-                <div className="flex flex-wrap gap-2">
-                  {extractedMotions.length === 0 ? (
+                {/* GIF Search Section */}
+                <section className={`rounded-xl border ${theme.border} ${theme.cardBg} p-5 shadow-sm`}>
+                  <div className="flex items-center gap-2 mb-4">
+                    <PlayCircle className="w-5 h-5 text-brand-500" />
+                    <p className={`text-base font-bold ${theme.text}`}>Quick GIF Search</p>
+                  </div>
+                  
+                  {/* Primary Search Button */}
+                  <div className="mb-4">
                     <button
-                      onClick={() =>
+                      onClick={() => {
+                        const query = generateGifSearchQuery(muscleId || '', muscleName, selectedMotion.id);
                         window.open(
-                          `https://www.google.com/search?tbm=isch&q=${encodeURIComponent(`${muscleName} muscle action animation gif`)}`,
+                          `https://www.google.com/search?tbm=isch&q=${encodeURIComponent(query + ' animation gif')}`,
                           '_blank'
-                        )
-                      }
-                      className={`px-3 py-2 rounded-lg border ${theme.border} ${theme.cardBg} text-xs font-medium hover:border-brand-400 hover:bg-blue-50 transition-colors flex items-center gap-2 ${theme.text}`}
+                        );
+                      }}
+                      className="w-full px-5 py-4 rounded-xl bg-gradient-to-r from-brand-500 to-blue-600 text-white font-bold text-base flex items-center justify-center gap-3 hover:shadow-xl transition-all"
                     >
-                      <Search className="w-4 h-4 text-brand-500" />
-                      Search all muscle actions
+                      <PlayCircle className="w-6 h-6" />
+                      Search {selectedMotion.displayName} GIF/Animation
                     </button>
-                  ) : (
-                    <>
-                      {/* Individual motion searches */}
-                      {extractedMotions.map((motion, i) => (
+                  </div>
+
+                  {/* Individual Motion GIF Shortcuts */}
+                  <div className={`p-4 rounded-xl border ${theme.border} ${theme.infoBox} overflow-hidden`}>
+                    <p className={`text-xs uppercase tracking-wider ${theme.subText} flex items-center gap-2 mb-3`}>
+                      <Activity className="w-4 h-4" />
+                      Motion-Specific GIF Search
+                    </p>
+                    <div className="flex flex-wrap gap-2">
+                      {extractedMotions.length === 0 ? (
                         <button
-                          key={i}
                           onClick={() =>
                             window.open(
-                              `https://www.google.com/search?tbm=isch&q=${encodeURIComponent(`${muscleName} ${motion} animation gif`)}`,
+                              `https://www.google.com/search?tbm=isch&q=${encodeURIComponent(`${muscleName} muscle action animation gif`)}`,
                               '_blank'
                             )
                           }
-                          className={`px-3 py-2 rounded-full border ${theme.border} ${theme.cardBg} text-[11px] font-medium capitalize hover:border-brand-400 transition-colors flex items-center gap-2 ${theme.text} max-w-full`}
+                          className={`px-3 py-2 rounded-lg border ${theme.border} ${theme.cardBg} text-xs font-medium hover:border-brand-400 hover:bg-blue-50 transition-colors flex items-center gap-2 ${theme.text}`}
                         >
-                          <Zap className="w-3 h-3 text-amber-500 flex-shrink-0" />
-                          <span className="truncate">{motion}</span>
+                          <Search className="w-4 h-4 text-brand-500" />
+                          Search all muscle actions
                         </button>
-                      ))}
-                      {/* Main search when specific motions exist */}
+                      ) : (
+                        <>
+                          {/* Individual motion searches */}
+                          {extractedMotions.map((motion, i) => (
+                            <button
+                              key={i}
+                              onClick={() =>
+                                window.open(
+                                  `https://www.google.com/search?tbm=isch&q=${encodeURIComponent(`${muscleName} ${motion} animation gif`)}`,
+                                  '_blank'
+                                )
+                              }
+                              className={`px-3 py-2 rounded-full border ${theme.border} ${theme.cardBg} text-xs font-medium capitalize hover:border-brand-400 transition-colors flex items-center gap-2 ${theme.text} max-w-full`}
+                            >
+                              <Zap className="w-3 h-3 text-amber-500 flex-shrink-0" />
+                              <span className="truncate">{motion}</span>
+                            </button>
+                          ))}
+                          {/* Main search when specific motions exist */}
+                          <button
+                            onClick={() =>
+                              window.open(
+                                `https://www.google.com/search?tbm=isch&q=${encodeURIComponent(`${muscleName} muscle action animation gif`)}`,
+                                '_blank'
+                              )
+                            }
+                            className={`px-3 py-2 rounded-lg border ${theme.border} ${theme.cardBg} text-xs font-medium hover:border-emerald-400 hover:bg-emerald-50 transition-colors flex items-center gap-2 ${theme.text}`}
+                          >
+                            <Search className="w-3 h-3 text-emerald-500 flex-shrink-0" />
+                            All actions
+                          </button>
+                        </>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Video Resources */}
+                  <div className="mt-4">
+                    <button
+                      onClick={() =>
+                        window.open(
+                          `https://www.youtube.com/results?search_query=${encodeURIComponent(
+                            `${selectedMotion.displayName} motion anatomy`
+                          )}`,
+                          '_blank'
+                        )
+                      }
+                      className={`w-full px-4 py-3 rounded-lg border ${theme.border} ${theme.cardBg} ${theme.text} font-semibold flex items-center justify-center gap-2 hover:border-brand-400 transition-colors`}
+                    >
+                      <ExternalLink className="w-4 h-4" />
+                      Watch Video Demonstrations
+                    </button>
+                  </div>
+                </section>
+
+                {/* Anatomy Images Section */}
+                <section className="grid md:grid-cols-2 gap-4">
+                  <div className={`p-4 rounded-xl border ${theme.border} ${theme.infoBox} overflow-hidden`}>
+                    <p className={`text-xs uppercase tracking-wider ${theme.subText} flex items-center gap-2 mb-3`}>
+                      <MapPin className="w-4 h-4" />
+                      Anatomy Images
+                    </p>
+                    <div className="flex flex-wrap gap-2">
                       <button
                         onClick={() =>
                           window.open(
-                            `https://www.google.com/search?tbm=isch&q=${encodeURIComponent(`${muscleName} muscle action animation gif`)}`,
+                            `https://www.google.com/search?tbm=isch&q=${encodeURIComponent(
+                            `${muscleName} muscle origin anatomy diagram`
+                          )}`,
+                          '_blank'
+                        )
+                      }
+                        className={`px-3 py-2 rounded-lg border ${theme.border} ${theme.cardBg} text-xs font-medium hover:border-emerald-400 transition-colors ${theme.text} overflow-hidden`}
+                      >
+                        <span className="text-blue-600 font-semibold truncate">Origin</span>
+                      </button>
+                      <button
+                        onClick={() =>
+                          window.open(
+                            `https://www.google.com/search?tbm=isch&q=${encodeURIComponent(
+                            `${muscleName} muscle insertion anatomy diagram`
+                          )}`,
+                          '_blank'
+                        )
+                      }
+                        className={`px-3 py-2 rounded-lg border ${theme.border} ${theme.cardBg} text-xs font-medium hover:border-rose-400 transition-colors ${theme.text} overflow-hidden`}
+                      >
+                        <span className="text-rose-600 font-semibold truncate">Insertion</span>
+                      </button>
+                      <button
+                        onClick={() =>
+                          window.open(
+                            `https://www.google.com/search?tbm=isch&q=${encodeURIComponent(
+                              `${muscleName} muscle anatomy labeled diagram`
+                            )}`,
                             '_blank'
                           )
                         }
-                        className={`px-3 py-2 rounded-lg border ${theme.border} ${theme.cardBg} text-[11px] font-medium hover:border-emerald-400 hover:bg-emerald-50 transition-colors flex items-center gap-2 ${theme.text}`}
+                        className={`px-3 py-2 rounded-lg border ${theme.border} ${theme.cardBg} text-xs font-medium hover:border-brand-400 transition-colors ${theme.text} overflow-hidden`}
                       >
-                        <Search className="w-3 h-3 text-emerald-500 flex-shrink-0" />
-                        All actions
+                        <span className="truncate">Labeled diagram</span>
                       </button>
-                    </>
-                  )}
-                </div>
-              </div>
-            </section>
-
-            <section className="grid md:grid-cols-2 gap-4">
-              {!browserMode && (actionString || demonstrationText) && (
-                <div className={`p-4 rounded-xl border ${theme.border} ${theme.cardBg} space-y-3`}>
-                  <div className="flex items-center gap-2">
-                    <Info className="w-4 h-4 text-blue-500" />
-                    <p className={`text-sm font-semibold ${theme.text}`}>Study requirements</p>
+                    </div>
                   </div>
-                  {actionString && (
-                    <div className={`p-3 rounded-lg border ${theme.border} ${theme.infoBox} overflow-hidden`}>
-                      <p className="text-[11px] font-bold text-blue-600 uppercase tracking-wider mb-1">Required actions</p>
-                      <p className={`text-sm leading-relaxed ${theme.text} break-words`}>{actionString}</p>
+
+                  {/* Origin & Insertion Text */}
+                  {(originString || insertionString) && (
+                    <div className={`p-4 rounded-xl border ${theme.border} ${theme.cardBg} space-y-3`}>
+                      <div className="flex items-center gap-2">
+                        <Brain className="w-4 h-4 text-emerald-500" />
+                        <p className={`text-sm font-semibold ${theme.text}`}>Origin & Insertion</p>
+                      </div>
+                      <div className="space-y-2 text-sm">
+                        {originString && (
+                          <div className={`p-3 rounded-lg border ${theme.border} ${theme.infoBox} overflow-hidden`}>
+                            <p className="text-xs font-bold uppercase tracking-wider text-blue-600 mb-1">Origin</p>
+                            <p className={`${theme.text} text-blue-600 break-words`}>{originString}</p>
+                          </div>
+                        )}
+                        {insertionString && (
+                          <div className={`p-3 rounded-lg border ${theme.border} ${theme.infoBox} overflow-hidden`}>
+                            <p className="text-xs font-bold uppercase tracking-wider text-rose-600 mb-1">Insertion</p>
+                            <p className={`${theme.text} text-rose-600 break-words`}>{insertionString}</p>
+                          </div>
+                        )}
+                      </div>
                     </div>
                   )}
-                  {demonstrationText && (
-                    <div className={`p-3 rounded-lg border ${theme.border} ${theme.infoBox} overflow-hidden`}>
-                      <p className="text-[11px] font-bold text-emerald-600 uppercase tracking-wider mb-1">Demonstration</p>
-                      <p className={`text-sm leading-relaxed ${theme.text} break-words`}>{demonstrationText}</p>
+                </section>
+              </>
+            )}
+
+            {/* Tab 2: Study Guides - Learning aids and resources */}
+            {activeTab === 'guides' && (
+              <>
+                {/* Learning Aids Section */}
+                <section className={`p-4 rounded-xl border ${theme.border} ${theme.cardBg} space-y-4`}>
+                  <div className="flex items-center gap-2">
+                    <BookOpen className="w-4 h-4 text-brand-500" />
+                    <p className={`text-sm font-semibold ${theme.text}`}>Learning Aids</p>
+                  </div>
+                  {getLearningTipsForMotion(selectedMotion.id).length > 0 && (
+                    <div className={`p-3 rounded-lg ${theme.infoBox} overflow-hidden`}>
+                      <p className="text-[11px] font-bold uppercase tracking-wider text-emerald-600 mb-2">
+                        Key Points
+                      </p>
+                      <ul className={`text-sm ${theme.text} space-y-1`}>
+                        {getLearningTipsForMotion(selectedMotion.id).map((tip, i) => (
+                          <li key={i} className="flex gap-2">
+                            <span className="text-emerald-500 flex-shrink-0">•</span>
+                            <span className="break-words">{tip}</span>
+                          </li>
+                        ))}
+                      </ul>
                     </div>
                   )}
-                </div>
-              )}
 
-              {(originString || insertionString) && (
-                <div className={`p-4 rounded-xl border ${theme.border} ${theme.cardBg} space-y-3`}>
-                  <div className="flex items-center gap-2">
-                    <Brain className="w-4 h-4 text-emerald-500" />
-                    <p className={`text-sm font-semibold ${theme.text}`}>Origin & Insertion</p>
-                  </div>
-                  <div className="space-y-2 text-sm">
-                    {originString && (
-                      <div className={`p-3 rounded-lg border ${theme.border} ${theme.infoBox} overflow-hidden`}>
-                        <p className="text-[11px] font-bold uppercase tracking-wider text-blue-600 mb-1">Origin</p>
-                        <p className={`${theme.text} text-blue-600 break-words`}>{originString}</p>
+                  {getClinicalRelevanceForMotion(selectedMotion.id) && (
+                    <div className={`p-3 rounded-lg ${currentTheme === 'midnight' || currentTheme === 'blueprint' ? 'bg-blue-900/30' : 'bg-blue-50'} border border-blue-400/30 overflow-hidden`}>
+                      <p className="text-[11px] font-bold uppercase tracking-wider text-blue-600 mb-1">Clinical Relevance</p>
+                      <p className={`text-sm ${theme.text} break-words`}>{getClinicalRelevanceForMotion(selectedMotion.id)}</p>
+                    </div>
+                  )}
+
+                  {getCommonErrorsForMotion(selectedMotion.id).length > 0 && (
+                    <div className={`p-3 rounded-lg ${currentTheme === 'midnight' || currentTheme === 'blueprint' ? 'bg-amber-900/30' : 'bg-amber-50'} border border-amber-400/30 overflow-hidden`}>
+                      <p className="text-[11px] font-bold uppercase tracking-wider text-amber-600 mb-1">Common Mistakes</p>
+                      <ul className={`text-sm ${theme.text} space-y-1`}>
+                        {getCommonErrorsForMotion(selectedMotion.id).map((error, i) => (
+                          <li key={i} className="flex gap-2">
+                            <span className="text-amber-500 flex-shrink-0">✗</span>
+                            <span className="break-words">{error}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+
+                  {getAntagonistMotion(selectedMotion.id) && (
+                    <button
+                      onClick={() => {
+                        const antagonist = getAntagonistMotion(selectedMotion.id);
+                        if (antagonist) setSelectedMotion(antagonist);
+                      }}
+                      className={`w-full px-3 py-2 rounded-lg border ${theme.border} ${theme.cardBg} text-sm font-semibold hover:border-purple-400 transition-colors flex items-center justify-center gap-2 ${theme.text}`}
+                    >
+                      <RotateCcw className="w-4 h-4" />
+                      View Antagonist: {getAntagonistMotion(selectedMotion.id)?.displayName}
+                    </button>
+                  )}
+
+                  {getHighlightedNodesForMotion(selectedMotion.id).length > 0 && (
+                    <div className={`p-3 rounded-lg ${theme.infoBox}`}>
+                      <p className={`text-[11px] font-bold uppercase tracking-wider ${theme.subText} mb-1`}>
+                        Key Muscles Involved
+                      </p>
+                      <div className="flex flex-wrap gap-2">
+                        {getHighlightedNodesForMotion(selectedMotion.id)
+                          .slice(0, 8)
+                          .map((muscle, i) => (
+                            <span
+                              key={i}
+                              className={`px-2 py-1 rounded-full text-[11px] font-semibold ${
+                                currentTheme === 'midnight' || currentTheme === 'blueprint'
+                                  ? 'bg-purple-900/50 text-purple-200'
+                                  : 'bg-purple-100 text-purple-700'
+                              }`}
+                            >
+                              {muscle.replace(/\.r$/, '').replace(/ muscle/i, '')}
+                            </span>
+                          ))}
                       </div>
-                    )}
-                    {insertionString && (
-                      <div className={`p-3 rounded-lg border ${theme.border} ${theme.infoBox} overflow-hidden`}>
-                        <p className="text-[11px] font-bold uppercase tracking-wider text-rose-600 mb-1">Insertion</p>
-                        <p className={`${theme.text} text-rose-600 break-words`}>{insertionString}</p>
-                      </div>
-                    )}
+                    </div>
+                  )}
+                </section>
+
+                {/* General Resources Section */}
+                <section className={`p-4 rounded-xl border ${theme.border} ${theme.cardBg}`}>
+                  <div className="flex items-center gap-2 mb-3">
+                    <ExternalLink className="w-4 h-4 text-brand-500" />
+                    <p className={`text-sm font-semibold ${theme.text}`}>General Resources</p>
                   </div>
-                </div>
-              )}
-            </section>
-
-            <section className={`p-4 rounded-xl border ${theme.border} ${theme.cardBg} space-y-4`}>
-              <div className="flex items-center gap-2">
-                <BookOpen className="w-4 h-4 text-brand-500" />
-                <p className={`text-sm font-semibold ${theme.text}`}>Learning aids</p>
-              </div>
-              {getLearningTipsForMotion(selectedMotion.id).length > 0 && (
-                <div className={`p-3 rounded-lg ${theme.infoBox} overflow-hidden`}>
-                  <p className="text-[11px] font-bold uppercase tracking-wider text-emerald-600 mb-2">
-                    Key points
-                  </p>
-                  <ul className={`text-sm ${theme.text} space-y-1`}>
-                    {getLearningTipsForMotion(selectedMotion.id).map((tip, i) => (
-                      <li key={i} className="flex gap-2">
-                        <span className="text-emerald-500 flex-shrink-0">•</span>
-                        <span className="break-words">{tip}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-
-              {getClinicalRelevanceForMotion(selectedMotion.id) && (
-                <div className={`p-3 rounded-lg ${currentTheme === 'midnight' || currentTheme === 'blueprint' ? 'bg-blue-900/30' : 'bg-blue-50'} border border-blue-400/30 overflow-hidden`}>
-                  <p className="text-[11px] font-bold uppercase tracking-wider text-blue-600 mb-1">Clinical relevance</p>
-                  <p className={`text-sm ${theme.text} break-words`}>{getClinicalRelevanceForMotion(selectedMotion.id)}</p>
-                </div>
-              )}
-
-              {getCommonErrorsForMotion(selectedMotion.id).length > 0 && (
-                <div className={`p-3 rounded-lg ${currentTheme === 'midnight' || currentTheme === 'blueprint' ? 'bg-amber-900/30' : 'bg-amber-50'} border border-amber-400/30 overflow-hidden`}>
-                  <p className="text-[11px] font-bold uppercase tracking-wider text-amber-600 mb-1">Common mistakes</p>
-                  <ul className={`text-sm ${theme.text} space-y-1`}>
-                    {getCommonErrorsForMotion(selectedMotion.id).map((error, i) => (
-                      <li key={i} className="flex gap-2">
-                        <span className="text-amber-500 flex-shrink-0">✗</span>
-                        <span className="break-words">{error}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-
-              {getAntagonistMotion(selectedMotion.id) && (
-                <button
-                  onClick={() => {
-                    const antagonist = getAntagonistMotion(selectedMotion.id);
-                    if (antagonist) setSelectedMotion(antagonist);
-                  }}
-                  className={`w-full px-3 py-2 rounded-lg border ${theme.border} ${theme.cardBg} text-sm font-semibold hover:border-purple-400 transition-colors flex items-center justify-center gap-2 ${theme.text}`}
-                >
-                  <RotateCcw className="w-4 h-4" />
-                  View antagonist: {getAntagonistMotion(selectedMotion.id)?.displayName}
-                </button>
-              )}
-
-              {getHighlightedNodesForMotion(selectedMotion.id).length > 0 && (
-                <div className={`p-3 rounded-lg ${theme.infoBox}`}>
-                  <p className={`text-[11px] font-bold uppercase tracking-wider ${theme.subText} mb-1`}>
-                    Key muscles involved
-                  </p>
-                  <div className="flex flex-wrap gap-2">
-                    {getHighlightedNodesForMotion(selectedMotion.id)
-                      .slice(0, 8)
-                      .map((muscle, i) => (
-                        <span
-                          key={i}
-                          className={`px-2 py-1 rounded-full text-[11px] font-semibold ${
-                            currentTheme === 'midnight' || currentTheme === 'blueprint'
-                              ? 'bg-purple-900/50 text-purple-200'
-                              : 'bg-purple-100 text-purple-700'
-                          }`}
-                        >
-                          {muscle.replace(/\.r$/, '').replace(/ muscle/i, '')}
-                        </span>
-                      ))}
+                  <div className="grid sm:grid-cols-2 gap-2">
+                    <button
+                      onClick={() =>
+                        window.open(
+                          `https://www.google.com/search?q=${encodeURIComponent(`${muscleName} muscle kinesiology`)}`,
+                          '_blank'
+                        )
+                      }
+                      className={`px-3 py-3 rounded-lg border ${theme.border} ${theme.cardBg} ${theme.text} font-semibold hover:border-brand-400 transition-colors flex items-center gap-2 justify-center`}
+                    >
+                      <ExternalLink className="w-4 h-4" />
+                      Kinesiology Overview
+                    </button>
+                    <button
+                      onClick={() =>
+                        window.open(
+                          `https://www.google.com/search?q=${encodeURIComponent(`${muscleName} ${selectedMotion.displayName} rehab exercises`)}`,
+                          '_blank'
+                        )
+                      }
+                      className={`px-3 py-3 rounded-lg border ${theme.border} ${theme.cardBg} ${theme.text} font-semibold hover:border-emerald-400 transition-colors flex items-center gap-2 justify-center`}
+                    >
+                      <Sparkles className="w-4 h-4 text-emerald-500" />
+                      Rehab & Training Ideas
+                    </button>
                   </div>
-                </div>
-              )}
-            </section>
-
-            <section className={`p-4 rounded-xl border ${theme.border} ${theme.cardBg}`}>
-              <div className="flex items-center gap-2 mb-3">
-                <ExternalLink className="w-4 h-4 text-brand-500" />
-                <p className={`text-sm font-semibold ${theme.text}`}>General resources</p>
-              </div>
-              <div className="grid sm:grid-cols-2 gap-2">
-                <button
-                  onClick={() =>
-                    window.open(
-                      `https://www.google.com/search?q=${encodeURIComponent(`${muscleName} muscle kinesiology`)}`,
-                      '_blank'
-                    )
-                  }
-                  className={`px-3 py-3 rounded-lg border ${theme.border} ${theme.cardBg} ${theme.text} font-semibold hover:border-brand-400 transition-colors flex items-center gap-2 justify-center`}
-                >
-                  <ExternalLink className="w-4 h-4" />
-                  Kinesiology overview
-                </button>
-                <button
-                  onClick={() =>
-                    window.open(
-                      `https://www.google.com/search?q=${encodeURIComponent(`${muscleName} ${selectedMotion.displayName} rehab exercises`)}`,
-                      '_blank'
-                    )
-                  }
-                  className={`px-3 py-3 rounded-lg border ${theme.border} ${theme.cardBg} ${theme.text} font-semibold hover:border-emerald-400 transition-colors flex items-center gap-2 justify-center`}
-                >
-                  <Sparkles className="w-4 h-4 text-emerald-500" />
-                  Rehab & training ideas
-                </button>
-              </div>
-            </section>
+                </section>
+              </>
+            )}
           </div>
         </div>
       </div>

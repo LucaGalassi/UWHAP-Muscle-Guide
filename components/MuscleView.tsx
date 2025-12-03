@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { MuscleItem, MuscleContent, AppTheme } from '../types';
 import { fetchMuscleDetails } from '../services/geminiService';
 import { MUSCLE_DETAILS, MUSCLE_DATA, THEME_CONFIG } from '../constants';
-import { extractMotionKeywords } from '../utils/motionParser';
 import { 
   Play, 
   MapPin, 
@@ -12,14 +11,12 @@ import {
   Search,
   Activity,
   AlertCircle,
-  Image as ImageIcon,
   CheckCircle2,
   Circle,
   ArrowRight,
   PlayCircle,
   Sparkles,
   X,
-  Move,
   Zap
 } from 'lucide-react';
 import { GROUP_A_REQUIREMENTS, GROUP_B_REQUIREMENTS } from '../constants';
@@ -386,25 +383,6 @@ interface InfoCardProps {
 const InfoCard: React.FC<InfoCardProps> = ({ title, icon, content, className, onSearch, isAction, currentTheme, muscleName }) => {
   const theme = THEME_CONFIG[currentTheme];
   
-  // Parse actions to extract individual movements for GIF search
-  const extractedMotions = React.useMemo(() => {
-    if (!isAction || !content) return [];
-    return extractMotionKeywords(content, 6);
-  }, [isAction, content]);
-  
-  // Check if we have specific motions (not just generic 'action')
-  const hasSpecificMotions = extractedMotions.some(m => m !== 'action');
-  
-  const openGifSearch = (motion: string) => {
-    const query = `${muscleName} ${motion} animation gif`;
-    const url = `https://www.google.com/search?tbm=isch&q=${encodeURIComponent(query)}`;
-    const width = 1000;
-    const height = 800;
-    const left = (window.screen.width - width) / 2;
-    const top = (window.screen.height - height) / 2;
-    window.open(url, 'GifSearch', `width=${width},height=${height},top=${top},left=${left},resizable=yes,scrollbars=yes,status=no,toolbar=no,menubar=no,noopener,noreferrer`);
-  };
-  
   return (
     <div className={`p-6 rounded-2xl border ${theme.border} shadow-sm flex flex-col h-full hover:border-brand-400/50 transition-colors ${theme.cardBg} ${className} overflow-hidden`}>
       <div className="flex items-center justify-between mb-4">
@@ -416,50 +394,6 @@ const InfoCard: React.FC<InfoCardProps> = ({ title, icon, content, className, on
       <div className={`text-sm ${theme.text} leading-relaxed break-words flex-1 mb-4 opacity-90`}>
         {content}
       </div>
-      
-      {/* GIF Search buttons for individual actions */}
-      {isAction && (
-        <div className="mb-3">
-          <p className={`text-xs font-semibold ${theme.subText} uppercase tracking-wider mb-2 flex items-center gap-1.5`}>
-            <ImageIcon className="w-3 h-3" />
-            Quick GIF Search
-          </p>
-          <div className="flex flex-wrap gap-2">
-            {hasSpecificMotions ? (
-              <>
-                {/* Individual motion searches */}
-                {extractedMotions.filter(m => m !== 'action').map((motion, i) => (
-                  <button
-                    key={i}
-                    onClick={() => openGifSearch(motion)}
-                    className={`px-2.5 py-1.5 rounded-lg border ${theme.border} ${theme.inputBg} text-[11px] font-medium capitalize hover:border-blue-400 hover:bg-blue-50 transition-colors flex items-center gap-1.5 ${theme.text}`}
-                  >
-                    <Search className="w-3 h-3 text-blue-500" />
-                    {motion} gif
-                  </button>
-                ))}
-                {/* General search button when specific motions exist */}
-                <button
-                  onClick={() => openGifSearch('muscle action')}
-                  className={`px-2.5 py-1.5 rounded-lg border ${theme.border} ${theme.inputBg} text-[11px] font-medium hover:border-emerald-400 hover:bg-emerald-50 transition-colors flex items-center gap-1.5 ${theme.text}`}
-                >
-                  <Search className="w-3 h-3 text-emerald-500" />
-                  All actions gif
-                </button>
-              </>
-            ) : (
-              /* Main search button when no specific motions found */
-              <button
-                onClick={() => openGifSearch('muscle action')}
-                className={`px-3 py-2 rounded-lg border ${theme.border} ${theme.inputBg} text-xs font-medium hover:border-brand-400 hover:bg-blue-50 transition-colors flex items-center gap-2 ${theme.text}`}
-              >
-                <Search className="w-4 h-4 text-brand-500" />
-                Search all muscle actions gif
-              </button>
-            )}
-          </div>
-        </div>
-      )}
       
       <button 
         onClick={onSearch}
