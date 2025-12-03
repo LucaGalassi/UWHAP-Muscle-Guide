@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { MuscleItem, MuscleContent, AppTheme } from '../types';
 import { fetchMuscleDetails } from '../services/geminiService';
 import { MUSCLE_DETAILS, MUSCLE_DATA, THEME_CONFIG } from '../constants';
+import { extractMotionKeywords } from '../utils/motionParser';
 import { 
   Play, 
   MapPin, 
@@ -388,32 +389,11 @@ const InfoCard: React.FC<InfoCardProps> = ({ title, icon, content, className, on
   // Parse actions to extract individual movements for GIF search
   const extractedMotions = React.useMemo(() => {
     if (!isAction || !content) return [];
-    
-    const motionKeywords = [
-      'flexion', 'extension', 'abduction', 'adduction',
-      'rotation', 'medial rotation', 'lateral rotation',
-      'pronation', 'supination', 'dorsiflexion', 'plantarflexion',
-      'elevation', 'depression', 'protraction', 'retraction',
-      'inversion', 'eversion', 'circumduction', 'opposition'
-    ];
-    
-    const actionList = content
-      .split(/[\n;]/)
-      .map((s) => s.replace(/^\d+\.\s*/, '').trim())
-      .filter((s) => s.length > 3 && !s.match(/^\d+$/));
-    
-    const found: string[] = [];
-    actionList.forEach((action) => {
-      const lower = action.toLowerCase();
-      motionKeywords.forEach((keyword) => {
-        if (lower.includes(keyword) && !found.includes(keyword)) {
-          found.push(keyword);
-        }
-      });
-    });
-    
-    return found;
+    return extractMotionKeywords(content, 6);
   }, [isAction, content]);
+  
+  // Check if we have specific motions (not just generic 'action')
+  const hasSpecificMotions = extractedMotions.some(m => m !== 'action');
   
   const openGifSearch = (motion: string) => {
     const query = `${muscleName} ${motion} animation gif`;
@@ -438,23 +418,45 @@ const InfoCard: React.FC<InfoCardProps> = ({ title, icon, content, className, on
       </div>
       
       {/* GIF Search buttons for individual actions */}
-      {isAction && extractedMotions.length > 0 && (
+      {isAction && (
         <div className="mb-3">
           <p className={`text-xs font-semibold ${theme.subText} uppercase tracking-wider mb-2 flex items-center gap-1.5`}>
             <ImageIcon className="w-3 h-3" />
             Quick GIF Search
           </p>
           <div className="flex flex-wrap gap-2">
-            {extractedMotions.map((motion, i) => (
+            {hasSpecificMotions ? (
+              <>
+                {/* Individual motion searches */}
+                {extractedMotions.filter(m => m !== 'action').map((motion, i) => (
+                  <button
+                    key={i}
+                    onClick={() => openGifSearch(motion)}
+                    className={`px-2.5 py-1.5 rounded-lg border ${theme.border} ${theme.inputBg} text-[11px] font-medium capitalize hover:border-blue-400 hover:bg-blue-50 transition-colors flex items-center gap-1.5 ${theme.text}`}
+                  >
+                    <Search className="w-3 h-3 text-blue-500" />
+                    {motion} gif
+                  </button>
+                ))}
+                {/* General search button when specific motions exist */}
+                <button
+                  onClick={() => openGifSearch('muscle action')}
+                  className={`px-2.5 py-1.5 rounded-lg border ${theme.border} ${theme.inputBg} text-[11px] font-medium hover:border-emerald-400 hover:bg-emerald-50 transition-colors flex items-center gap-1.5 ${theme.text}`}
+                >
+                  <Search className="w-3 h-3 text-emerald-500" />
+                  All actions gif
+                </button>
+              </>
+            ) : (
+              /* Main search button when no specific motions found */
               <button
-                key={i}
-                onClick={() => openGifSearch(motion)}
-                className={`px-2.5 py-1.5 rounded-lg border ${theme.border} ${theme.inputBg} text-[11px] font-medium capitalize hover:border-blue-400 hover:bg-blue-50 transition-colors flex items-center gap-1.5 ${theme.text}`}
+                onClick={() => openGifSearch('muscle action')}
+                className={`px-3 py-2 rounded-lg border ${theme.border} ${theme.inputBg} text-xs font-medium hover:border-brand-400 hover:bg-blue-50 transition-colors flex items-center gap-2 ${theme.text}`}
               >
-                <Search className="w-3 h-3 text-blue-500" />
-                {motion} gif
+                <Search className="w-4 h-4 text-brand-500" />
+                Search all muscle actions gif
               </button>
-            ))}
+            )}
           </div>
         </div>
       )}

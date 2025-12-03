@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { AppTheme } from '../types';
 import { THEME_CONFIG } from '../constants';
+import { extractMotionKeywords, ACTION_SPLIT_PATTERN } from '../utils/motionParser';
 import {
   MotionDefinition,
   MOTIONS,
@@ -97,41 +98,15 @@ const AdvancedAnimationViewer: React.FC<AdvancedAnimationViewerProps> = ({
   const actionList = useMemo(() => {
     if (!actionString) return [];
     return actionString
-      .split(/[\n;]/)
+      .split(ACTION_SPLIT_PATTERN)
       .map((s) => s.replace(/^\d+\.\s*/, '').trim())
       .filter((s) => s.length > 3 && !s.match(/^\d+$/));
   }, [actionString]);
 
   const extractedMotions = useMemo(() => {
-    const motionKeywords = [
-      'flexion',
-      'extension',
-      'abduction',
-      'adduction',
-      'rotation',
-      'pronation',
-      'supination',
-      'dorsiflexion',
-      'plantarflexion',
-      'elevation',
-      'depression',
-      'protraction',
-      'retraction',
-      'inversion',
-      'eversion',
-      'circumduction',
-    ];
-    const found: string[] = [];
-    actionList.forEach((action) => {
-      const lower = action.toLowerCase();
-      motionKeywords.forEach((keyword) => {
-        if (lower.includes(keyword) && !found.includes(keyword)) {
-          found.push(keyword);
-        }
-      });
-    });
-    return found;
-  }, [actionList]);
+    if (!actionString) return [];
+    return extractMotionKeywords(actionString, 8);
+  }, [actionString]);
 
   const overlayBg =
     currentTheme === 'midnight' || currentTheme === 'blueprint'
@@ -168,7 +143,7 @@ const AdvancedAnimationViewer: React.FC<AdvancedAnimationViewerProps> = ({
         </div>
 
         <div className="flex-1 overflow-hidden grid grid-cols-1 md:grid-cols-[320px_1fr]">
-          <aside className={`border-r ${theme.border} ${theme.sidebarBg} flex flex-col`}>
+          <aside className={`border-r ${theme.border} ${theme.sidebarBg} flex flex-col overflow-hidden`}>
             <div className="p-4 space-y-4 flex-shrink-0 border-b border-dashed border-current/10">
               <div className="space-y-2">
                 <label className={`text-xs font-bold uppercase tracking-wider ${theme.subText} flex items-center gap-2`}>
@@ -205,7 +180,7 @@ const AdvancedAnimationViewer: React.FC<AdvancedAnimationViewerProps> = ({
               )}
             </div>
 
-            <div className="flex-1 overflow-y-auto p-4 space-y-3 custom-scrollbar">
+            <div className="flex-1 overflow-y-auto p-4 space-y-3 custom-scrollbar min-h-0">
               <div className="flex items-center justify-between mb-1">
                 <p className={`text-xs uppercase tracking-wider ${theme.subText}`}>
                   Motions ({filteredMotions.length})
@@ -265,7 +240,7 @@ const AdvancedAnimationViewer: React.FC<AdvancedAnimationViewerProps> = ({
             </div>
           </aside>
 
-          <div className="flex-1 overflow-y-auto p-6 space-y-6 custom-scrollbar">
+          <div className="flex-1 overflow-y-auto p-6 space-y-6 custom-scrollbar min-h-0">
             <section className={`rounded-xl border ${theme.border} ${theme.cardBg} p-4 shadow-sm overflow-hidden`}>
               <div className="flex items-start justify-between gap-4 flex-wrap">
                 <div className="flex-1 min-w-0">
@@ -374,24 +349,52 @@ const AdvancedAnimationViewer: React.FC<AdvancedAnimationViewerProps> = ({
                   Motion GIF Shortcuts
                 </p>
                 <div className="flex flex-wrap gap-2">
-                  {extractedMotions.length === 0 && (
-                    <span className={`text-xs ${theme.subText}`}>No extra actions parsed; try the main search.</span>
-                  )}
-                  {extractedMotions.map((motion, i) => (
+                  {extractedMotions.length === 0 ? (
                     <button
-                      key={i}
                       onClick={() =>
                         window.open(
-                          `https://www.google.com/search?tbm=isch&q=${encodeURIComponent(`${muscleName} ${motion} animation gif`)}`,
+                          `https://www.google.com/search?tbm=isch&q=${encodeURIComponent(`${muscleName} muscle action animation gif`)}`,
                           '_blank'
                         )
                       }
-                      className={`px-3 py-2 rounded-full border ${theme.border} ${theme.cardBg} text-[11px] font-medium capitalize hover:border-brand-400 transition-colors flex items-center gap-2 ${theme.text} max-w-full`}
+                      className={`px-3 py-2 rounded-lg border ${theme.border} ${theme.cardBg} text-xs font-medium hover:border-brand-400 hover:bg-blue-50 transition-colors flex items-center gap-2 ${theme.text}`}
                     >
-                      <Zap className="w-3 h-3 text-amber-500 flex-shrink-0" />
-                      <span className="truncate">{motion}</span>
+                      <Search className="w-4 h-4 text-brand-500" />
+                      Search all muscle actions
                     </button>
-                  ))}
+                  ) : (
+                    <>
+                      {/* Individual motion searches */}
+                      {extractedMotions.map((motion, i) => (
+                        <button
+                          key={i}
+                          onClick={() =>
+                            window.open(
+                              `https://www.google.com/search?tbm=isch&q=${encodeURIComponent(`${muscleName} ${motion} animation gif`)}`,
+                              '_blank'
+                            )
+                          }
+                          className={`px-3 py-2 rounded-full border ${theme.border} ${theme.cardBg} text-[11px] font-medium capitalize hover:border-brand-400 transition-colors flex items-center gap-2 ${theme.text} max-w-full`}
+                        >
+                          <Zap className="w-3 h-3 text-amber-500 flex-shrink-0" />
+                          <span className="truncate">{motion}</span>
+                        </button>
+                      ))}
+                      {/* Main search when specific motions exist */}
+                      <button
+                        onClick={() =>
+                          window.open(
+                            `https://www.google.com/search?tbm=isch&q=${encodeURIComponent(`${muscleName} muscle action animation gif`)}`,
+                            '_blank'
+                          )
+                        }
+                        className={`px-3 py-2 rounded-lg border ${theme.border} ${theme.cardBg} text-[11px] font-medium hover:border-emerald-400 hover:bg-emerald-50 transition-colors flex items-center gap-2 ${theme.text}`}
+                      >
+                        <Search className="w-3 h-3 text-emerald-500 flex-shrink-0" />
+                        All actions
+                      </button>
+                    </>
+                  )}
                 </div>
               </div>
             </section>
