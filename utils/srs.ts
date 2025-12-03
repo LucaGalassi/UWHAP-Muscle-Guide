@@ -24,12 +24,13 @@ export const calculateNextReview = (
   // Rating values: AGAIN=0, HARD=1, GOOD=2, EASY=3 (conceptually)
   
   if (rating === 'AGAIN') {
-    // Reset streak and interval
+    // Reset streak and interval - set to 1 minute in both interval and dueDate
+    const oneMinuteInDays = 1 / (24 * 60); // ~0.0007 days
     return {
       ...current,
       status: 'LEARNING',
       streak: 0,
-      interval: 0, // Due immediately (or very soon)
+      interval: oneMinuteInDays, // Consistent with dueDate
       dueDate: now + (1 * 60 * 1000), // 1 minute
       lastReviewed: now
     };
@@ -60,16 +61,18 @@ export const calculateNextReview = (
     easeFactor = Math.max(1.3, easeFactor - 0.15); // Penalty
   }
 
-  // Convert days to ms
+  // Convert days to ms with overflow protection
   const dayInMs = 24 * 60 * 60 * 1000;
+  const maxInterval = 365; // Cap at 1 year to prevent overflow
+  const safeInterval = Math.min(interval, maxInterval);
   
   return {
     ...current,
-    status: interval > 21 ? 'MASTERED' : 'REVIEW',
+    status: safeInterval > 21 ? 'MASTERED' : 'REVIEW',
     streak: streak + 1,
-    interval,
+    interval: safeInterval,
     easeFactor,
-    dueDate: now + (interval * dayInMs),
+    dueDate: now + (safeInterval * dayInMs),
     lastReviewed: now
   };
 };

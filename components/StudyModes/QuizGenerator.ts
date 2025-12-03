@@ -71,12 +71,44 @@ export const generateQuizQuestion = (muscleId?: string): QuizQuestion => {
   }
 
   // Ensure options are unique (dedupe strings in case of similar text content)
-  const uniqueOptions = Array.from(new Set([...distractorText, correctAnswer]));
+  let uniqueOptions = Array.from(new Set([...distractorText, correctAnswer]));
   
-  // If deduping reduced count below 4, fill with random filler text or other muscles
-  // (Simplified fallback)
+  // If deduping reduced count below 4, add fallback options
+  if (uniqueOptions.length < 4) {
+    const remainingMuscles = MUSCLE_DATA.filter(m => 
+      m.id !== targetMuscle.id && 
+      !distractorIds.includes(m.id)
+    );
+    
+    // Add additional options based on question type
+    for (let i = uniqueOptions.length; i < 4 && remainingMuscles.length > 0; i++) {
+      const randomIndex = Math.floor(Math.random() * remainingMuscles.length);
+      const randomMuscle = remainingMuscles.splice(randomIndex, 1)[0];
+      
+      let newOption = '';
+      switch (type) {
+        case 'ORIGIN':
+          newOption = MUSCLE_DETAILS[randomMuscle.id]?.origin || 'Unknown location';
+          break;
+        case 'INSERTION':
+          newOption = MUSCLE_DETAILS[randomMuscle.id]?.insertion || 'Unknown location';
+          break;
+        case 'ACTION':
+          newOption = MUSCLE_DETAILS[randomMuscle.id]?.action || 'Unknown action';
+          break;
+        case 'IDENTIFY':
+          newOption = randomMuscle.name;
+          break;
+      }
+      
+      if (newOption && !uniqueOptions.includes(newOption)) {
+        uniqueOptions.push(newOption);
+      }
+    }
+  }
   
-  const options = uniqueOptions.sort(() => 0.5 - Math.random());
+  // Shuffle and ensure we have exactly 4 options
+  const options = uniqueOptions.slice(0, 4).sort(() => 0.5 - Math.random());
 
   return {
     id: Math.random().toString(36).substr(2, 9),

@@ -84,6 +84,15 @@ const SmartGuideView: React.FC<SmartGuideViewProps> = ({ progressMap, onUpdatePr
     // Move to next in queue
     const nextQueue = sessionQueue.slice(1);
     if (nextQueue.length > 0) {
+      // Validate that next muscle exists
+      const nextMuscle = MUSCLE_DATA.find(m => m.id === nextQueue[0]);
+      if (!nextMuscle) {
+        console.error('Invalid muscle ID in queue:', nextQueue[0]);
+        setPhase('DASHBOARD');
+        setCurrentMuscleId(null);
+        return;
+      }
+      
       setSessionQueue(nextQueue);
       setCurrentMuscleId(nextQueue[0]);
       

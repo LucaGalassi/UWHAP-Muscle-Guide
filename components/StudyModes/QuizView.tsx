@@ -23,9 +23,14 @@ const QuizView: React.FC<QuizViewProps> = ({ onComplete, questionCount }) => {
       return;
     }
 
-    setQuestion(generateQuizQuestion());
-    setSelectedOption(null);
-    setIsCorrect(null);
+    try {
+      setQuestion(generateQuizQuestion());
+      setSelectedOption(null);
+      setIsCorrect(null);
+    } catch (e) {
+      console.error('Failed to generate quiz question:', e);
+      alert('Unable to generate quiz question. Please try again.');
+    }
   };
 
   useEffect(() => {

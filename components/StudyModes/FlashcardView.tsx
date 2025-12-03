@@ -20,6 +20,7 @@ const FlashcardView: React.FC<FlashcardViewProps> = ({ muscle, onRate, onNext, a
   
   useEffect(() => {
     setIsFlipped(false); // Reset flip on new muscle
+    setContent(null); // Clear old content immediately
     let mounted = true;
     const load = async () => {
       setLoading(true);
@@ -27,7 +28,7 @@ const FlashcardView: React.FC<FlashcardViewProps> = ({ muscle, onRate, onNext, a
         const data = await fetchMuscleDetails(muscle, apiKey);
         if (mounted) setContent(data);
       } catch (e) {
-        console.error(e);
+        console.error('Failed to load muscle details:', e);
       } finally {
         if (mounted) setLoading(false);
       }
@@ -50,7 +51,7 @@ const FlashcardView: React.FC<FlashcardViewProps> = ({ muscle, onRate, onNext, a
 
   const theme = THEME_CONFIG[currentTheme];
 
-  if (loading) {
+  if (loading || !content) {
     return (
       <div className="h-full flex flex-col items-center justify-center p-8 space-y-6">
         <Activity className="w-10 h-10 text-brand-300 animate-pulse" />

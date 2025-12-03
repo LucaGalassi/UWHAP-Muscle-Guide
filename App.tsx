@@ -15,23 +15,43 @@ const STATUS_MAP = ['NEW', 'LEARNING', 'REVIEW', 'MASTERED'];
 
 const compressProgress = (map: Record<string, MuscleProgress>): string => {
   const minified = Object.values(map).map(p => {
+    // Validate progress data before compression
+    if (!p || !p.muscleId) {
+      console.warn('Skipping invalid progress entry:', p);
+      return null;
+    }
+    
     const muscleIndex = MUSCLE_DATA.findIndex(m => m.id === p.muscleId);
-    if (muscleIndex === -1) return null;
+    if (muscleIndex === -1) {
+      console.warn('Muscle not found in data:', p.muscleId);
+      return null;
+    }
+    
     const statusIdx = STATUS_MAP.indexOf(p.status);
+    if (statusIdx === -1) {
+      console.warn('Invalid status:', p.status);
+      return null;
+    }
+    
     // Schema: [index, status, interval, ease, due_mins, last_mins, streak]
     return [
       muscleIndex,
       statusIdx,
-      p.interval,
-      Math.round(p.easeFactor * 100) / 100, // Round ease to 2 decimals
-      Math.floor(p.dueDate / 60000), // Store minutes to save space
-      Math.floor(p.lastReviewed / 60000), // Store minutes to save space
-      p.streak
+      Math.max(0, p.interval || 0),
+      Math.max(1.3, Math.round((p.easeFactor || 2.5) * 100) / 100), // Round ease to 2 decimals
+      Math.floor((p.dueDate || Date.now()) / 60000), // Store minutes to save space
+      Math.floor((p.lastReviewed || Date.now()) / 60000), // Store minutes to save space
+      Math.max(0, p.streak || 0)
     ];
   }).filter(Boolean);
   
   // Convert to JSON string then Base64
-  return btoa(JSON.stringify(minified));
+  try {
+    return btoa(JSON.stringify(minified));
+  } catch (e) {
+    console.error('Failed to compress progress:', e);
+    return '';
+  }
 };
 
 const decompressProgress = (encoded: string): Record<string, MuscleProgress> => {
@@ -41,28 +61,45 @@ const decompressProgress = (encoded: string): Record<string, MuscleProgress> => 
     
     // Check if legacy format (standard object map) or new format (array of arrays)
     if (!Array.isArray(parsed)) {
-       return parsed; 
+      // Validate legacy format has expected structure
+      if (typeof parsed === 'object' && parsed !== null) {
+        return parsed;
+      }
+      throw new Error('Invalid legacy format');
     }
 
     const map: Record<string, MuscleProgress> = {};
     parsed.forEach((item: any) => {
+      // Validate array structure
+      if (!Array.isArray(item) || item.length !== 7) {
+        console.warn('Skipping invalid progress item:', item);
+        return;
+      }
+      
       const [mIdx, sIdx, interval, ease, due, last, streak] = item;
+      
+      // Validate indices and values
+      if (typeof mIdx !== 'number' || mIdx < 0 || mIdx >= MUSCLE_DATA.length) {
+        console.warn('Invalid muscle index:', mIdx);
+        return;
+      }
+      
       const muscle = MUSCLE_DATA[mIdx];
       if (muscle) {
         map[muscle.id] = {
           muscleId: muscle.id,
           status: (STATUS_MAP[sIdx] || 'NEW') as any,
-          interval,
-          easeFactor: ease,
+          interval: Math.max(0, interval),
+          easeFactor: Math.max(1.3, ease),
           dueDate: due * 60000, // Convert back to ms
           lastReviewed: last * 60000,
-          streak
+          streak: Math.max(0, streak)
         };
       }
     });
     return map;
   } catch (e) {
-    console.error("Failed to decompress progress", e);
+    console.error("Failed to decompress progress, returning empty state", e);
     return {};
   }
 };
@@ -119,8 +156,16 @@ const App: React.FC = () => {
     if (sharedProgress) {
       try {
         const parsedShared = decompressProgress(sharedProgress);
-        setProgressMap(parsedShared);
-        localStorage.setItem('srs_progress', JSON.stringify(parsedShared));
+        if (Object.keys(parsedShared).length > 0) {
+          setProgressMap(parsedShared);
+          try {
+            localStorage.setItem('srs_progress', JSON.stringify(parsedShared));
+          } catch (storageError) {
+            console.error('Failed to save shared progress to localStorage', storageError);
+          }
+        } else {
+          console.warn('Decompressed progress was empty');
+        }
       } catch (e) {
         console.error("Failed to parse shared progress", e);
       }
@@ -141,23 +186,39 @@ const App: React.FC = () => {
   // Initialize state from URL params and LocalStorage on mount
   useEffect(() => {
     // 1. Load API Key
-    const storedKey = localStorage.getItem('user_gemini_key');
-    if (storedKey) setApiKey(storedKey);
+    try {
+      const storedKey = localStorage.getItem('user_gemini_key');
+      if (storedKey) setApiKey(storedKey);
+    } catch (e) {
+      console.error('Failed to load API key from localStorage', e);
+    }
 
-    // 2. Load Progress from LocalStorage
-    const storedProgress = localStorage.getItem('srs_progress');
-    if (storedProgress) {
+    // 2. Load Progress from LocalStorage (but allow URL to override)
+    let hasUrlProgress = false;
+    if (window.location.search) {
+      const params = new URLSearchParams(window.location.search);
+      hasUrlProgress = params.has('p');
+    }
+    
+    if (!hasUrlProgress) {
       try {
-        setProgressMap(JSON.parse(storedProgress));
+        const storedProgress = localStorage.getItem('srs_progress');
+        if (storedProgress) {
+          setProgressMap(JSON.parse(storedProgress));
+        }
       } catch (e) {
         console.error("Failed to parse local progress", e);
       }
     }
 
     // 3. Load Theme
-    const storedTheme = localStorage.getItem('app_theme');
-    if (storedTheme && THEME_CONFIG[storedTheme as AppTheme]) {
-       setTheme(storedTheme as AppTheme);
+    try {
+      const storedTheme = localStorage.getItem('app_theme');
+      if (storedTheme && THEME_CONFIG[storedTheme as AppTheme]) {
+         setTheme(storedTheme as AppTheme);
+      }
+    } catch (e) {
+      console.error('Failed to load theme from localStorage', e);
     }
 
     // 4. Load URL Params (Overrides local)
@@ -169,13 +230,22 @@ const App: React.FC = () => {
   // Save Progress whenever it changes
   useEffect(() => {
     if (Object.keys(progressMap).length > 0) {
-      localStorage.setItem('srs_progress', JSON.stringify(progressMap));
+      try {
+        localStorage.setItem('srs_progress', JSON.stringify(progressMap));
+      } catch (e) {
+        console.error('Failed to save progress to localStorage', e);
+        // Could show user notification here in production
+      }
     }
   }, [progressMap]);
 
   // Save Theme whenever it changes
   useEffect(() => {
-    localStorage.setItem('app_theme', theme);
+    try {
+      localStorage.setItem('app_theme', theme);
+    } catch (e) {
+      console.error('Failed to save theme to localStorage', e);
+    }
   }, [theme]);
 
   const handleSetApiKey = (key: string) => {
@@ -244,7 +314,11 @@ const App: React.FC = () => {
      if (Object.keys(progressMap).length > 0) {
        try {
          const encoded = compressProgress(progressMap);
-         params.set('p', encoded);
+         if (encoded) {
+           params.set('p', encoded);
+         } else {
+           console.warn('Failed to encode progress - link will not include progress data');
+         }
        } catch (e) {
          console.error("Failed to encode progress", e);
        }

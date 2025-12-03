@@ -23,9 +23,11 @@ const WelcomeModal: React.FC<WelcomeModalProps> = ({ onDismiss, onResume, daysUn
     }
     try {
       onResume(resumeLink);
+      setError(''); // Clear error on success
       onDismiss();
     } catch (e) {
-      setError("Invalid link format. Please try again.");
+      console.error('Resume link error:', e);
+      setError("Invalid link format. Please check the URL and try again.");
     }
   };
 
