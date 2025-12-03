@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Play, Download, AlertTriangle, Timer, CheckCircle, ArrowRight, GraduationCap, Brain, Save, ShieldAlert, ChevronRight, Palette, Sparkles, Moon, Ruler, Leaf } from 'lucide-react';
-import { THEME_CONFIG, GROUP_A_REQUIREMENTS, GROUP_B_REQUIREMENTS } from '../constants';
+import { THEME_CONFIG } from '../constants';
 import appPackage from '../package.json';
 import { AppTheme } from '../types';
 
@@ -19,15 +19,6 @@ const WelcomeModal: React.FC<WelcomeModalProps> = ({ onDismiss, onResume, daysUn
   const [error, setError] = useState('');
   const [tutorialStep, setTutorialStep] = useState<number>(0); // 0 = Landing, 1+ = Tutorial
   const [resumeMode, setResumeMode] = useState<'CODE' | 'LINK'>('CODE');
-
-  const focusGroup = daysUntilExam > 0 ? 'Group A' : 'Group B';
-  const focusRequirements = focusGroup === 'Group A' ? GROUP_A_REQUIREMENTS : GROUP_B_REQUIREMENTS;
-  const focusTimelineText = focusGroup === 'Group A'
-    ? `${daysUntilExam} day${daysUntilExam === 1 ? '' : 's'} until lab exam!`
-    : 'Post-exam review window';
-  const focusDescriptor = focusGroup === 'Group A'
-    ? 'Muscles you demonstrate during the upcoming lab exam.'
-    : 'Secondary list we revisit once the Group A checkoff is done.';
 
   const themeShowcase: Record<AppTheme, { tagline: string; highlight: string; swatch: string; icon: React.ReactNode }> = {
     modern: {
@@ -345,7 +336,7 @@ const WelcomeModal: React.FC<WelcomeModalProps> = ({ onDismiss, onResume, daysUn
            </div>
 
            {/* Feature Highlights */}
-           <div className="grid md:grid-cols-3 gap-4 mb-8">
+           <div className="grid md:grid-cols-2 gap-4 mb-8">
               <div className="flex items-center gap-3 text-sm p-3 bg-white rounded-xl border border-slate-200">
                 <CheckCircle className="w-5 h-5 text-emerald-500 shrink-0" />
                 <span className="text-slate-700 font-medium">No account needed</span>
@@ -354,43 +345,6 @@ const WelcomeModal: React.FC<WelcomeModalProps> = ({ onDismiss, onResume, daysUn
                 <Save className="w-5 h-5 text-blue-500 shrink-0" />
                 <span className="text-slate-700 font-medium">Save via code</span>
               </div>
-              <div className="flex items-center gap-3 text-sm p-3 bg-white rounded-xl border border-slate-200">
-                <AlertTriangle className="w-5 h-5 text-yellow-500 shrink-0" />
-                <span className="text-slate-700 font-medium">Focus: {focusGroup}</span>
-              </div>
-           </div>
-
-           <div className="mb-10">
-             <div className="flex items-center gap-3 mb-3">
-               <ShieldAlert className="w-5 h-5 text-amber-600" />
-               <div>
-                 <p className="text-xs font-bold text-amber-600 uppercase tracking-widest">What's the focus badge?</p>
-                 <p className="text-sm text-amber-900">We highlight the muscles your faculty expect first.</p>
-               </div>
-             </div>
-             <div className="rounded-2xl border border-amber-200 bg-amber-50/80 p-5">
-               <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-                 <div>
-                   <p className="text-xs font-bold text-amber-500 uppercase tracking-wider">Current sprint</p>
-                   <p className="text-2xl font-black text-amber-900">Focus: {focusGroup}</p>
-                   <p className="text-sm text-amber-800 mt-1">{focusDescriptor}</p>
-                 </div>
-                 <div className="text-center bg-white/70 border border-amber-100 rounded-2xl px-4 py-3 font-bold text-amber-700 text-sm">
-                   {focusTimelineText}
-                 </div>
-               </div>
-               <ul className="mt-4 space-y-2 text-sm text-amber-900">
-                 {focusRequirements.map((item) => (
-                   <li key={item} className="flex items-center gap-2">
-                     <CheckCircle className="w-4 h-4 text-emerald-600" />
-                     <span>{item}</span>
-                   </li>
-                 ))}
-               </ul>
-               <p className="text-[11px] text-amber-700 font-semibold mt-4">
-                 The repetition system will not be as accurate we move past the December 8 lab exam, and you can still open any Group via the sidebar at any time.
-               </p>
-             </div>
            </div>
 
            <div className="mb-10">
