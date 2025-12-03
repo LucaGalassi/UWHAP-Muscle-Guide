@@ -1,9 +1,9 @@
 import React, { useEffect, useMemo, useRef, useState, Suspense } from 'react';
-import { Canvas, useFrame } from '@react-three/fiber';
-import { OrbitControls, useGLTF, Bounds } from '@react-three/drei';
+import { Canvas, useFrame, useThree } from '@react-three/fiber';
+import { OrbitControls, useGLTF, Bounds, Html } from '@react-three/drei';
 import { AppTheme } from '../types';
 import { THEME_CONFIG } from '../constants';
-import { X, PlayCircle, PauseCircle, Compass, Camera } from 'lucide-react';
+import { X, PlayCircle, PauseCircle, Compass, Camera, HelpCircle, Info } from 'lucide-react';
 import * as THREE from 'three';
 
 interface AdvancedAnimationViewerProps {
@@ -45,11 +45,12 @@ interface JointSpec {
 
 // Define a minimal articulated arm (shoulder->elbow->forearm->hand) with hip option
 const JOINTS: Record<string, JointSpec> = {
+  ShoulderFlexExt: { name: 'Shoulder Flex/Ext', axis: new THREE.Vector3(1,0,0), minDeg: -40, maxDeg: 100 },
   ShoulderAbdAdd: { name: 'Shoulder Abd/Add', axis: new THREE.Vector3(0,0,1), minDeg: -10, maxDeg: 90 },
-  ShoulderMedLatRot: { name: 'Shoulder Med/Lat Rot', axis: new THREE.Vector3(1,0,0), minDeg: -40, maxDeg: 40 },
-  ElbowFlexExt: { name: 'Elbow Flex/Ext', axis: new THREE.Vector3(0,0,1), minDeg: 0, maxDeg: 145 },
-  ForearmProSup: { name: 'Forearm Pro/Sup', axis: new THREE.Vector3(0,1,0), minDeg: -90, maxDeg: 90 },
-  HipFlexExt: { name: 'Hip Flex/Ext', axis: new THREE.Vector3(0,0,1), minDeg: -10, maxDeg: 120 },
+  ShoulderMedLatRot: { name: 'Shoulder Med/Lat Rot', axis: new THREE.Vector3(0,1,0), minDeg: -40, maxDeg: 40 },
+  ElbowFlexExt: { name: 'Elbow Flex/Ext', axis: new THREE.Vector3(1,0,0), minDeg: 0, maxDeg: 145 },
+  ForearmProSup: { name: 'Forearm Pro/Sup', axis: new THREE.Vector3(0,0,1), minDeg: -90, maxDeg: 90 },
+  HipFlexExt: { name: 'Hip Flex/Ext', axis: new THREE.Vector3(1,0,0), minDeg: -10, maxDeg: 120 },
   KneeFlexExt: { name: 'Knee Flex/Ext', axis: new THREE.Vector3(1,0,0), minDeg: 0, maxDeg: 130 },
   AnkleFlexExt: { name: 'Ankle Flex/Ext', axis: new THREE.Vector3(1,0,0), minDeg: -20, maxDeg: 45 },
 };
@@ -58,8 +59,8 @@ function motionToTargets(motion: MotionName) {
   switch (motion) {
     case 'Elbow Flexion': return { joint: JOINTS.ElbowFlexExt, targetDeg: 120 };
     case 'Elbow Extension': return { joint: JOINTS.ElbowFlexExt, targetDeg: 10 };
-    case 'Shoulder Flexion': return { joint: JOINTS.ShoulderAbdAdd, targetDeg: 80 };
-    case 'Shoulder Extension': return { joint: JOINTS.ShoulderAbdAdd, targetDeg: 0 };
+    case 'Shoulder Flexion': return { joint: JOINTS.ShoulderFlexExt, targetDeg: 80 };
+    case 'Shoulder Extension': return { joint: JOINTS.ShoulderFlexExt, targetDeg: -20 };
     case 'Shoulder Abduction': return { joint: JOINTS.ShoulderAbdAdd, targetDeg: 80 };
     case 'Shoulder Adduction': return { joint: JOINTS.ShoulderAbdAdd, targetDeg: 0 };
     case 'Shoulder Medial Rotation': return { joint: JOINTS.ShoulderMedLatRot, targetDeg: -30 };
@@ -90,52 +91,94 @@ function AxisHelper({ axis, length=0.6 }: { axis: THREE.Vector3; length?: number
   );
 }
 
+function CameraController({ position }: { position: number[] }) {
+  const { camera } = useThree();
+  useEffect(() => {
+    camera.position.set(position[0], position[1], position[2]);
+    camera.lookAt(0, 0, 0);
+  }, [position, camera]);
+  return null;
+}
+
+function StickFigureFallback() {
+    return (
+        <group>
+            {/* Head */}
+            <mesh position={[0, 1.7, 0]}>
+                <sphereGeometry args={[0.15, 32, 32]} />
+                <meshStandardMaterial color="#cbd5e1" />
+            </mesh>
+            {/* Torso */}
+            <mesh position={[0, 1.2, 0]}>
+                <boxGeometry args={[0.3, 0.8, 0.2]} />
+                <meshStandardMaterial color="#94a3b8" />
+            </mesh>
+            {/* Arms */}
+            <mesh position={[-0.25, 1.5, 0]} rotation={[0, 0, -0.2]}>
+                <cylinderGeometry args={[0.04, 0.04, 0.6]} />
+                <meshStandardMaterial color="#64748b" />
+            </mesh>
+            <mesh position={[0.25, 1.5, 0]} rotation={[0, 0, 0.2]}>
+                <cylinderGeometry args={[0.04, 0.04, 0.6]} />
+                <meshStandardMaterial color="#64748b" />
+            </mesh>
+            {/* Legs */}
+            <mesh position={[-0.1, 0.4, 0]}>
+                <cylinderGeometry args={[0.05, 0.05, 0.8]} />
+                <meshStandardMaterial color="#64748b" />
+            </mesh>
+            <mesh position={[0.1, 0.4, 0]}>
+                <cylinderGeometry args={[0.05, 0.05, 0.8]} />
+                <meshStandardMaterial color="#64748b" />
+            </mesh>
+            <gridHelper args={[4, 4]} />
+        </group>
+    )
+}
+
 function ArmRig({ motion, playing, angleOut, skeleton }: { motion: MotionName; playing: boolean; angleOut: (deg:number)=>void; skeleton?: any }) {
   const group = useRef<THREE.Group>(null);
-  const elbow = useRef<THREE.Group>(null);
-  const forearm = useRef<THREE.Group>(null);
-  const shoulder = useRef<THREE.Group>(null);
-  const hip = useRef<THREE.Group>(null);
-  const knee = useRef<THREE.Group>(null);
-  const ankle = useRef<THREE.Group>(null);
   const spec = motionToTargets(motion);
   const axisNorm = useMemo(() => spec.joint.axis.clone().normalize(), [spec.joint.axis]);
 
-  // Map bones if skeleton is provided
+    // Map bones if skeleton is provided
   const bones = useMemo(() => {
     if (!skeleton?.nodes) return {};
     
     // DEBUG: Log all available bone names
     console.log("Available GLTF Nodes:", Object.keys(skeleton.nodes));
 
-    const find = (patterns: string[]) => {
+    const findAll = (patterns: string[]) => {
       const keys = Object.keys(skeleton.nodes);
       const lower = keys.map(k => ({ k, l: k.toLowerCase() }));
+      const results: any[] = [];
+      
       for (const p of patterns) {
         const pl = p.toLowerCase();
-        // Exact match first
-        let hit = lower.find(({ l }) => l === pl);
-        // Then contains
-        if (!hit) hit = lower.find(({ l }) => l.includes(pl));
-        
-        if (hit) {
-            console.log(`Mapped '${p}' -> '${hit.k}'`);
-            return (skeleton.nodes as any)[hit.k];
-        }
+        // Find ALL matches that contain the pattern
+        const matches = lower.filter(({ l }) => l.includes(pl));
+        matches.forEach(m => {
+            if (!results.includes((skeleton.nodes as any)[m.k])) {
+                results.push((skeleton.nodes as any)[m.k]);
+            }
+        });
       }
-      return null;
+      return results;
     };
+
+    // Group definitions based on user provided tags
     return {
-      shoulder: find(['Humerusr', 'shoulder_r', 'r_shoulder', 'shoulder', 'upperarm_r', 'humerus_r', 'rightarm', 'mixamorigrightarm', 'right_arm', 'arm_r', 'clavicle_r']),
-      elbow: find(['Ulnar', 'ulna_r', 'elbow_r', 'r_elbow', 'lowerarm_r', 'radius_r', 'forearm_r', 'rightforearm', 'mixamorigrightforearm', 'right_forearm', 'forearm_r', 'Bones']),
-      forearm: find(['Radius', 'Radiusr', 'radius_r', 'forearm_r', 'ulna_r', 'r_forearm', 'rightforearm', 'mixamorigrightforearm', 'right_forearm', 'wrist_r']),
-      hip: find(['Femurr', 'femur_r', 'hip_r', 'r_hip', 'thigh_r', 'pelvis', 'rightupleg', 'mixamorigrightupleg', 'right_leg', 'leg_r']),
-      knee: find(['Tibiar', 'tibia_r', 'knee_r', 'r_knee', 'shin_r', 'calf_r', 'rightleg', 'mixamorigrightleg', 'right_shin', 'shin_r']),
-      ankle: find(['Talusr', 'talus_r', 'ankle_r', 'r_ankle', 'foot_r', 'rightfoot', 'mixamorigrightfoot', 'right_foot', 'foot_r', 'toe_r']),
-      // Random bones for "flying around" effect (mapped to unused joints for now)
-      random1: find(['Clavicler', 'Scapular', 'Rib_(1st)r', 'Rib_(2nd)r', 'Rib_(3rd)r']),
-      random2: find(['Manubrium_of_sternum', 'Body_of_sternum', 'Xiphoid_process']),
-      random3: find(['Cervical_vertebra_(C3)', 'Cervical_vertebra_(C4)', 'Cervical_vertebra_(C5)', 'Cervical_vertebra_(C6)', 'Cervical_vertebra_(C7)']),
+      shoulder: findAll(['Humerus', 'Brachialis', 'Biceps', 'Triceps', 'Coracobrachialis', 'Brachial', 'Axillary', 'Deltoid', 'Teres', 'Infraspinatus', 'Supraspinatus', 'Subscapularis', 'Latissimus', 'Pectoralis']),
+      elbow: findAll(['Ulna', 'Radius', 'Forearm', 'Brachioradialis', 'Extensor', 'Flexor', 'Pronator', 'Supinator', 'Anconeus', 'Palmaris']),
+      forearm: findAll(['Radius', 'Pronator', 'Supinator']), // Rotation only affects radius + attached muscles
+      hip: findAll(['Femur', 'Thigh', 'Quadriceps', 'Hamstring', 'Adductor', 'Sartorius', 'Gracilis', 'Gluteus', 'Iliacus', 'Psoas', 'Tensor_fasciae', 'Pectineus', 'Piriformis', 'Gemellus', 'Obturator', 'Quadratus_femoris']),
+      knee: findAll(['Tibia', 'Fibula', 'Shin', 'Calf', 'Gastrocnemius', 'Soleus', 'Plantaris', 'Popliteus', 'Tibialis', 'Fibularis', 'Peroneus', 'Extensor_digitorum_longus', 'Extensor_hallucis', 'Flexor_digitorum', 'Flexor_hallucis']),
+      ankle: findAll(['Talus', 'Calcaneus', 'Foot', 'Tarsal', 'Metatarsal', 'Phalanx', 'Toe', 'Hallucis', 'Digitorum', 'Lumbrical', 'Interossei', 'Abductor', 'Adductor', 'Flexor_digiti', 'Extensor_digiti']),
+      hand: findAll(['Carpal', 'Metacarpal', 'Phalanx', 'Scaphoid', 'Lunate', 'Triquetrum', 'Pisiform', 'Trapezium', 'Trapezoid', 'Capitate', 'Hamate', 'Finger', 'Thumb', 'Palm', 'Hand']),
+      
+      // Ambient Motion Groups
+      torso: findAll(['Rib', 'Sternum', 'Vertebra', 'Sacrum', 'Coccyx', 'Pelvis', 'Clavicle', 'Scapula', 'Manubrium', 'Xiphoid']),
+      head: findAll(['Cervical', 'Atlas', 'Axis', 'Skull', 'Mandible', 'Maxilla', 'Frontal', 'Parietal', 'Occipital', 'Temporal', 'Sphenoid', 'Ethmoid', 'Nasal', 'Zygomatic', 'Vomer', 'Lacrimal', 'Palatine']),
     };
   }, [skeleton]);
 
@@ -153,33 +196,119 @@ function ArmRig({ motion, playing, angleOut, skeleton }: { motion: MotionName; p
       obj.quaternion.setFromAxisAngle(axisNorm, rad);
     };
 
-    if (spec.joint === JOINTS.ElbowFlexExt) {
-      setQuat(elbow.current);
-      setQuat(bones.elbow);
-    }
-    if (spec.joint === JOINTS.ShoulderAbdAdd || spec.joint === JOINTS.ShoulderMedLatRot) {
-      setQuat(shoulder.current);
-      setQuat(bones.shoulder);
+    // Smart Group Rotation:
+    // 1. Identify the primary bone (first in list).
+    // 2. Rotate primary bone.
+    // 3. Rotate other bones ONLY if they are not descendants of the primary bone (handles "soup" vs "hierarchy").
+    const applyToGroup = (group: any[] | undefined) => {
+        if (!group || group.length === 0) return;
+        
+        const primary = group[0];
+        setQuat(primary);
+
+        for (let i = 1; i < group.length; i++) {
+            const node = group[i];
+            // Check if node is a descendant of primary
+            let isChild = false;
+            let p = node.parent;
+            while (p) {
+                if (p === primary) { isChild = true; break; }
+                p = p.parent;
+            }
+            
+            if (!isChild) {
+                setQuat(node);
+            }
+        }
+    };
+
+    if (spec.joint === JOINTS.ShoulderAbdAdd || spec.joint === JOINTS.ShoulderMedLatRot || spec.joint === JOINTS.ShoulderFlexExt) {
+      applyToGroup(bones.shoulder);
+      // Shoulder moves the arm, so we must also move the child groups if they aren't parented
+      // In a proper hierarchy, moving shoulder moves elbow. In a soup, we must move elbow manually.
+      // We can use the same logic: check if elbow primary is child of shoulder primary.
+      const shoulderPrimary = bones.shoulder?.[0];
+      const elbowPrimary = bones.elbow?.[0];
+      
+      let elbowIsChild = false;
+      if (shoulderPrimary && elbowPrimary) {
+          let p = elbowPrimary.parent;
+          while(p) { if(p === shoulderPrimary) { elbowIsChild = true; break; } p = p.parent; }
+      }
+
+      if (!elbowIsChild) {
+          applyToGroup(bones.elbow); 
+          applyToGroup(bones.forearm);
+          applyToGroup(bones.hand);
+      }
     }
     if (spec.joint === JOINTS.ForearmProSup) {
-      setQuat(forearm.current);
-      setQuat(bones.forearm);
+      applyToGroup(bones.forearm);
+      // Check hand child status
+      const forearmPrimary = bones.forearm?.[0];
+      const handPrimary = bones.hand?.[0];
+      let handIsChild = false;
+      if (forearmPrimary && handPrimary) {
+          let p = handPrimary.parent;
+          while(p) { if(p === forearmPrimary) { handIsChild = true; break; } p = p.parent; }
+      }
+      if (!handIsChild) applyToGroup(bones.hand);
+    }
+    if (spec.joint === JOINTS.ElbowFlexExt) {
+      applyToGroup(bones.elbow);
+      // Check hand child status (Elbow moves forearm and hand)
+      const elbowPrimary = bones.elbow?.[0];
+      const handPrimary = bones.hand?.[0];
+      let handIsChild = false;
+      if (elbowPrimary && handPrimary) {
+          let p = handPrimary.parent;
+          while(p) { if(p === elbowPrimary) { handIsChild = true; break; } p = p.parent; }
+      }
+      if (!handIsChild) {
+          applyToGroup(bones.forearm); // Forearm moves with elbow flexion
+          applyToGroup(bones.hand);
+      }
     }
     if (spec.joint === JOINTS.HipFlexExt) {
-      setQuat(hip.current);
-      setQuat(bones.hip);
+      applyToGroup(bones.hip);
+      // Hip moves the leg
+      const hipPrimary = bones.hip?.[0];
+      const kneePrimary = bones.knee?.[0];
+      let kneeIsChild = false;
+      if (hipPrimary && kneePrimary) {
+          let p = kneePrimary.parent;
+          while(p) { if(p === hipPrimary) { kneeIsChild = true; break; } p = p.parent; }
+      }
+      if (!kneeIsChild) {
+          applyToGroup(bones.knee);
+          applyToGroup(bones.ankle);
+      }
+    }
+    if (spec.joint === JOINTS.KneeFlexExt) {
+      applyToGroup(bones.knee);
+      // Knee moves the foot
+      const kneePrimary = bones.knee?.[0];
+      const anklePrimary = bones.ankle?.[0];
+      let ankleIsChild = false;
+      if (kneePrimary && anklePrimary) {
+          let p = anklePrimary.parent;
+          while(p) { if(p === kneePrimary) { ankleIsChild = true; break; } p = p.parent; }
+      }
+      if (!ankleIsChild) applyToGroup(bones.ankle);
     }
     if (spec.joint === JOINTS.AnkleFlexExt) {
-      setQuat(ankle.current);
-      setQuat(bones.ankle);
+      applyToGroup(bones.ankle);
     }
     
-    // "Flying Around" Effect for Random Bones (Subtle breathing/floating motion)
-    if (playing && bones.random1) {
-       bones.random1.position.y += Math.sin(t * 0.5) * 0.0005;
-    }
-    if (playing && bones.random2) {
-       bones.random2.rotation.z = Math.sin(t * 0.2) * 0.02;
+    // "Flying Around" / Breathing Effect for Torso/Head
+    if (playing) {
+       bones.torso?.forEach((node: any, i: number) => {
+           node.position.y += Math.sin(t * 0.5 + i) * 0.0002; // Subtle float
+           node.rotation.z += Math.sin(t * 0.3 + i) * 0.0005; // Subtle twist
+       });
+       bones.head?.forEach((node: any, i: number) => {
+           node.rotation.y = Math.sin(t * 0.2) * 0.02; // Slow look around
+       });
     }
   });
 
@@ -189,76 +318,7 @@ function ArmRig({ motion, playing, angleOut, skeleton }: { motion: MotionName; p
     );
   }
 
-  return (
-    <group ref={group} position={[0,0,0]}>
-      {/* Shoulder joint with axis helper */}
-      <group ref={shoulder} position={[-0.4, 0.3, 0]}>
-        <mesh>
-          <sphereGeometry args={[0.04, 16, 16]} />
-          <meshStandardMaterial color="#94a3b8" />
-        </mesh>
-        <AxisHelper axis={JOINTS.ShoulderAbdAdd.axis} />
-        <mesh position={[0.2, 0, 0]}> {/* upper arm */}
-          <boxGeometry args={[0.4, 0.08, 0.08]} />
-          <meshStandardMaterial color="#64748b" />
-        </mesh>
-      </group>
-
-      {/* Elbow joint */}
-      <group ref={elbow} position={[0, 0.3, 0]}>
-        <mesh>
-          <sphereGeometry args={[0.04, 16, 16]} />
-          <meshStandardMaterial color="#94a3b8" />
-        </mesh>
-        <AxisHelper axis={JOINTS.ElbowFlexExt.axis} />
-        <group ref={forearm}>
-          <mesh position={[0.2, 0, 0]}> {/* forearm */}
-            <boxGeometry args={[0.4, 0.07, 0.07]} />
-            <meshStandardMaterial color="#0ea5e9" />
-          </mesh>
-        </group>
-      </group>
-
-      {/* Hip joint */}
-      <group ref={hip} position={[0, -0.3, 0]}>
-        <mesh>
-          <sphereGeometry args={[0.05, 16, 16]} />
-          <meshStandardMaterial color="#94a3b8" />
-        </mesh>
-        <AxisHelper axis={JOINTS.HipFlexExt.axis} />
-        <mesh position={[0.25, -0.05, 0]}> {/* thigh */}
-          <boxGeometry args={[0.5, 0.09, 0.09]} />
-          <meshStandardMaterial color="#22c55e" />
-        </mesh>
-        
-        {/* Knee joint */}
-        <group ref={knee} position={[0.5, -0.05, 0]}>
-          <mesh>
-            <sphereGeometry args={[0.04, 16, 16]} />
-            <meshStandardMaterial color="#94a3b8" />
-          </mesh>
-          <AxisHelper axis={JOINTS.KneeFlexExt.axis} />
-          <mesh position={[0.2, 0, 0]}> {/* shin */}
-            <boxGeometry args={[0.4, 0.07, 0.07]} />
-            <meshStandardMaterial color="#0ea5e9" />
-          </mesh>
-          
-          {/* Ankle joint */}
-          <group ref={ankle} position={[0.4, 0, 0]}>
-            <mesh>
-              <sphereGeometry args={[0.03, 16, 16]} />
-              <meshStandardMaterial color="#94a3b8" />
-            </mesh>
-            <AxisHelper axis={JOINTS.AnkleFlexExt.axis} />
-            <mesh position={[0.1, 0, 0.05]}> {/* foot */}
-              <boxGeometry args={[0.2, 0.05, 0.1]} />
-              <meshStandardMaterial color="#22c55e" />
-            </mesh>
-          </group>
-        </group>
-      </group>
-    </group>
-  );
+  return <StickFigureFallback />;
 }
 
 type ModelEntry = { label: string; url: string };
@@ -383,6 +443,7 @@ export const AdvancedAnimationViewer: React.FC<AdvancedAnimationViewerProps> = (
           <div className="flex gap-4 flex-1 min-h-0">
             <div className={`rounded-2xl border ${theme.border} ${theme.inputBg} p-2 flex-1 min-h-0`}>
               <Canvas camera={{ position: cameraPosition as any, fov: 45 }} dpr={[1, 2]} frameloop="always">
+                <CameraController position={cameraPosition} />
                 <ambientLight intensity={0.7} />
                 <directionalLight position={[5,5,5]} intensity={0.8} />
                 <gridHelper args={[10, 20]} />
@@ -424,6 +485,21 @@ export const AdvancedAnimationViewer: React.FC<AdvancedAnimationViewerProps> = (
                     Force Box Rig (Debug)
                  </label>
                  <p className="text-[10px] text-slate-400 mt-1">Use this if the 3D model is not animating correctly.</p>
+              </div>
+
+              {/* Instructions / Plain Words Demo */}
+              <div className={`mb-4 p-3 rounded-lg border ${theme.border} ${theme.cardBg}`}>
+                  <div className="flex items-center gap-2 mb-2">
+                      <Info className="w-4 h-4 text-blue-500" />
+                      <h4 className={`text-sm font-bold ${theme.text}`}>How to use</h4>
+                  </div>
+                  <ul className={`text-xs ${theme.subText} space-y-1 list-disc pl-4`}>
+                      <li><strong>Select Motion:</strong> Choose an action (e.g., Flexion) from the dropdown.</li>
+                      <li><strong>Rotate View:</strong> Click and drag to rotate the camera.</li>
+                      <li><strong>Zoom:</strong> Scroll to zoom in/out.</li>
+                      <li><strong>Pan:</strong> Right-click and drag to move the camera.</li>
+                      <li><strong>Change Model:</strong> Use the dropdown to switch between Skeleton, Upper Limb, etc.</li>
+                  </ul>
               </div>
 
               {referenceText ? (
