@@ -561,13 +561,31 @@ const Sidebar: React.FC<SidebarProps> = ({
 
       {/* Settings Modal */}
       {showSettingsModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm animate-in fade-in duration-200">
-           <div className={`rounded-2xl shadow-2xl w-full max-w-md overflow-hidden border ${theme.border} ${theme.cardBg} ${theme.text}`}>
-             <div className={`p-4 border-b ${theme.border} flex items-center justify-between sticky top-0 z-10 ${isDarkTheme ? 'bg-slate-900/70' : currentTheme === 'nature' ? 'bg-[#f5f5f4]/80' : 'bg-slate-50/80'}`}>
-               <div className="flex items-center gap-2">
-                 <Settings className={`w-4 h-4 ${isDarkTheme ? 'text-slate-200' : 'text-slate-600'}`} />
-                 <h3 className="font-bold">App Settings</h3>
-               </div>
+        <div
+          className={`fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-sm animate-in fade-in duration-200 ${
+            currentTheme === 'blueprint'
+              ? 'bg-[#0d1a2f]/70'
+              : isDarkTheme
+                ? 'bg-slate-900/50'
+                : 'bg-slate-900/30'
+          }`}
+        >
+          <div className={`rounded-2xl shadow-2xl w-full max-w-md overflow-hidden border ${theme.border} ${theme.cardBg} ${theme.text}`}>
+            <div
+              className={`p-4 border-b ${theme.border} flex items-center justify-between sticky top-0 z-10 ${
+                currentTheme === 'blueprint'
+                  ? 'bg-[#0d1a2f]/70'
+                  : isDarkTheme
+                    ? 'bg-slate-900/70'
+                    : currentTheme === 'nature'
+                      ? 'bg-[#f5f5f4]/80'
+                      : 'bg-slate-50/80'
+              }`}
+            >
+              <div className="flex items-center gap-2">
+                <Settings className={`w-4 h-4 ${isDarkTheme ? 'text-slate-200' : 'text-slate-600'}`} />
+                <h3 className="font-bold">App Settings</h3>
+              </div>
                <button
                 onClick={() => setShowSettingsModal(false)}
                 className={`p-1 rounded-full transition-colors ${isDarkTheme ? 'hover:bg-slate-800' : 'hover:bg-slate-200'}`}

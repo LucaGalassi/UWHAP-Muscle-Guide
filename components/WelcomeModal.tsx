@@ -26,7 +26,7 @@ const WelcomeModal: React.FC<WelcomeModalProps> = ({ onDismiss, onResume, daysUn
     currentTheme === 'midnight' || currentTheme === 'blueprint'
       ? 'bg-slate-950/80'
       : currentTheme === 'nature'
-        ? 'bg-emerald-900/15'
+        ? 'bg-emerald-950/30 backdrop-blur-sm'
         : 'bg-slate-900/50';
 
   const isDarkTutorial = currentTheme === 'midnight' || currentTheme === 'blueprint';
@@ -37,11 +37,34 @@ const WelcomeModal: React.FC<WelcomeModalProps> = ({ onDismiss, onResume, daysUn
   const tutorialWarning = `${currentThemeConfig.cardBg} border ${currentThemeConfig.border} ${
     isDarkTutorial ? 'bg-amber-900/40 text-amber-100' : 'bg-amber-50 text-amber-700'
   }`;
-  const tutorialNumberVariants = [
-    currentThemeConfig.iconFunc,
-    currentThemeConfig.iconLoc,
-    `${currentThemeConfig.accent} text-white`
-  ];
+  const tutorialNumberVariants: Record<AppTheme, string[]> = {
+    modern: [
+      'bg-blue-100 text-blue-800 border border-blue-200 shadow-sm',
+      'bg-emerald-100 text-emerald-700 border border-emerald-200 shadow-sm',
+      'bg-gradient-to-r from-brand-500 to-blue-600 text-white shadow-md border border-white/60',
+      'bg-amber-100 text-amber-700 border border-amber-200 shadow-sm'
+    ],
+    midnight: [
+      'bg-blue-800/80 text-blue-50 border border-blue-400/70 shadow-md',
+      'bg-emerald-800/70 text-emerald-100 border border-emerald-400/70 shadow-md',
+      'bg-gradient-to-r from-indigo-500 to-purple-500 text-white shadow-lg border border-white/15',
+      'bg-amber-800/70 text-amber-100 border border-amber-500/70 shadow-md'
+    ],
+    blueprint: [
+      'bg-blue-500/50 text-blue-50 border border-blue-200/80 shadow-md backdrop-blur-sm',
+      'bg-cyan-500/40 text-cyan-50 border border-cyan-200/70 shadow-md backdrop-blur-sm',
+      'bg-gradient-to-r from-sky-500 to-blue-500 text-white shadow-lg border border-white/15',
+      'bg-amber-500/50 text-amber-50 border border-amber-200/80 shadow-md backdrop-blur-sm'
+    ],
+    nature: [
+      'bg-emerald-600 text-white border border-emerald-700 shadow-md',
+      'bg-amber-500 text-white border border-amber-600 shadow-md',
+      'bg-gradient-to-r from-emerald-600 to-teal-700 text-white shadow-lg border border-emerald-200/80',
+      'bg-amber-700 text-white border border-amber-800 shadow-md'
+    ]
+  };
+  const tutorialNumbers = tutorialNumberVariants[currentTheme];
+  const natureStartButtonEmphasis = currentTheme === 'nature' ? 'ring-2 ring-emerald-500/50 shadow-emerald-200' : '';
 
   const themeShowcase: Record<AppTheme, { tagline: string; highlight: string; swatch: string; icon: React.ReactNode }> = {
     modern: {
@@ -116,28 +139,36 @@ const WelcomeModal: React.FC<WelcomeModalProps> = ({ onDismiss, onResume, daysUn
         <div className={`space-y-4 text-sm leading-relaxed ${tutorialMuted}`}>
           <ul className="space-y-3">
             <li className="flex gap-3">
-              <div className={`w-6 h-6 rounded-full flex items-center justify-center font-bold text-xs shrink-0 ${tutorialNumberVariants[0]}`}>1</div>
+              <div className={`w-6 h-6 rounded-full flex items-center justify-center font-bold text-xs shrink-0 ${tutorialNumbers[0]}`}>
+                1
+              </div>
               <div>
                 <span className={`block font-bold ${tutorialText}`}>Smart Guide Mode</span>
                 <span className={tutorialMuted}>Uses "Spaced Repetition" to calculate exactly when you need to review a muscle so you never forget it. Best for daily study.</span>
               </div>
             </li>
             <li className="flex gap-3">
-              <div className={`w-6 h-6 rounded-full flex items-center justify-center font-bold text-xs shrink-0 ${tutorialNumberVariants[1]}`}>2</div>
+              <div className={`w-6 h-6 rounded-full flex items-center justify-center font-bold text-xs shrink-0 ${tutorialNumbers[1]}`}>
+                2
+              </div>
               <div>
                 <span className={`block font-bold ${tutorialText}`}>Flashcards</span>
                 <span className={tutorialMuted}>Flip cards to test your memory. Rate yourself "Hard", "Good", or "Easy" to adjust your study schedule.</span>
               </div>
             </li>
             <li className="flex gap-3">
-              <div className={`w-6 h-6 rounded-full flex items-center justify-center font-bold text-xs shrink-0 ${tutorialNumberVariants[2]}`}>3</div>
+              <div className={`w-6 h-6 rounded-full flex items-center justify-center font-bold text-xs shrink-0 ${tutorialNumbers[2]}`}>
+                3
+              </div>
               <div>
                 <span className={`block font-bold ${tutorialText}`}>Lightning Round</span>
                 <span className={tutorialMuted}>A fast-paced game! Start with 60 seconds. Correct answers add time, wrong answers subtract it. How long can you last?</span>
               </div>
             </li>
             <li className="flex gap-3">
-              <div className="w-6 h-6 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center font-bold text-xs shrink-0">4</div>
+              <div className={`w-6 h-6 rounded-full flex items-center justify-center font-bold text-xs shrink-0 ${tutorialNumbers[3]}`}>
+                4
+              </div>
               <div>
                 <span className={`block font-bold ${tutorialText}`}>Quiz Mode</span>
                 <span className={tutorialMuted}>Generate custom multiple-choice quizzes to simulate exam conditions.</span>
@@ -227,11 +258,13 @@ const WelcomeModal: React.FC<WelcomeModalProps> = ({ onDismiss, onResume, daysUn
              </div>
              
              <h2 className={`text-xl md:text-2xl font-black mb-1 transition-colors ${currentThemeConfig.text}`}>{step.title}</h2>
-             <p className={`font-bold text-xs uppercase tracking-widest mb-6 md:mb-8 transition-colors ${
-               currentTheme === 'blueprint' || currentTheme === 'midnight' 
-               ? 'text-indigo-400' 
-               : 'text-brand-600'
-             }`}>{step.subtitle}</p>
+            <p className={`font-bold text-xs uppercase tracking-widest mb-6 md:mb-8 transition-colors ${
+              currentTheme === 'blueprint' || currentTheme === 'midnight'
+              ? 'text-indigo-400'
+              : currentTheme === 'nature'
+                ? 'text-emerald-700'
+                : 'text-brand-600'
+            }`}>{step.subtitle}</p>
              
              <div className={`w-full text-left rounded-xl p-4 transition-all ${currentThemeConfig.cardBg}`}>
                {step.content}
@@ -465,11 +498,11 @@ const WelcomeModal: React.FC<WelcomeModalProps> = ({ onDismiss, onResume, daysUn
              </div>
            </div>
 
-           <button 
-             onClick={() => setTutorialStep(1)}
-             className={`w-full py-5 text-white hover:opacity-90 rounded-xl font-bold transition-all flex items-center justify-center gap-3 group shadow-lg hover:shadow-2xl hover:scale-[1.02] ${currentThemeConfig.accent}`}
-           >
-             <div className="flex items-center gap-3">
+          <button
+            onClick={() => setTutorialStep(1)}
+            className={`w-full py-5 text-white hover:opacity-90 rounded-xl font-bold transition-all flex items-center justify-center gap-3 group shadow-lg hover:shadow-2xl hover:scale-[1.02] ${currentThemeConfig.accent} ${natureStartButtonEmphasis}`}
+          >
+            <div className="flex items-center gap-3">
                <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center border-2 border-white/30 shadow-sm">
                  <Play className="w-5 h-5 text-white" />
                </div>
