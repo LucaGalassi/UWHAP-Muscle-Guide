@@ -283,6 +283,30 @@ const Sidebar: React.FC<SidebarProps> = ({
           {/* STUDY MODE: Stats */}
           {currentMode === 'STUDY' && (
             <div className="space-y-3">
+              {/* Overall Progress Tracker - Same as Reference Mode */}
+              <div className="mb-2 bg-gradient-to-br from-brand-500/10 to-blue-500/10 p-5 rounded-2xl border border-brand-500/20 relative overflow-hidden">
+                <div className="flex justify-between items-end mb-3 relative z-10">
+                  <span className="text-xs font-bold text-brand-700 uppercase tracking-wider flex items-center gap-1.5">
+                    <Trophy className="w-3.5 h-3.5" /> Mastery
+                  </span>
+                  <span className="text-sm font-black text-brand-700">{learnedIds.size} / {MUSCLE_DATA.length}</span>
+                </div>
+                <div className="h-3 w-full bg-white/50 rounded-full overflow-hidden mb-4 ring-1 ring-black/5">
+                  <div 
+                    className="h-full bg-gradient-to-r from-brand-400 to-brand-600 rounded-full transition-all duration-1000 ease-out" 
+                    style={{ width: `${progress}%` }}
+                  />
+                </div>
+                <button 
+                  onClick={() => setShowShareModal(true)}
+                  className="w-full flex items-center justify-center gap-2 text-xs font-bold text-brand-700 hover:text-brand-800 py-2.5 bg-white/80 hover:bg-white border border-brand-200/50 rounded-xl shadow-sm hover:shadow transition-all backdrop-blur-sm"
+                >
+                  <Save className="w-3.5 h-3.5" />
+                  Save Progress
+                </button>
+              </div>
+
+              {/* Smart Learning Stats */}
               <div className={`p-4 rounded-xl flex items-center gap-4 border ${
                 currentTheme === 'midnight' || currentTheme === 'blueprint' 
                 ? 'bg-red-900/20 border-red-700/30' 
@@ -305,29 +329,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                 </div>
               </div>
               
-              <div className={`p-4 rounded-xl flex items-center gap-4 border ${
-                currentTheme === 'midnight' || currentTheme === 'blueprint' 
-                ? 'bg-blue-900/20 border-blue-700/30' 
-                : 'bg-blue-50 border-blue-100'
-              }`}>
-                <div className={`p-2 rounded-lg shadow-sm ${
-                  currentTheme === 'midnight' || currentTheme === 'blueprint'
-                  ? 'bg-blue-800/30 text-blue-300'
-                  : 'bg-white text-blue-600'
-                }`}>
-                  <Trophy className="w-5 h-5" />
-                </div>
-                <div>
-                  <h4 className={`text-sm font-bold ${theme.sidebarText}`}>{learnedIds.size} Mastered</h4>
-                  <p className={`text-xs font-medium ${
-                    currentTheme === 'midnight' || currentTheme === 'blueprint'
-                    ? 'text-blue-300'
-                    : 'text-blue-600'
-                  }`}>Keep hitting the books!</p>
-                </div>
-              </div>
-              
-              <p className={`text-xs text-center pt-4 ${theme.sidebarSubText}`}>
+              <p className={`text-xs text-center pt-2 ${theme.sidebarSubText}`}>
                 Exam Dec 8th. You got this.
               </p>
             </div>
