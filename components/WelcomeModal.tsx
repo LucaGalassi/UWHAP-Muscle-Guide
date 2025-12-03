@@ -139,18 +139,19 @@ const WelcomeModal: React.FC<WelcomeModalProps> = ({ onDismiss, onResume, daysUn
              </p>
           </div>
           <p>
-            To save your progress across devices or browsers, click <strong>"Save & Share Stats"</strong> in the sidebar.
+            To save your progress across devices or browsers, open the <strong>Sidebar</strong> and click the <strong>Settings / Save</strong> button.
           </p>
           <p>
-            This generates a <strong>Save Code</strong> (like a fancy password). Copy this code and save it somewhere safe:
+            This will generate your unique <strong>Save Code</strong>. Copy that code and keep it safe.
           </p>
-          <div className="bg-slate-900 p-3 rounded-lg border border-slate-700">
-            <code className="text-xs text-emerald-400 font-mono break-all">
-              eyJtdXNjbGVzIjp7InRlc3QiOiJ2YWx1ZSJ9fQ==
+          <div className="bg-slate-900 p-3 rounded-lg border border-slate-700 relative overflow-hidden">
+            <div className="absolute top-0 right-0 bg-red-600 text-white text-[10px] font-bold px-2 py-1 rounded-bl-lg">EXAMPLE ONLY</div>
+            <code className="text-xs text-emerald-400 font-mono break-all opacity-50">
+              eyJtdXNjbGVzIjp7InRlc3QiOiJ2YWx1ZSJ9fQ==...
             </code>
           </div>
           <p className="text-xs">
-            <strong className="text-brand-600">Next time:</strong> Just paste your code on the welcome screen to restore everything!
+            <strong className="text-red-600">DO NOT COPY THE CODE ABOVE.</strong> It is just an example. You must generate your own code from the sidebar.
           </p>
         </div>
       )

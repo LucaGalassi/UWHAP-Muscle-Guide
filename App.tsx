@@ -427,9 +427,9 @@ const App: React.FC = () => {
               currentTheme={theme}
             />
           )}
-          {activeTool === 'QUIZ' && <QuizView />}
+          {activeTool === 'QUIZ' && <QuizView currentTheme={theme} />}
           {activeTool === 'LIGHTNING' && (
-            <LightningRoundView onExit={() => setActiveTool('NONE')} />
+            <LightningRoundView onExit={() => setActiveTool('NONE')} currentTheme={theme} />
           )}
           {activeTool === 'SMART_GUIDE' && (
             <SmartGuideView 

@@ -1,7 +1,7 @@
 {
   "name": "ap-muscle-guide",
   "private": true,
-  "version": "5.5 UWHAP",
+  "version": "6.0 UWHAP",
   "type": "module",
   "scripts": {
     "dev": "vite",
