@@ -10,7 +10,17 @@ import {
   MOTIONS,
   getMotionsForMuscle,
   generateGifSearchQuery,
-  getModelTypeForMotion
+  getModelTypeForMotion,
+  // New educational imports
+  getLearningTipsForMotion,
+  getClinicalRelevanceForMotion,
+  getCommonErrorsForMotion,
+  getAntagonistMotion,
+  getVisibilityProfile,
+  getHighlightedNodesForMotion,
+  getAllLayerPresets,
+  LAYER_PRESETS,
+  LayerPreset
 } from '../services/animationService';
 import { StickFigureAnimation } from './StickFigureAnimation';
 import { MapPin, Zap, ExternalLink, Image, BookOpen, Activity } from 'lucide-react';
@@ -74,6 +84,7 @@ const AdvancedAnimationViewer: React.FC<AdvancedAnimationViewerProps> = ({
   const [showControls, setShowControls] = useState(true);
   const [currentAngle, setCurrentAngle] = useState(0);
   const [model3DFailed, setModel3DFailed] = useState(false);
+  const [selectedLayer, setSelectedLayer] = useState<string>('muscles'); // Default to muscles view
 
   // Auto-fallback to stick figure if 3D fails
   useEffect(() => {
@@ -264,6 +275,33 @@ const AdvancedAnimationViewer: React.FC<AdvancedAnimationViewerProps> = ({
                   )}
                 </div>
 
+                {/* Anatomical Layer Toggle */}
+                <div>
+                  <label className={`text-xs font-bold uppercase tracking-wider ${theme.subText} mb-2 flex items-center gap-2`}>
+                    <Eye className="w-3 h-3" />
+                    Anatomical Layers
+                  </label>
+                  <div className="grid grid-cols-2 gap-2">
+                    {getAllLayerPresets().map(preset => (
+                      <button
+                        key={preset.id}
+                        onClick={() => setSelectedLayer(preset.id)}
+                        className={`px-2 py-2 rounded-lg text-[10px] font-semibold transition-all ${
+                          selectedLayer === preset.id
+                            ? 'bg-purple-500 text-white'
+                            : `${theme.inputBg} ${theme.text} hover:bg-opacity-80`
+                        }`}
+                        title={preset.description}
+                      >
+                        {preset.name}
+                      </button>
+                    ))}
+                  </div>
+                  <p className={`text-[9px] ${theme.subText} mt-2`}>
+                    {LAYER_PRESETS[selectedLayer]?.description || 'Select a layer to filter visible structures'}
+                  </p>
+                </div>
+
                 {/* Region Filter (Browser Mode) */}
                 {browserMode && (
                   <div>
@@ -439,6 +477,98 @@ const AdvancedAnimationViewer: React.FC<AdvancedAnimationViewerProps> = ({
                       <PlayCircle className="w-3 h-3 text-red-500" /> YouTube
                     </button>
                   </div>
+                </div>
+
+                {/* Educational Content Panel - NEW */}
+                <div className="space-y-3">
+                  <label className={`text-xs font-bold uppercase tracking-wider ${theme.subText} flex items-center gap-2`}>
+                    <Sparkles className="w-3 h-3" />
+                    Study Tips for {selectedMotion.displayName}
+                  </label>
+                  
+                  {/* Learning Tips */}
+                  {getLearningTipsForMotion(selectedMotion.id).length > 0 && (
+                    <div className={`p-3 rounded-lg ${theme.infoBox} space-y-2`}>
+                      <p className={`text-[10px] font-bold uppercase tracking-wider text-emerald-600 flex items-center gap-1`}>
+                        💡 Key Learning Points
+                      </p>
+                      <ul className={`text-xs ${theme.text} space-y-1`}>
+                        {getLearningTipsForMotion(selectedMotion.id).map((tip, i) => (
+                          <li key={i} className="flex items-start gap-2">
+                            <span className="text-emerald-500 mt-0.5">•</span>
+                            <span>{tip}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+
+                  {/* Clinical Relevance */}
+                  {getClinicalRelevanceForMotion(selectedMotion.id) && (
+                    <div className={`p-3 rounded-lg ${currentTheme === 'midnight' || currentTheme === 'blueprint' ? 'bg-blue-900/30' : 'bg-blue-50'} border border-blue-400/30`}>
+                      <p className={`text-[10px] font-bold uppercase tracking-wider text-blue-600 flex items-center gap-1 mb-1`}>
+                        🏥 Clinical Relevance
+                      </p>
+                      <p className={`text-xs ${theme.text}`}>
+                        {getClinicalRelevanceForMotion(selectedMotion.id)}
+                      </p>
+                    </div>
+                  )}
+
+                  {/* Common Errors */}
+                  {getCommonErrorsForMotion(selectedMotion.id).length > 0 && (
+                    <div className={`p-3 rounded-lg ${currentTheme === 'midnight' || currentTheme === 'blueprint' ? 'bg-amber-900/30' : 'bg-amber-50'} border border-amber-400/30`}>
+                      <p className={`text-[10px] font-bold uppercase tracking-wider text-amber-600 flex items-center gap-1 mb-1`}>
+                        ⚠️ Common Mistakes to Avoid
+                      </p>
+                      <ul className={`text-xs ${theme.text} space-y-1`}>
+                        {getCommonErrorsForMotion(selectedMotion.id).map((error, i) => (
+                          <li key={i} className="flex items-start gap-2">
+                            <span className="text-amber-500 mt-0.5">✗</span>
+                            <span>{error}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+
+                  {/* Antagonist Motion */}
+                  {getAntagonistMotion(selectedMotion.id) && (
+                    <div className={`p-3 rounded-lg ${theme.infoBox}`}>
+                      <p className={`text-[10px] font-bold uppercase tracking-wider ${theme.subText} flex items-center gap-1 mb-1`}>
+                        ⚔️ Antagonist Motion
+                      </p>
+                      <button
+                        onClick={() => {
+                          const antagonist = getAntagonistMotion(selectedMotion.id);
+                          if (antagonist) setSelectedMotion(antagonist);
+                        }}
+                        className={`w-full px-3 py-2 rounded-lg border ${theme.border} ${theme.cardBg} text-sm font-medium hover:border-purple-400 transition-all flex items-center justify-center gap-2 ${theme.text}`}
+                      >
+                        <RotateCcw className="w-3 h-3" />
+                        {getAntagonistMotion(selectedMotion.id)?.displayName}
+                      </button>
+                    </div>
+                  )}
+
+                  {/* Highlighted Muscles */}
+                  {getHighlightedNodesForMotion(selectedMotion.id).length > 0 && (
+                    <div className={`p-3 rounded-lg ${theme.infoBox}`}>
+                      <p className={`text-[10px] font-bold uppercase tracking-wider ${theme.subText} flex items-center gap-1 mb-1`}>
+                        🔍 Key Muscles Involved
+                      </p>
+                      <div className="flex flex-wrap gap-1">
+                        {getHighlightedNodesForMotion(selectedMotion.id).slice(0, 6).map((muscle, i) => (
+                          <span 
+                            key={i}
+                            className={`px-2 py-0.5 rounded-full text-[10px] font-medium ${currentTheme === 'midnight' || currentTheme === 'blueprint' ? 'bg-purple-900/50 text-purple-300' : 'bg-purple-100 text-purple-700'}`}
+                          >
+                            {muscle.replace(/\.r$/, '').replace(/ muscle/i, '')}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 {/* Beta Notice */}

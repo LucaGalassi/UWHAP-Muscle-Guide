@@ -14,12 +14,13 @@ interface SmartGuideViewProps {
   onToggleLearned: (id: string) => void;
   apiKey: string;
   currentTheme: AppTheme;
+  examDate?: number; // Optional exam date timestamp
 }
 
 type GuidePhase = 'DASHBOARD' | 'LEARN' | 'QUIZ' | 'REVIEW_CARD';
 type LearnFilter = 'ALL' | 'A' | 'B';
 
-const SmartGuideView: React.FC<SmartGuideViewProps> = ({ progressMap, onUpdateProgress, onToggleLearned, apiKey, currentTheme }) => {
+const SmartGuideView: React.FC<SmartGuideViewProps> = ({ progressMap, onUpdateProgress, onToggleLearned, apiKey, currentTheme, examDate }) => {
   const [sessionQueue, setSessionQueue] = useState<string[]>([]);
   const [currentMuscleId, setCurrentMuscleId] = useState<string | null>(null);
   const [phase, setPhase] = useState<GuidePhase>('DASHBOARD');
@@ -81,10 +82,17 @@ const SmartGuideView: React.FC<SmartGuideViewProps> = ({ progressMap, onUpdatePr
   };
 
   const handleProgressUpdate = (rating: ConfidenceRating) => {
-    if (!currentMuscleId) return;
+    console.log('SmartGuide: Rating received:', rating, 'for muscle:', currentMuscleId);
+    if (!currentMuscleId) {
+      console.error('No current muscle ID');
+      return;
+    }
     
     const currentProgress = progressMap[currentMuscleId] || createInitialProgress(currentMuscleId);
-    const updated = calculateNextReview(currentProgress, rating);
+    console.log('Current progress before update:', currentProgress);
+    
+    const updated = calculateNextReview(currentProgress, rating, examDate);
+    console.log('Updated progress:', updated);
     
     onUpdateProgress(updated);
     
@@ -106,6 +114,7 @@ const SmartGuideView: React.FC<SmartGuideViewProps> = ({ progressMap, onUpdatePr
       const isNextNew = !progressMap[nextQueue[0]];
       setPhase(isNextNew ? 'LEARN' : 'REVIEW_CARD');
     } else {
+      console.log('Session completed! Returning to dashboard');
       setPhase('DASHBOARD');
       setCurrentMuscleId(null);
     }
@@ -119,49 +128,52 @@ const SmartGuideView: React.FC<SmartGuideViewProps> = ({ progressMap, onUpdatePr
         <div className="mb-8">
           <div className="flex items-center gap-3 mb-2">
             <h1 className={`text-3xl font-extrabold ${theme.text}`}>Smart Study Guide</h1>
-            <span className="bg-brand-100 text-brand-700 text-xs font-bold px-2 py-1 rounded-md border border-brand-200">Dec 8 Exam Prep</span>
+            <span className="bg-brand-100 text-brand-700 text-xs font-bold px-2 py-1 rounded-md border border-brand-200">Exam Ready</span>
           </div>
-          <p className={`${theme.subText}`}>Your intelligent dashboard. Prioritizes what you need to know, when you need to know it.</p>
+          <p className={`${theme.subText}`}>Science-backed spaced repetition system. Learn efficiently, retain longer, ace your exam.</p>
         </div>
 
         {/* Detailed Tracking Bars - Enhanced */}
         <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm mb-10">
           <h3 className="text-sm font-bold text-slate-400 uppercase tracking-widest mb-6 flex items-center gap-2">
-             <TrendingUp className="w-4 h-4" /> Progress Analytics
+             <TrendingUp className="w-4 h-4" /> Your Progress Overview
           </h3>
           
           <div className="space-y-6">
             {/* Mastered */}
             <div>
                <div className="flex justify-between text-sm font-bold mb-2">
-                 <span className="text-emerald-700 flex items-center gap-2"><CheckCircle className="w-4 h-4" /> Mastered (Long Term)</span>
-                 <span className="text-slate-900 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-100">{masteredCount}</span>
+                 <span className="text-emerald-700 flex items-center gap-2"><CheckCircle className="w-4 h-4" /> Mastered</span>
+                 <span className="text-slate-900 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-100">{masteredCount} of {MUSCLE_DATA.length}</span>
                </div>
                <div className="h-4 w-full bg-slate-100 rounded-full overflow-hidden shadow-inner">
                  <div className="h-full bg-gradient-to-r from-emerald-400 to-emerald-600 rounded-full transition-all duration-1000" style={{width: `${(masteredCount / MUSCLE_DATA.length) * 100}%`}}></div>
                </div>
+               <p className="text-xs text-slate-500 mt-1">Deeply learned, reviewed 3+ times successfully</p>
             </div>
 
             {/* In Review */}
             <div>
                <div className="flex justify-between text-sm font-bold mb-2">
-                 <span className="text-blue-700 flex items-center gap-2"><Repeat className="w-4 h-4" /> Active Review</span>
-                 <span className="text-slate-900 bg-blue-50 px-2 py-0.5 rounded border border-blue-100">{reviewCount}</span>
+                 <span className="text-blue-700 flex items-center gap-2"><Repeat className="w-4 h-4" /> In Review</span>
+                 <span className="text-slate-900 bg-blue-50 px-3 py-1 rounded-full border border-blue-100">{reviewCount}</span>
                </div>
                <div className="h-4 w-full bg-slate-100 rounded-full overflow-hidden shadow-inner">
                  <div className="h-full bg-gradient-to-r from-blue-400 to-blue-600 rounded-full transition-all duration-1000" style={{width: `${(reviewCount / MUSCLE_DATA.length) * 100}%`}}></div>
                </div>
+               <p className="text-xs text-slate-500 mt-1">Building retention through spaced reviews</p>
             </div>
 
              {/* Learning */}
              <div>
                <div className="flex justify-between text-sm font-bold mb-2">
-                 <span className="text-orange-700 flex items-center gap-2"><Brain className="w-4 h-4" /> Learning Queue</span>
-                 <span className="text-slate-900 bg-orange-50 px-2 py-0.5 rounded border border-orange-100">{learningCount}</span>
+                 <span className="text-orange-700 flex items-center gap-2"><Brain className="w-4 h-4" /> Currently Learning</span>
+                 <span className="text-slate-900 bg-orange-50 px-3 py-1 rounded-full border border-orange-100">{learningCount}</span>
                </div>
                <div className="h-4 w-full bg-slate-100 rounded-full overflow-hidden shadow-inner">
                  <div className="h-full bg-gradient-to-r from-orange-400 to-orange-600 rounded-full transition-all duration-1000" style={{width: `${(learningCount / MUSCLE_DATA.length) * 100}%`}}></div>
                </div>
+               <p className="text-xs text-slate-500 mt-1">Recently introduced, needs reinforcement</p>
             </div>
           </div>
         </div>
@@ -192,8 +204,8 @@ const SmartGuideView: React.FC<SmartGuideViewProps> = ({ progressMap, onUpdatePr
                 <div className="flex items-center gap-3">
                   <Repeat className="w-6 h-6" />
                   <div className="text-left">
-                    <div className="text-base">Start Review Session</div>
-                    <div className="text-xs opacity-80 font-normal">{dueCount === 0 ? "You're all caught up!" : "Clear your backlog"}</div>
+                    <div className="text-base">Review Due Items</div>
+                    <div className="text-xs opacity-80 font-normal">{dueCount === 0 ? "All caught up! Come back later" : "Reinforce what you've learned"}</div>
                   </div>
                 </div>
                 {dueCount > 0 && <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />}
@@ -209,8 +221,8 @@ const SmartGuideView: React.FC<SmartGuideViewProps> = ({ progressMap, onUpdatePr
                         <Target className="w-5 h-5" />
                       </div>
                       <div>
-                         <h3 className="font-bold text-slate-900">New Content</h3>
-                         <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Expand your knowledge</p>
+                         <h3 className="font-bold text-slate-900">Learn New Muscles</h3>
+                         <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Guided introduction</p>
                       </div>
                    </div>
                    <button 
@@ -356,13 +368,6 @@ const SmartGuideView: React.FC<SmartGuideViewProps> = ({ progressMap, onUpdatePr
                />
                {/* Floating Action Buttons */}
                <div className="absolute bottom-8 right-8 z-20 flex flex-col gap-3 items-end">
-                 {/* Animation Button */}
-                 <button 
-                   onClick={() => setShowAnimationViewer(true)}
-                   className="px-5 py-3 bg-purple-600 text-white font-bold rounded-xl shadow-lg hover:bg-purple-700 flex items-center gap-2 transition-all hover:scale-105"
-                 >
-                   <PlayCircle className="w-5 h-5" /> View Animations
-                 </button>
                  {/* Continue Button */}
                  <button 
                    onClick={() => setPhase('QUIZ')}

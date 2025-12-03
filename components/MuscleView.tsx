@@ -52,7 +52,6 @@ const MuscleView: React.FC<MuscleViewProps> = ({ muscle, onSelectMuscle, isLearn
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isBannerDismissed, setIsBannerDismissed] = useState(false);
-  const [showMotionPopup, setShowMotionPopup] = useState(false);
   const [showAdvancedAnim, setShowAdvancedAnim] = useState(false);
   const [selectedMotion, setSelectedMotion] = useState<string | null>(null);
   const [selectedActionRef, setSelectedActionRef] = useState<string | null>(null);
@@ -64,7 +63,6 @@ const MuscleView: React.FC<MuscleViewProps> = ({ muscle, onSelectMuscle, isLearn
   useEffect(() => {
     // Reset banner dismissal when muscle changes
     setIsBannerDismissed(false);
-    setShowMotionPopup(false);
     setShowAdvancedAnim(false);
     
     let mounted = true;
@@ -95,10 +93,7 @@ const MuscleView: React.FC<MuscleViewProps> = ({ muscle, onSelectMuscle, isLearn
     window.open(url, 'ImageSearch', `width=${width},height=${height},top=${top},left=${left},resizable=yes,scrollbars=yes,status=no,toolbar=no,menubar=no`);
   };
 
-  const handleMotionSearch = (motion: string) => {
-    openSearchPopup(`${muscle.name} muscle ${motion} animation gif`);
-    setShowMotionPopup(false);
-  };
+
 
   const handleRelatedClick = (relatedMuscle: MuscleItem) => {
     if (onRelatedMuscleClick) {
@@ -188,11 +183,11 @@ const MuscleView: React.FC<MuscleViewProps> = ({ muscle, onSelectMuscle, isLearn
                 <MapPin className="w-5 h-5" />
               </button>
               <button 
-                onClick={() => setShowMotionPopup(true)}
+                onClick={() => setShowAdvancedAnim(true)}
                 className={`p-2.5 rounded-xl border transition-all ${theme.inputBg} ${theme.border} ${theme.text} hover:scale-105 active:scale-95`}
-                title="Search Motion GIFs"
+                title="Open 3D Animation Viewer"
               >
-                <Search className="w-5 h-5" />
+                <Move className="w-5 h-5" />
               </button>
               <button 
                 onClick={() => setShowAdvancedAnim(true)}
@@ -214,10 +209,10 @@ const MuscleView: React.FC<MuscleViewProps> = ({ muscle, onSelectMuscle, isLearn
                 <Target className="w-3 h-3" />
                 Study Requirements
               </h4>
-              <ul className={`grid md:grid-cols-2 gap-x-8 gap-y-2 text-sm ${currentTheme === 'midnight' ? 'text-slate-300' : 'text-slate-600'}`}>
+              <ul className={`grid md:grid-cols-2 gap-x-8 gap-y-2 text-sm ${theme.text}`}>
                 {(muscle.group === 'A' ? GROUP_A_REQUIREMENTS : GROUP_B_REQUIREMENTS).map((req, i) => (
                   <li key={i} className="flex items-start gap-2">
-                    <span className="mt-1.5 w-1 h-1 rounded-full bg-slate-300 shrink-0"></span>
+                    <span className={`mt-1.5 w-1 h-1 rounded-full shrink-0 ${theme.subText.replace('text-', 'bg-')}`}></span>
                     {req}
                   </li>
                 ))}
@@ -284,7 +279,7 @@ const MuscleView: React.FC<MuscleViewProps> = ({ muscle, onSelectMuscle, isLearn
           {muscle.group === 'A' && (
             <div className={`${theme.infoBox} rounded-2xl p-8 border ${theme.border}`}>
               <h3 className={`text-lg font-bold ${theme.text} mb-4 flex items-center gap-2`}>
-                <Activity className="w-5 h-5 text-slate-400" />
+                <Activity className={`w-5 h-5 ${theme.subText}`} />
                 Demonstration
               </h3>
               <div className={`${theme.text} leading-relaxed text-base whitespace-pre-line`}>
@@ -325,7 +320,7 @@ const MuscleView: React.FC<MuscleViewProps> = ({ muscle, onSelectMuscle, isLearn
             <div className="space-y-8">
               {content.clinicalConnection && (
                 <div>
-                  <h3 className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-3 flex items-center gap-2">
+                  <h3 className={`text-sm font-bold ${theme.subText} uppercase tracking-wider mb-3 flex items-center gap-2`}>
                     <Info className="w-4 h-4" />
                     Clinical Connection
                   </h3>
@@ -339,7 +334,7 @@ const MuscleView: React.FC<MuscleViewProps> = ({ muscle, onSelectMuscle, isLearn
 
                {content.relatedMuscles && content.relatedMuscles.length > 0 && (
                 <div>
-                  <h3 className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-3">
+                  <h3 className={`text-sm font-bold ${theme.subText} uppercase tracking-wider mb-3`}>
                     Related Muscles
                   </h3>
                   <div className="flex flex-col gap-2">
@@ -374,41 +369,7 @@ const MuscleView: React.FC<MuscleViewProps> = ({ muscle, onSelectMuscle, isLearn
         </div>
       )}
 
-      {/* Motion Search Popup */}
-      {showMotionPopup && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className={`w-full max-w-md rounded-2xl shadow-2xl overflow-hidden ${theme.cardBg} border ${theme.border} animate-in zoom-in-95 duration-200`}>
-            <div className={`p-4 border-b ${theme.border} flex items-center justify-between`}>
-              <h3 className={`font-bold ${theme.text}`}>Select a Motion</h3>
-              <button 
-                onClick={() => setShowMotionPopup(false)}
-                className={`p-2 rounded-full hover:bg-slate-100 ${theme.subText} transition-colors`}
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-            <div className="p-4 max-h-[60vh] overflow-y-auto custom-scrollbar">
-              <div className="grid grid-cols-1 gap-2">
-                {STANDARD_MOTIONS.map((motion) => (
-                  <button
-                    key={motion}
-                    onClick={() => handleMotionSearch(motion)}
-                    className={`flex items-center justify-between p-3 rounded-xl border ${theme.border} hover:border-brand-500 hover:bg-brand-50 transition-all group text-left`}
-                  >
-                    <span className={`font-medium ${theme.text} group-hover:text-brand-700`}>{motion}</span>
-                    <ArrowRight className="w-4 h-4 text-slate-300 group-hover:text-brand-500 transition-colors" />
-                  </button>
-                ))}
-              </div>
-            </div>
-            <div className={`p-4 border-t ${theme.border} ${theme.inputBg}`}>
-              <p className={`text-xs text-center ${theme.subText}`}>
-                Searching for: <span className="font-mono">{muscle.name} muscle [motion] animation gif</span>
-              </p>
-            </div>
-          </div>
-        </div>
-      )}
+
 
       {/* Advanced 3D Viewer (react-three-fiber) */}
       {showAdvancedAnim && (
@@ -441,18 +402,14 @@ interface InfoCardProps {
 const InfoCard: React.FC<InfoCardProps> = ({ title, icon, content, className, onSearch, isAction, currentTheme }) => {
   const theme = THEME_CONFIG[currentTheme];
   return (
-    <div className={`p-6 rounded-2xl border ${theme.border} shadow-sm flex flex-col h-full hover:border-slate-300 transition-colors ${theme.cardBg} ${className}`}>
+    <div className={`p-6 rounded-2xl border ${theme.border} shadow-sm flex flex-col h-full hover:border-brand-400/50 transition-colors ${theme.cardBg} ${className}`}>
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2.5">
           <div className={`p-1.5 rounded-md ${theme.inputBg}`}>{icon}</div>
           <h3 className={`font-bold ${theme.text} text-sm uppercase tracking-wide`}>{title}</h3>
         </div>
       </div>
-      <div className={`text-sm ${
-        currentTheme === 'midnight' ? 'text-slate-300' : 
-        currentTheme === 'blueprint' ? 'text-blue-200' : 
-        'text-slate-600'
-      } leading-relaxed whitespace-pre-line flex-1 mb-4`}>
+      <div className={`text-sm ${theme.text} leading-relaxed whitespace-pre-line flex-1 mb-4 opacity-90`}>
         {content}
       </div>
       <button 
@@ -460,7 +417,7 @@ const InfoCard: React.FC<InfoCardProps> = ({ title, icon, content, className, on
         className={`w-full mt-auto py-2.5 px-3 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-2 active:scale-[0.98] ${
           isAction 
           ? 'bg-blue-600 text-white hover:bg-blue-700 shadow-sm' 
-          : `${theme.inputBg} hover:bg-slate-100 border ${theme.border} hover:border-slate-300 ${theme.subText} hover:text-brand-600`
+          : `${theme.inputBg} border ${theme.border} hover:border-brand-400 ${theme.text} hover:text-brand-600`
         }`}
       >
         {isAction ? <PlayCircle className="w-4 h-4" /> : <Search className="w-3.5 h-3.5" />}

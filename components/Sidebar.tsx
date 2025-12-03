@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { MUSCLE_DATA, THEME_CONFIG } from '../constants';
 import { MuscleItem, StudyMode, MuscleProgress, AppTheme } from '../types';
 import { Search, ChevronRight, BookOpen, CheckCircle2, Share2, Circle, X, Copy, Check, GraduationCap, LayoutList, Settings, Key, Trash2, Trophy, Clock, Sun, Moon, DraftingCompass, Leaf, Palette, Save, AlertTriangle, Timer, Play } from 'lucide-react';
@@ -25,6 +25,8 @@ interface SidebarProps {
   studentName: string;
   onSetStudentName: (name: string) => void;
   onOpenAnimationBrowser?: () => void; // NEW
+  examDate: number;
+  onSetExamDate: (date: number) => void;
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ 
@@ -47,7 +49,9 @@ const Sidebar: React.FC<SidebarProps> = ({
   daysUntilExam,
   studentName,
   onSetStudentName,
-  onOpenAnimationBrowser
+  onOpenAnimationBrowser,
+  examDate,
+  onSetExamDate
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterGroup, setFilterGroup] = useState<'ALL' | 'A' | 'B'>('ALL');
@@ -66,9 +70,19 @@ const Sidebar: React.FC<SidebarProps> = ({
   const [hideSplash, setHideSplash] = useState<boolean>(() => {
     try { return localStorage.getItem('settings_hide_splash') === '1'; } catch { return false; }
   });
+  const [tempExamDate, setTempExamDate] = useState<string>('');
   const [statsPreview, setStatsPreview] = useState<any>(() => {
     try { const raw = localStorage.getItem('app_stats'); return raw ? JSON.parse(raw) : null; } catch { return null; }
   });
+
+  // Initialize temp exam date when modal opens
+  useEffect(() => {
+    if (showSettingsModal) {
+      const date = new Date(examDate);
+      const formatted = date.toISOString().slice(0, 16); // Format: YYYY-MM-DDTHH:MM
+      setTempExamDate(formatted);
+    }
+  }, [showSettingsModal, examDate]);
 
   const theme = THEME_CONFIG[currentTheme];
 
@@ -110,6 +124,13 @@ const Sidebar: React.FC<SidebarProps> = ({
 
   const handleSaveKey = () => {
     onSetApiKey(tempKey);
+    // Save exam date if changed
+    if (tempExamDate) {
+      const parsed = new Date(tempExamDate).getTime();
+      if (!isNaN(parsed) && parsed > Date.now()) {
+        onSetExamDate(parsed);
+      }
+    }
     try {
       localStorage.setItem('welcome_dismissed', skipWelcome ? '1' : '0');
       localStorage.setItem('settings_auto_resume', autoResume ? '1' : '0');
@@ -261,23 +282,47 @@ const Sidebar: React.FC<SidebarProps> = ({
           {/* STUDY MODE: Stats */}
           {currentMode === 'STUDY' && (
             <div className="space-y-3">
-              <div className="bg-red-50 p-4 rounded-xl flex items-center gap-4 border border-red-100">
-                <div className="p-2 bg-white rounded-lg text-red-600 shadow-sm">
+              <div className={`p-4 rounded-xl flex items-center gap-4 border ${
+                currentTheme === 'midnight' || currentTheme === 'blueprint' 
+                ? 'bg-red-900/20 border-red-800/50' 
+                : 'bg-red-50 border-red-100'
+              }`}>
+                <div className={`p-2 rounded-lg shadow-sm ${
+                  currentTheme === 'midnight' || currentTheme === 'blueprint'
+                  ? 'bg-red-900/30 text-red-400'
+                  : 'bg-white text-red-600'
+                }`}>
                   <Clock className="w-5 h-5" />
                 </div>
                 <div>
-                  <h4 className="text-sm font-bold text-slate-900">{dueCount} Muscles</h4>
-                  <p className="text-xs text-red-600 font-medium">Due for spaced repetition</p>
+                  <h4 className={`text-sm font-bold ${theme.sidebarText}`}>{dueCount} Muscles</h4>
+                  <p className={`text-xs font-medium ${
+                    currentTheme === 'midnight' || currentTheme === 'blueprint'
+                    ? 'text-red-400'
+                    : 'text-red-600'
+                  }`}>Due for spaced repetition</p>
                 </div>
               </div>
               
-              <div className="bg-blue-50 p-4 rounded-xl flex items-center gap-4 border border-blue-100">
-                <div className="p-2 bg-white rounded-lg text-blue-600 shadow-sm">
+              <div className={`p-4 rounded-xl flex items-center gap-4 border ${
+                currentTheme === 'midnight' || currentTheme === 'blueprint' 
+                ? 'bg-blue-900/20 border-blue-800/50' 
+                : 'bg-blue-50 border-blue-100'
+              }`}>
+                <div className={`p-2 rounded-lg shadow-sm ${
+                  currentTheme === 'midnight' || currentTheme === 'blueprint'
+                  ? 'bg-blue-900/30 text-blue-400'
+                  : 'bg-white text-blue-600'
+                }`}>
                   <Trophy className="w-5 h-5" />
                 </div>
                 <div>
-                  <h4 className="text-sm font-bold text-slate-900">{learnedIds.size} Mastered</h4>
-                  <p className="text-xs text-blue-600 font-medium">Keep hitting the books!</p>
+                  <h4 className={`text-sm font-bold ${theme.sidebarText}`}>{learnedIds.size} Mastered</h4>
+                  <p className={`text-xs font-medium ${
+                    currentTheme === 'midnight' || currentTheme === 'blueprint'
+                    ? 'text-blue-400'
+                    : 'text-blue-600'
+                  }`}>Keep hitting the books!</p>
                 </div>
               </div>
               
@@ -313,11 +358,19 @@ const Sidebar: React.FC<SidebarProps> = ({
                             e.stopPropagation();
                             toggleLearned(muscle.id);
                           }}
-                          className={`p-3 focus:outline-none transition-colors ${isSelected ? 'text-brand-500' : 'text-slate-300 hover:text-brand-500'}`}
+                          className={`p-3 focus:outline-none transition-colors ${
+                            isSelected 
+                            ? 'text-brand-500' 
+                            : `${theme.sidebarSubText} hover:text-brand-500`
+                          }`}
                           title={isLearned ? "Mark as unlearned" : "Mark as learned"}
                         >
                           {isLearned ? (
-                            <CheckCircle2 className="w-4 h-4 text-green-500 fill-green-50" />
+                            <CheckCircle2 className={`w-4 h-4 ${
+                              currentTheme === 'midnight' || currentTheme === 'blueprint'
+                              ? 'text-green-400 fill-green-900/30'
+                              : 'text-green-500 fill-green-50'
+                            }`} />
                           ) : (
                             <Circle className="w-4 h-4" />
                           )}
@@ -353,8 +406,27 @@ const Sidebar: React.FC<SidebarProps> = ({
         )}
         
         {/* Footer */}
-        <div className={`p-4 border-t ${theme.sidebarBorder} ${theme.sidebarBg} text-[10px] ${theme.sidebarSubText} text-center uppercase tracking-wider font-semibold`}>
-          • Made by Luca G • {apiKey ? 'AI Link Enabled •' : 'AI Link Disabled •'}
+        <div className={`p-4 border-t ${theme.sidebarBorder} ${theme.sidebarBg}`}>
+          <div className="flex items-center justify-between text-[10px] font-bold">
+            <span className={`${theme.sidebarSubText} opacity-50`}>v{pkg.version}</span>
+            <div className="flex items-center gap-2">
+              <div className={`flex items-center gap-1 ${apiKey ? 'text-emerald-600' : theme.sidebarSubText}`}>
+                <Key className="w-3 h-3" />
+                <span className="uppercase tracking-wider">{apiKey ? 'AI' : 'No AI'}</span>
+              </div>
+              <span className={`${theme.sidebarSubText} opacity-30`}>|</span>
+              <button
+                onClick={() => setShowSettingsModal(true)}
+                className={`flex items-center gap-1 ${theme.sidebarSubText} hover:text-brand-600 transition-colors uppercase tracking-wider`}
+              >
+                <Settings className="w-3 h-3" />
+                <span>Settings</span>
+              </button>
+            </div>
+          </div>
+          <div className={`text-center mt-2 text-[9px] ${theme.sidebarSubText} opacity-50 uppercase tracking-wider`}>
+            Made by Luca G
+          </div>
         </div>
       </div>
 
@@ -546,6 +618,33 @@ const Sidebar: React.FC<SidebarProps> = ({
                 </div>
 
                 <div className="border-t border-slate-100 pt-6 space-y-4">
+                  {/* Exam Date Settings */}
+                  <div className="space-y-3">
+                    <div className="flex items-start gap-3">
+                      <div className="p-2 bg-red-50 text-red-600 rounded-lg">
+                        <Timer className="w-5 h-5" />
+                      </div>
+                      <div>
+                        <h4 className="text-sm font-bold text-slate-900">Exam Date & Study Planning</h4>
+                        <p className="text-xs text-slate-500 mt-1">
+                          Set your exam date to optimize study intervals and receive smart reminders.
+                        </p>
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-xs font-bold text-slate-600 uppercase tracking-wider">Exam Date & Time</label>
+                      <input 
+                        type="datetime-local"
+                        value={tempExamDate}
+                        onChange={(e) => setTempExamDate(e.target.value)}
+                        className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-brand-500/20 outline-none"
+                      />
+                      <p className="text-xs text-slate-500 italic">
+                        The SRS algorithm will adjust review intervals to ensure you review all material before your exam.
+                      </p>
+                    </div>
+                  </div>
+
                   {/* Session & Resume Settings */}
                   <div className="space-y-3">
                     <div className="flex items-start gap-3">

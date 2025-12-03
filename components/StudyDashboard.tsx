@@ -30,22 +30,26 @@ const StudyDashboard: React.FC<StudyDashboardProps> = ({ onSelectTool, learnedCo
       </div>
 
       {/* Stats row */}
-      <div className="grid md:grid-cols-4 gap-4 mb-6">
-        <div className={`p-4 rounded-xl border ${theme.border} ${theme.cardBg}`}>
-          <div className={`text-[10px] uppercase tracking-wider ${theme.subText}`}>Sessions</div>
-          <div className={`text-xl font-extrabold ${theme.text}`}>{stats?.totalSessions ?? 0}</div>
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mb-6">
+        <div className={`p-4 rounded-xl border ${theme.border} ${theme.cardBg} text-center`}>
+          <div className={`text-3xl font-black ${theme.text} mb-1`}>{learnedCount}</div>
+          <div className={`text-[10px] uppercase tracking-wider ${theme.subText} font-bold`}>Mastered</div>
+          <div className={`text-[9px] ${theme.subText} opacity-60 mt-0.5`}>of {totalCount}</div>
         </div>
-        <div className={`p-4 rounded-xl border ${theme.border} ${theme.cardBg}`}>
-          <div className={`text-[10px] uppercase tracking-wider ${theme.subText}`}>Muscles Viewed</div>
-          <div className={`text-xl font-extrabold ${theme.text}`}>{stats?.musclesViewed ?? 0}</div>
+        <div className={`p-4 rounded-xl border ${theme.border} ${theme.cardBg} text-center`}>
+          <div className={`text-3xl font-black ${theme.text} mb-1`}>{stats?.totalSessions ?? 0}</div>
+          <div className={`text-[10px] uppercase tracking-wider ${theme.subText} font-bold`}>Sessions</div>
+          <div className={`text-[9px] ${theme.subText} opacity-60 mt-0.5`}>completed</div>
         </div>
-        <div className={`p-4 rounded-xl border ${theme.border} ${theme.cardBg}`}>
-          <div className={`text-[10px] uppercase tracking-wider ${theme.subText}`}>Flashcards Answered</div>
-          <div className={`text-xl font-extrabold ${theme.text}`}>{stats?.flashcardsAnswered ?? 0}</div>
+        <div className={`p-4 rounded-xl border ${theme.border} ${theme.cardBg} text-center`}>
+          <div className={`text-3xl font-black ${theme.text} mb-1`}>{stats?.flashcardsAnswered ?? 0}</div>
+          <div className={`text-[10px] uppercase tracking-wider ${theme.subText} font-bold`}>Cards</div>
+          <div className={`text-[9px] ${theme.subText} opacity-60 mt-0.5`}>reviewed</div>
         </div>
-        <div className={`p-4 rounded-xl border ${theme.border} ${theme.cardBg}`}>
-          <div className={`text-[10px] uppercase tracking-wider ${theme.subText}`}>Last Session</div>
-          <div className={`text-xs font-semibold ${theme.text}`}>{stats?.lastSessionAt ? new Date(stats.lastSessionAt).toLocaleString() : '—'}</div>
+        <div className={`p-4 rounded-xl border ${theme.border} ${theme.cardBg} text-center`}>
+          <div className={`text-2xl font-black ${theme.text} mb-1`}>{Math.round((learnedCount / totalCount) * 100)}%</div>
+          <div className={`text-[10px] uppercase tracking-wider ${theme.subText} font-bold`}>Progress</div>
+          <div className={`text-[9px] ${theme.subText} opacity-60 mt-0.5`}>mastery rate</div>
         </div>
       </div>
 
@@ -95,10 +99,10 @@ const StudyDashboard: React.FC<StudyDashboardProps> = ({ onSelectTool, learnedCo
           </div>
           <h3 className="text-xl font-bold text-white mb-2">Smart Guide</h3>
           <p className="text-sm text-slate-400 leading-relaxed mb-6">
-            Your personal AI-free tutor. A structured path to learn the {totalCount - learnedCount} remaining muscles one by one.
+            Intelligent spaced repetition system. Learn {totalCount - learnedCount} new muscles and review at optimal intervals for long-term retention.
           </p>
           <span className="text-white text-xs font-bold uppercase tracking-wider flex items-center gap-1 group-hover:gap-2 transition-all">
-            Start Guided Session <ArrowRight className="w-3 h-3" />
+            Begin Smart Study <ArrowRight className="w-3 h-3" />
           </span>
         </button>
 
@@ -121,14 +125,19 @@ const StudyDashboard: React.FC<StudyDashboardProps> = ({ onSelectTool, learnedCo
       </div>
 
       {/* Ratings breakdown */}
-      <div className="mt-6 grid grid-cols-4 gap-3">
-        {(['AGAIN','HARD','GOOD','EASY'] as const).map((k) => (
-          <div key={k} className={`p-3 rounded-lg border ${theme.border} ${theme.cardBg} text-center`}>
-            <div className={`text-[10px] uppercase tracking-wider ${theme.subText}`}>{k}</div>
-            <div className={`text-lg font-extrabold ${theme.text}`}>{stats?.ratings?.[k] ?? 0}</div>
+      {(stats?.flashcardsAnswered ?? 0) > 0 && (
+        <div className="mt-6">
+          <h3 className={`text-xs font-bold uppercase tracking-wider ${theme.subText} mb-3`}>Confidence Distribution</h3>
+          <div className="grid grid-cols-4 gap-2">
+            {[{key:'AGAIN',label:'Again',color:'red'},{key:'HARD',label:'Hard',color:'orange'},{key:'GOOD',label:'Good',color:'blue'},{key:'EASY',label:'Easy',color:'emerald'}].map(({key,label,color}) => (
+              <div key={key} className={`p-3 rounded-lg border ${theme.border} ${theme.cardBg} text-center`}>
+                <div className={`text-2xl font-black text-${color}-600 mb-1`}>{stats?.ratings?.[key as keyof typeof stats.ratings] ?? 0}</div>
+                <div className={`text-[10px] uppercase tracking-wider text-${color}-600 font-bold`}>{label}</div>
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
+        </div>
+      )}
     </div>
   );
 };

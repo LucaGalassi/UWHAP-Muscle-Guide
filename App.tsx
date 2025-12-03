@@ -15,7 +15,7 @@ import { Menu, ArrowLeft, AlertTriangle, Timer } from 'lucide-react';
 
 // Compression Helpers
 const STATUS_MAP = ['NEW', 'LEARNING', 'REVIEW', 'MASTERED'];
-const EXAM_DATE = new Date('2025-12-08T09:00:00'); // Exam Date reference
+const DEFAULT_EXAM_DATE = new Date('2025-12-08T09:00:00').getTime(); // Default exam date as timestamp
 
 const compressProgress = (map: Record<string, MuscleProgress>): string => {
   const minified = Object.values(map).map(p => {
@@ -126,8 +126,12 @@ const App: React.FC = () => {
   // Global Theme State
   const [theme, setTheme] = useState<AppTheme>('modern');
 
+  // Exam Date State
+  const [examDate, setExamDate] = useState<number>(DEFAULT_EXAM_DATE);
+
   // Welcome Modal State
   const [showWelcome, setShowWelcome] = useState(true);
+  const [isNewUser, setIsNewUser] = useState(false);
   // Resume prompt moved into SplashScreen
   
   // Splash Screen State
@@ -162,7 +166,7 @@ const App: React.FC = () => {
   useEffect(() => {
     const updateCountdown = () => {
       const now = new Date();
-      const diff = EXAM_DATE.getTime() - now.getTime();
+      const diff = examDate - now.getTime();
       const days = Math.ceil(diff / (1000 * 60 * 60 * 24));
       setDaysUntilExam(Math.max(0, days));
     };
@@ -170,7 +174,7 @@ const App: React.FC = () => {
     updateCountdown();
     const timer = setInterval(updateCountdown, 60 * 60 * 1000); // refresh hourly
     return () => clearInterval(timer);
-  }, []);
+  }, [examDate]);
 
   const parseUrlParams = (search: string) => {
     const params = new URLSearchParams(search);
@@ -275,6 +279,19 @@ const App: React.FC = () => {
       console.error('Failed to load theme from localStorage', e);
     }
 
+    // 3.5 Load Exam Date
+    try {
+      const storedExamDate = localStorage.getItem('exam_date');
+      if (storedExamDate) {
+        const parsed = parseInt(storedExamDate, 10);
+        if (!isNaN(parsed) && parsed > Date.now()) {
+          setExamDate(parsed);
+        }
+      }
+    } catch (e) {
+      console.error('Failed to load exam date from localStorage', e);
+    }
+
     // 4. Load Student Name
     try {
       const storedName = localStorage.getItem('student_name');
@@ -340,6 +357,16 @@ const App: React.FC = () => {
       console.error('Failed to save student name to localStorage', e);
     }
   }, [studentName]);
+
+  // Save Exam Date whenever it changes
+  useEffect(() => {
+    try {
+      localStorage.setItem('exam_date', examDate.toString());
+      localStorage.setItem('last_save_timestamp', Date.now().toString());
+    } catch (e) {
+      console.error('Failed to save exam date to localStorage', e);
+    }
+  }, [examDate]);
 
   // Track muscles viewed
   useEffect(() => {
@@ -551,6 +578,7 @@ const App: React.FC = () => {
               onToggleLearned={toggleLearnedSimple}
               apiKey={apiKey}
               currentTheme={theme}
+              examDate={examDate}
             />
           )}
         </div>
@@ -583,6 +611,7 @@ const App: React.FC = () => {
             setStudentName('');
             setTheme('modern');
             setApiKey('');
+            setIsNewUser(true);
             setShowWelcome(true);
           }}
           onImport={(input) => {
@@ -601,11 +630,12 @@ const App: React.FC = () => {
       {/* Welcome Modal */}
       {showWelcome && (
         <WelcomeModal 
-          onDismiss={() => { setShowWelcome(false); try { localStorage.setItem('welcome_dismissed', '1'); } catch {} }}
+          onDismiss={() => { setShowWelcome(false); setIsNewUser(false); try { localStorage.setItem('welcome_dismissed', '1'); } catch {} }}
           onResume={handleResumeData}
           daysUntilExam={daysUntilExam}
           currentTheme={theme}
           onSelectTheme={setTheme}
+          isNewUser={isNewUser}
         />
       )}
 
@@ -651,6 +681,8 @@ const App: React.FC = () => {
           studentName={studentName}
           onSetStudentName={setStudentName}
           onOpenAnimationBrowser={() => setShowAnimationBrowser(true)}
+          examDate={examDate}
+          onSetExamDate={setExamDate}
         />
 
         {/* Main Content */}

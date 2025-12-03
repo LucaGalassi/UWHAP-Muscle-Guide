@@ -43,6 +43,7 @@ const FlashcardView: React.FC<FlashcardViewProps> = ({ muscle, onRate, onNext, a
   }, [muscle, apiKey]);
 
   const handleRating = (rating: ConfidenceRating) => {
+    console.log('Rating selected:', rating);
     if (onRate) {
       onRate(rating);
     } else {
@@ -201,14 +202,6 @@ const FlashcardView: React.FC<FlashcardViewProps> = ({ muscle, onRate, onNext, a
                        <Play className="w-4 h-4" /> Action
                     </span>
                     <p className={`text-lg font-medium leading-relaxed ${theme.text}`}>{content?.action || "..."}</p>
-                    <div className="mt-4">
-                      <button
-                        onClick={(e) => { e.stopPropagation(); setShowAdvancedAnim(true); }}
-                        className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 text-xs font-bold uppercase tracking-wider shadow-sm"
-                      >
-                        <PlayCircle className="w-4 h-4" /> Show Action Animation
-                      </button>
-                    </div>
                  </div>
                </div>
             </div>
@@ -220,36 +213,56 @@ const FlashcardView: React.FC<FlashcardViewProps> = ({ muscle, onRate, onNext, a
       </div>
 
       {/* SRS Controls - Fixed z-index and visibility */}
-      <div className={`w-full max-w-2xl transition-all duration-300 relative z-20 ${isFlipped ? 'opacity-100 translate-y-0 pointer-events-auto' : 'opacity-0 translate-y-4 pointer-events-none'}`}>
+      <div className={`w-full max-w-2xl transition-all duration-300 relative z-20 ${isFlipped ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 pointer-events-none'}`}>
         <p className={`text-center text-xs font-bold uppercase tracking-widest mb-4 ${theme.subText}`}>How well did you know this?</p>
         <div className="grid grid-cols-4 gap-2 md:gap-4">
           <button 
-            onClick={(e) => { e.stopPropagation(); handleRating('AGAIN'); }}
-            className={`group flex flex-col items-center justify-center py-3 md:py-4 rounded-xl transition-all shadow-lg hover:-translate-y-1 border-b-4 border-red-500 ${currentTheme === 'midnight' || currentTheme === 'blueprint' ? 'bg-slate-800 hover:bg-red-900/50' : 'bg-white hover:bg-red-50'}`}
+            onClick={(e) => { 
+              e.stopPropagation(); 
+              e.preventDefault();
+              handleRating('AGAIN'); 
+            }}
+            disabled={!isFlipped}
+            className={`group flex flex-col items-center justify-center py-3 md:py-4 rounded-xl transition-all shadow-lg hover:-translate-y-1 border-b-4 border-red-500 ${currentTheme === 'midnight' || currentTheme === 'blueprint' ? 'bg-slate-800 hover:bg-red-900/50' : 'bg-white hover:bg-red-50'} ${!isFlipped ? 'cursor-default' : 'cursor-pointer'}`}
           >
             <span className={`font-bold text-sm md:text-base ${currentTheme === 'midnight' || currentTheme === 'blueprint' ? 'text-red-400' : 'text-slate-700 group-hover:text-red-700'}`}>Again</span>
             <span className={`text-[9px] md:text-[10px] uppercase font-bold mt-1 ${theme.subText}`}>Forgot</span>
           </button>
           
           <button 
-            onClick={(e) => { e.stopPropagation(); handleRating('HARD'); }}
-            className={`group flex flex-col items-center justify-center py-3 md:py-4 rounded-xl transition-all shadow-lg hover:-translate-y-1 border-b-4 border-orange-500 ${currentTheme === 'midnight' || currentTheme === 'blueprint' ? 'bg-slate-800 hover:bg-orange-900/50' : 'bg-white hover:bg-orange-50'}`}
+            onClick={(e) => { 
+              e.stopPropagation(); 
+              e.preventDefault();
+              handleRating('HARD'); 
+            }}
+            disabled={!isFlipped}
+            className={`group flex flex-col items-center justify-center py-3 md:py-4 rounded-xl transition-all shadow-lg hover:-translate-y-1 border-b-4 border-orange-500 ${currentTheme === 'midnight' || currentTheme === 'blueprint' ? 'bg-slate-800 hover:bg-orange-900/50' : 'bg-white hover:bg-orange-50'} ${!isFlipped ? 'cursor-default' : 'cursor-pointer'}`}
           >
             <span className={`font-bold text-sm md:text-base ${currentTheme === 'midnight' || currentTheme === 'blueprint' ? 'text-orange-400' : 'text-slate-700 group-hover:text-orange-700'}`}>Hard</span>
             <span className={`text-[9px] md:text-[10px] uppercase font-bold mt-1 ${theme.subText}`}>Struggled</span>
           </button>
           
           <button 
-            onClick={(e) => { e.stopPropagation(); handleRating('GOOD'); }}
-            className={`group flex flex-col items-center justify-center py-3 md:py-4 rounded-xl transition-all shadow-lg hover:-translate-y-1 border-b-4 border-blue-500 ${currentTheme === 'midnight' || currentTheme === 'blueprint' ? 'bg-slate-800 hover:bg-blue-900/50' : 'bg-white hover:bg-blue-50'}`}
+            onClick={(e) => { 
+              e.stopPropagation(); 
+              e.preventDefault();
+              handleRating('GOOD'); 
+            }}
+            disabled={!isFlipped}
+            className={`group flex flex-col items-center justify-center py-3 md:py-4 rounded-xl transition-all shadow-lg hover:-translate-y-1 border-b-4 border-blue-500 ${currentTheme === 'midnight' || currentTheme === 'blueprint' ? 'bg-slate-800 hover:bg-blue-900/50' : 'bg-white hover:bg-blue-50'} ${!isFlipped ? 'cursor-default' : 'cursor-pointer'}`}
           >
             <span className={`font-bold text-sm md:text-base ${currentTheme === 'midnight' || currentTheme === 'blueprint' ? 'text-blue-400' : 'text-slate-700 group-hover:text-blue-700'}`}>Good</span>
             <span className={`text-[9px] md:text-[10px] uppercase font-bold mt-1 ${theme.subText}`}>Recalled</span>
           </button>
           
           <button 
-            onClick={(e) => { e.stopPropagation(); handleRating('EASY'); }}
-            className={`group flex flex-col items-center justify-center py-3 md:py-4 rounded-xl transition-all shadow-lg hover:-translate-y-1 border-b-4 border-emerald-500 ${currentTheme === 'midnight' || currentTheme === 'blueprint' ? 'bg-slate-800 hover:bg-emerald-900/50' : 'bg-white hover:bg-emerald-50'}`}
+            onClick={(e) => { 
+              e.stopPropagation(); 
+              e.preventDefault();
+              handleRating('EASY'); 
+            }}
+            disabled={!isFlipped}
+            className={`group flex flex-col items-center justify-center py-3 md:py-4 rounded-xl transition-all shadow-lg hover:-translate-y-1 border-b-4 border-emerald-500 ${currentTheme === 'midnight' || currentTheme === 'blueprint' ? 'bg-slate-800 hover:bg-emerald-900/50' : 'bg-white hover:bg-emerald-50'} ${!isFlipped ? 'cursor-default' : 'cursor-pointer'}`}
           >
             <span className={`font-bold text-sm md:text-base ${currentTheme === 'midnight' || currentTheme === 'blueprint' ? 'text-emerald-400' : 'text-slate-700 group-hover:text-emerald-700'}`}>Easy</span>
             <span className={`text-[9px] md:text-[10px] uppercase font-bold mt-1 ${theme.subText}`}>Instant</span>

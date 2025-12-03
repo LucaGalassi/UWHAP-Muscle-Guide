@@ -16,7 +16,8 @@ export const createInitialProgress = (muscleId: string): MuscleProgress => ({
 
 export const calculateNextReview = (
   current: MuscleProgress, 
-  rating: ConfidenceRating
+  rating: ConfidenceRating,
+  examDate?: number // Optional exam date timestamp
 ): MuscleProgress => {
   const now = Date.now();
   let { interval, easeFactor, streak, status } = current;
@@ -59,6 +60,17 @@ export const calculateNextReview = (
   if (rating === 'HARD') {
     interval = Math.max(1, Math.floor(interval * 0.5)); // Reduce interval increase for hard items
     easeFactor = Math.max(1.3, easeFactor - 0.15); // Penalty
+  }
+
+  // Exam date awareness: Cap intervals to ensure review before exam
+  if (examDate) {
+    const daysUntilExam = (examDate - now) / (24 * 60 * 60 * 1000);
+    if (daysUntilExam > 0 && interval > 0) {
+      // Ensure we review at least once before exam
+      // Cap interval to 40% of remaining time to allow multiple reviews
+      const maxInterval = Math.max(1, Math.floor(daysUntilExam * 0.4));
+      interval = Math.min(interval, maxInterval);
+    }
   }
 
   // Convert days to ms with overflow protection

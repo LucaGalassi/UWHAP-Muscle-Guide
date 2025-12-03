@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Activity, Clock, AlertTriangle } from 'lucide-react';
+import { Activity, Clock, AlertTriangle, Settings, Key } from 'lucide-react';
+import pkg from '../package.json';
 
 interface SplashScreenProps {
   onFinish: () => void;
@@ -60,6 +61,18 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onFinish, studentName, hasS
 
   return (
     <div className={`fixed inset-0 z-[100] flex flex-col items-center justify-center bg-slate-950 transition-all duration-700 ease-in-out ${isExiting ? 'opacity-0 scale-110 pointer-events-none' : 'opacity-100 scale-100'}`}>
+      {/* Version Badge - Top Right Corner */}
+      <div className="absolute top-4 right-4 flex items-center gap-2 text-slate-500 text-xs font-bold z-10">
+        <span className="opacity-50">v{pkg.version}</span>
+        <span className="opacity-30">|</span>
+        <div className="flex items-center gap-1 opacity-50">
+          <Key className="w-3 h-3" />
+          <span>AI</span>
+        </div>
+        <span className="opacity-30">|</span>
+        <Settings className="w-3 h-3 opacity-50" />
+      </div>
+
       <div className="relative mb-12">
         {/* Background Glow */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-blue-600/20 rounded-full blur-[100px] animate-pulse"></div>
@@ -76,7 +89,7 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onFinish, studentName, hasS
       </div>
 
       <h1 className="relative z-10 text-4xl md:text-6xl font-black text-white tracking-tighter mb-6 animate-in slide-in-from-bottom-8 fade-in duration-1000 text-center px-4">
-        <span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 via-blue-500 to-indigo-500">UWHAP</span> Muscle Guide
+        <span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 via-blue-500 to-indigo-500">UWH AP1</span> Muscle Guide
       </h1>
       
       {studentName && (
@@ -123,28 +136,9 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onFinish, studentName, hasS
                 className="px-3 py-2 rounded-lg bg-emerald-600 text-white text-sm font-bold hover:bg-emerald-700"
               >Resume</button>
               <button
-                onClick={() => { onReset?.(); setIsExiting(true); setTimeout(onFinish, 300); }}
+                onClick={() => { onReset?.(); setShowPrompt(false); setIsExiting(true); setTimeout(onFinish, 300); }}
                 className="px-3 py-2 rounded-lg bg-slate-100 text-slate-700 text-sm font-bold hover:bg-slate-200 border border-slate-200"
               >Start Fresh</button>
-            </div>
-            <div className="space-y-2">
-              <label className="text-xs font-bold text-slate-600">Or paste a Save Code / Link</label>
-              <input
-                value={importValue}
-                onChange={(e)=>setImportValue(e.target.value)}
-                className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm"
-                placeholder="Paste code or URL here"
-              />
-              <div className="flex gap-2">
-                <button
-                  onClick={() => { if (importValue.trim()) { try { onImport?.(importValue.trim()); } catch {} } setIsExiting(true); setTimeout(onFinish, 300); }}
-                  className="px-3 py-2 rounded-lg bg-blue-600 text-white text-sm font-bold hover:bg-blue-700"
-                >Load</button>
-                <button
-                  onClick={() => { setShowPrompt(false); setIsExiting(true); setTimeout(onFinish, 300); }}
-                  className="px-3 py-2 rounded-lg bg-white text-slate-700 text-sm font-bold border border-slate-200 hover:bg-slate-50"
-                >Skip</button>
-              </div>
             </div>
           </div>
         </div>

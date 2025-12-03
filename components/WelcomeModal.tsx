@@ -10,11 +10,12 @@ interface WelcomeModalProps {
   daysUntilExam: number;
   currentTheme: AppTheme;
   onSelectTheme: (theme: AppTheme) => void;
+  isNewUser?: boolean;
 }
 
 const APP_VERSION = appPackage.version ?? 'dev';
 
-const WelcomeModal: React.FC<WelcomeModalProps> = ({ onDismiss, onResume, daysUntilExam, currentTheme, onSelectTheme }) => {
+const WelcomeModal: React.FC<WelcomeModalProps> = ({ onDismiss, onResume, daysUntilExam, currentTheme, onSelectTheme, isNewUser = false }) => {
   const [resumeLink, setResumeLink] = useState('');
   const [error, setError] = useState('');
   const [tutorialStep, setTutorialStep] = useState<number>(0); // 0 = Landing, 1+ = Tutorial
@@ -183,38 +184,39 @@ const WelcomeModal: React.FC<WelcomeModalProps> = ({ onDismiss, onResume, daysUn
     const stepIndex = tutorialStep - 1;
     const step = TUTORIAL_STEPS[stepIndex];
     const isLast = stepIndex === TUTORIAL_STEPS.length - 1;
+    const currentThemeConfig = THEME_CONFIG[currentTheme];
 
     return (
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/90 backdrop-blur-md animate-in fade-in duration-300">
-        <div className="w-full max-w-lg bg-white rounded-3xl shadow-2xl overflow-hidden flex flex-col relative h-[80vh] md:h-auto md:min-h-[500px]">
+      <div className={`fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-md animate-in fade-in duration-300 transition-colors ${currentThemeConfig.appBg}`}>
+        <div className={`w-full max-w-lg rounded-3xl shadow-2xl overflow-hidden flex flex-col relative h-[80vh] md:h-auto md:min-h-[500px] transition-all duration-500 ${currentThemeConfig.cardBg} ${currentThemeConfig.border} border-2`}>
           
           {/* Progress Bar */}
           <div className="flex gap-1 p-2 shrink-0">
              {TUTORIAL_STEPS.map((_, i) => (
-               <div key={i} className={`h-1 flex-1 rounded-full transition-all duration-300 ${i <= stepIndex ? 'bg-brand-600' : 'bg-slate-100'}`} />
+               <div key={i} className={`h-1 flex-1 rounded-full transition-all duration-300 ${i <= stepIndex ? currentThemeConfig.accent : currentThemeConfig.border}`} />
              ))}
           </div>
 
-          <div className="flex-1 p-4 md:p-8 flex flex-col items-center text-center animate-in slide-in-from-right-4 duration-300 key={stepIndex} overflow-y-auto">
-             <div className="w-16 h-16 md:w-20 md:h-20 bg-slate-50 rounded-full flex items-center justify-center mb-4 md:mb-6 shadow-sm border border-slate-100 shrink-0">
+          <div className={`flex-1 p-4 md:p-8 flex flex-col items-center text-center animate-in slide-in-from-right-4 duration-300 key={stepIndex} overflow-y-auto ${currentThemeConfig.appBg}`}>
+             <div className={`w-16 h-16 md:w-20 md:h-20 rounded-full flex items-center justify-center mb-4 md:mb-6 shadow-sm border shrink-0 ${currentThemeConfig.iconFunc}`}>
                {step.icon}
              </div>
              
-             <h2 className="text-xl md:text-2xl font-black text-slate-900 mb-1">{step.title}</h2>
+             <h2 className={`text-xl md:text-2xl font-black mb-1 transition-colors ${currentThemeConfig.text}`}>{step.title}</h2>
              <p className="text-brand-600 font-bold text-xs uppercase tracking-widest mb-6 md:mb-8">{step.subtitle}</p>
              
-             <div className="w-full text-left bg-white rounded-xl">
+             <div className={`w-full text-left rounded-xl ${currentThemeConfig.cardBg}`}>
                {step.content}
              </div>
           </div>
 
-          <div className="p-4 md:p-6 border-t border-slate-100 bg-slate-50 flex justify-between items-center shrink-0">
+          <div className={`p-4 md:p-6 border-t flex justify-between items-center shrink-0 transition-colors ${currentThemeConfig.border} ${currentThemeConfig.cardBg}`}>
              <button 
                onClick={() => {
                  if (stepIndex === 0) setTutorialStep(0);
                  else setTutorialStep(prev => prev - 1);
                }}
-               className="text-slate-400 hover:text-slate-600 text-sm font-bold px-4 py-2"
+               className={`hover:opacity-70 text-sm font-bold px-4 py-2 transition-colors ${currentThemeConfig.subText}`}
              >
                Back
              </button>
@@ -224,10 +226,10 @@ const WelcomeModal: React.FC<WelcomeModalProps> = ({ onDismiss, onResume, daysUn
                  if (isLast) onDismiss();
                  else setTutorialStep(prev => prev + 1);
                }}
-               className={`flex items-center gap-2 px-6 py-3 rounded-xl font-bold text-sm transition-all shadow-lg ${
+               className={`flex items-center gap-2 px-6 py-3 rounded-xl font-bold text-sm transition-all shadow-lg hover:scale-105 text-white ${
                  isLast 
-                 ? 'bg-emerald-500 text-white hover:bg-emerald-600 shadow-emerald-200' 
-                 : 'bg-slate-900 text-white hover:bg-slate-800'
+                 ? 'bg-emerald-500 hover:bg-emerald-600 shadow-emerald-200' 
+                 : currentThemeConfig.accent
                }`}
              >
                {isLast ? "Let's Study!" : "Next"} <ChevronRight className="w-4 h-4" />
@@ -239,17 +241,19 @@ const WelcomeModal: React.FC<WelcomeModalProps> = ({ onDismiss, onResume, daysUn
   }
 
   // RENDER LANDING VIEW (Resume vs New)
+  const currentThemeConfig = THEME_CONFIG[currentTheme];
+  
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 backdrop-blur-md animate-in fade-in duration-300">
-      <div className="w-full max-w-3xl max-h-[90vh] flex flex-col bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden">
+    <div className={`fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-md animate-in fade-in duration-300 transition-colors ${currentThemeConfig.appBg}`}>
+      <div className={`w-full max-w-3xl max-h-[90vh] flex flex-col rounded-3xl shadow-2xl overflow-hidden transition-all duration-500 ${currentThemeConfig.cardBg} ${currentThemeConfig.border} border-2`}>
         
         {/* Hero Header */}
-        <div className="bg-gradient-to-br from-brand-600 via-brand-500 to-blue-600 p-6 md:p-8 text-white relative overflow-hidden shrink-0">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -mr-20 -mt-20"></div>
-          <div className="absolute bottom-0 left-0 w-48 h-48 bg-blue-400/20 rounded-full blur-3xl -ml-16 -mb-16"></div>
+        <div className={`p-6 md:p-8 relative overflow-hidden shrink-0 transition-all duration-500 ${currentThemeConfig.accent}`}>
+          <div className={`absolute top-0 right-0 w-64 h-64 rounded-full blur-3xl -mr-20 -mt-20 transition-all duration-700 ${currentThemeConfig.blobColor1} ${currentThemeConfig.blobOpacity}`}></div>
+          <div className={`absolute bottom-0 left-0 w-48 h-48 rounded-full blur-3xl -ml-16 -mb-16 transition-all duration-700 ${currentThemeConfig.blobColor2} ${currentThemeConfig.blobOpacity}`}></div>
           <div className="absolute top-6 right-6 z-10 text-right">
-            <span className="block text-[10px] font-bold uppercase tracking-[0.3em] text-white/60">Release</span>
-            <div className="mt-2 inline-flex items-center gap-2 bg-white/15 backdrop-blur-sm border border-white/30 rounded-full px-3 py-1 text-[12px] font-semibold text-white">
+            <span className="block text-[10px] font-bold uppercase tracking-[0.3em] text-white/70">Release</span>
+            <div className="mt-2 inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm border border-white/30 rounded-full px-3 py-1 text-[12px] font-semibold text-white">
               <Sparkles className="w-3.5 h-3.5" /> v{APP_VERSION}
             </div>
           </div>
@@ -257,175 +261,187 @@ const WelcomeModal: React.FC<WelcomeModalProps> = ({ onDismiss, onResume, daysUn
           <div className="relative z-10">
             <div className="flex items-center gap-3 mb-4">
               <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center border border-white/30 shadow-lg">
-                <GraduationCap className="w-6 h-6" />
+                <GraduationCap className="w-6 h-6 text-white" />
               </div>
               <div>
-                <h1 className="text-2xl md:text-3xl font-black tracking-tight">Welcome to A&P Muscle Guide</h1>
-                <p className="text-blue-100 text-sm font-medium mt-1">UW Health RN Apprenticeship Edition</p>
+                <h1 className="text-2xl md:text-3xl font-black tracking-tight text-white">Welcome to A&P Muscle Guide</h1>
+                <p className="text-white/90 text-sm font-medium mt-1">UW Health RN Apprenticeship Edition</p>
               </div>
             </div>
           </div>
         </div>
 
         {/* Content Area */}
-        <div className="p-6 md:p-8 bg-gradient-to-b from-white to-slate-50 overflow-y-auto">
-           <div className="mb-8">
-             <h2 className="text-2xl font-bold text-slate-900 mb-3 flex items-center gap-2">
-               <CheckCircle className="w-6 h-6 text-emerald-500" />
-               Resume Your Progress
-             </h2>
-             <p className="text-slate-600 leading-relaxed">
-               Have a save code? Paste it below to restore your progress, themes, and study queue.
-             </p>
-           </div>
+        <div className={`p-6 md:p-8 overflow-y-auto transition-colors duration-500 ${currentThemeConfig.appBg}`}>
+           {!isNewUser && (
+             <>
+               <div className="mb-8">
+                 <h2 className={`text-2xl font-bold mb-3 flex items-center gap-2 transition-colors ${currentThemeConfig.text}`}>
+                   <CheckCircle className="w-6 h-6 text-emerald-500" />
+                   Resume Your Progress
+                 </h2>
+                 <p className={`leading-relaxed transition-colors ${currentThemeConfig.subText}`}>
+                   Have a save code? Paste it below to restore your progress, themes, and study queue.
+                 </p>
+               </div>
 
-           <div className="space-y-4 mb-8">
-              <div className="flex flex-col gap-3">
-                <div className="flex items-center justify-between">
-                  <label className="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-2">
-                    <Save className="w-3 h-3" />
-                    Resume Options
-                  </label>
-                  <div className="bg-slate-100 p-1 rounded-lg flex text-[11px] font-bold uppercase tracking-wider">
-                    <button 
-                      onClick={() => setResumeMode('CODE')}
-                      className={`px-3 py-1 rounded-md transition-all ${resumeMode === 'CODE' ? 'bg-white shadow text-brand-600' : 'text-slate-400'}`}
-                    >Code</button>
-                    <button 
-                      onClick={() => setResumeMode('LINK')}
-                      className={`px-3 py-1 rounded-md transition-all ${resumeMode === 'LINK' ? 'bg-white shadow text-brand-600' : 'text-slate-400'}`}
-                    >Link</button>
+               <div className="space-y-4 mb-8">
+                  <div className="flex flex-col gap-3">
+                    <div className="flex items-center justify-between">
+                      <label className="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-2">
+                        <Save className="w-3 h-3" />
+                        Resume Options
+                      </label>
+                      <div className="bg-slate-100 p-1 rounded-lg flex text-[11px] font-bold uppercase tracking-wider">
+                        <button 
+                          onClick={() => setResumeMode('CODE')}
+                          className={`px-3 py-1 rounded-md transition-all ${resumeMode === 'CODE' ? 'bg-white shadow text-brand-600' : 'text-slate-400'}`}
+                        >Code</button>
+                        <button 
+                          onClick={() => setResumeMode('LINK')}
+                          className={`px-3 py-1 rounded-md transition-all ${resumeMode === 'LINK' ? 'bg-white shadow text-brand-600' : 'text-slate-400'}`}
+                        >Link</button>
+                      </div>
+                    </div>
+                    {resumeMode === 'CODE' ? (
+                      <textarea 
+                        rows={3}
+                        placeholder="Paste your save code here...\nExample: eyJ2ZXJzaW9uIjoxLCJwYXJhbXMiOnt9fQ=="
+                        className={`w-full border-2 rounded-xl px-4 py-3 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-all resize-none ${currentThemeConfig.inputBg} ${currentThemeConfig.border} ${currentThemeConfig.text}`}
+                        value={resumeLink}
+                        onChange={(e) => {
+                          setResumeLink(e.target.value);
+                          setError('');
+                        }}
+                      />
+                    ) : (
+                      <input
+                        type="text"
+                        placeholder="Paste your magic link (https://...)"
+                        className={`w-full border-2 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-all ${currentThemeConfig.inputBg} ${currentThemeConfig.border} ${currentThemeConfig.text}`}
+                        value={resumeLink}
+                        onChange={(e) => {
+                          setResumeLink(e.target.value);
+                          setError('');
+                        }}
+                      />
+                    )}
+                    {error && (
+                      <div className="mt-1 p-3 bg-red-50 border border-red-200 rounded-lg flex items-start gap-2">
+                        <AlertTriangle className="w-4 h-4 text-red-500 shrink-0 mt-0.5" />
+                        <p className="text-xs text-red-700 font-medium">{error}</p>
+                      </div>
+                    )}
                   </div>
-                </div>
-                {resumeMode === 'CODE' ? (
-                  <textarea 
-                    rows={3}
-                    placeholder="Paste your save code here...\nExample: eyJ2ZXJzaW9uIjoxLCJwYXJhbXMiOnt9fQ=="
-                    className="w-full bg-slate-50 border-2 border-slate-200 rounded-xl px-4 py-3 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-all resize-none"
-                    value={resumeLink}
-                    onChange={(e) => {
-                      setResumeLink(e.target.value);
-                      setError('');
-                    }}
-                  />
-                ) : (
-                  <input
-                    type="text"
-                    placeholder="Paste your magic link (https://...)"
-                    className="w-full bg-slate-50 border-2 border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-all"
-                    value={resumeLink}
-                    onChange={(e) => {
-                      setResumeLink(e.target.value);
-                      setError('');
-                    }}
-                  />
-                )}
-                {error && (
-                  <div className="mt-1 p-3 bg-red-50 border border-red-200 rounded-lg flex items-start gap-2">
-                    <AlertTriangle className="w-4 h-4 text-red-500 shrink-0 mt-0.5" />
-                    <p className="text-xs text-red-700 font-medium">{error}</p>
+
+                  <button 
+                    onClick={handleResume}
+                    disabled={!resumeLink.trim()}
+                    className={`w-full py-4 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 shadow-lg ${
+                      resumeLink.trim()
+                      ? 'bg-gradient-to-r from-emerald-500 to-emerald-600 text-white hover:from-emerald-600 hover:to-emerald-700 shadow-emerald-200' 
+                      : 'bg-slate-100 text-slate-400 cursor-not-allowed shadow-none'
+                    }`}
+                  >
+                    <Download className="w-4 h-4" /> Restore My Progress
+                  </button>
+               </div>
+
+               {/* Feature Highlights */}
+               <div className="grid md:grid-cols-2 gap-4 mb-8">
+                  <div className={`flex items-center gap-3 text-sm p-3 rounded-xl transition-all ${currentThemeConfig.cardBg} ${currentThemeConfig.border} border`}>
+                    <CheckCircle className="w-5 h-5 text-emerald-500 shrink-0" />
+                    <span className={`font-medium ${currentThemeConfig.text}`}>No account needed</span>
                   </div>
-                )}
-              </div>
-
-              <button 
-                onClick={handleResume}
-                disabled={!resumeLink.trim()}
-                className={`w-full py-4 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 shadow-lg ${
-                  resumeLink.trim()
-                  ? 'bg-gradient-to-r from-emerald-500 to-emerald-600 text-white hover:from-emerald-600 hover:to-emerald-700 shadow-emerald-200' 
-                  : 'bg-slate-100 text-slate-400 cursor-not-allowed shadow-none'
-                }`}
-              >
-                <Download className="w-4 h-4" /> Restore My Progress
-              </button>
-           </div>
-
-           {/* Feature Highlights */}
-           <div className="grid md:grid-cols-2 gap-4 mb-8">
-              <div className="flex items-center gap-3 text-sm p-3 bg-white rounded-xl border border-slate-200">
-                <CheckCircle className="w-5 h-5 text-emerald-500 shrink-0" />
-                <span className="text-slate-700 font-medium">No account needed</span>
-              </div>
-              <div className="flex items-center gap-3 text-sm p-3 bg-white rounded-xl border border-slate-200">
-                <Save className="w-5 h-5 text-blue-500 shrink-0" />
-                <span className="text-slate-700 font-medium">Save via code</span>
-              </div>
-           </div>
+                  <div className={`flex items-center gap-3 text-sm p-3 rounded-xl transition-all ${currentThemeConfig.cardBg} ${currentThemeConfig.border} border`}>
+                    <Save className="w-5 h-5 text-blue-500 shrink-0" />
+                    <span className={`font-medium ${currentThemeConfig.text}`}>Save via code</span>
+                  </div>
+               </div>
+             </>
+           )}
 
            <div className="mb-10">
-             <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
+             <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
                <div className="flex items-center gap-3">
-                 <div className="w-12 h-12 rounded-2xl bg-brand-50 border border-brand-100 flex items-center justify-center text-brand-600">
+                 <div className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-all ${currentThemeConfig.iconFunc}`}>
                    <Palette className="w-6 h-6" />
                  </div>
                  <div>
-                   <p className="text-xs font-bold text-brand-500 uppercase tracking-widest">Make it yours</p>
-                   <p className="text-xl font-black text-slate-900">Pick a theme before you dive in</p>
+                   <p className="text-xs font-bold text-brand-500 uppercase tracking-widest">Live Preview</p>
+                   <p className={`text-xl font-black transition-colors ${currentThemeConfig.text}`}>Choose Your Theme</p>
                  </div>
                </div>
-               <p className="text-[11px] font-bold uppercase tracking-widest text-slate-400">Tap a card to preview instantly</p>
+               <div className={`px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest animate-pulse ${currentThemeConfig.badge}`}>
+                 ✨ Updates Live
+               </div>
              </div>
              <div className="grid gap-4 md:grid-cols-2">
                {Object.entries(themeShowcase).map(([key, story]) => {
                  const themeKey = key as AppTheme;
                  const isActive = themeKey === currentTheme;
+                 const themeConf = THEME_CONFIG[themeKey];
                  return (
                    <button
                      key={key}
                      type="button"
                      onClick={() => onSelectTheme(themeKey)}
                      aria-pressed={isActive}
-                     className={`text-left rounded-2xl border-2 p-4 transition-all bg-white/90 backdrop-blur-sm ${
+                     className={`text-left rounded-2xl border-2 p-4 transition-all duration-300 backdrop-blur-sm relative overflow-hidden group ${
                        isActive
-                         ? 'border-emerald-400 shadow-lg shadow-emerald-100'
-                         : 'border-slate-200 hover:border-brand-200 hover:shadow-md'
-                     }`}
+                         ? 'border-emerald-500 shadow-xl scale-[1.02] ring-2 ring-emerald-400/50'
+                         : `${currentThemeConfig.border} hover:border-brand-400 hover:shadow-lg hover:scale-[1.01]`
+                     } ${currentThemeConfig.cardBg}`}
                    >
-                     <div className="flex items-center justify-between gap-3">
-                       <div className="flex items-center gap-3">
-                         <div className="w-12 h-12 rounded-2xl bg-slate-100 flex items-center justify-center text-brand-600">
-                           {story.icon}
+                     {/* Animated background on hover */}
+                     <div className={`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 ${story.swatch}`} style={{ opacity: isActive ? 0.1 : 0 }}></div>
+                     
+                     <div className="relative z-10">
+                       <div className="flex items-center justify-between gap-3 mb-3">
+                         <div className="flex items-center gap-3">
+                           <div className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-all ${isActive ? story.swatch : themeConf.iconFunc}`}>
+                             {story.icon}
+                           </div>
+                           <div>
+                             <p className={`text-[11px] font-bold uppercase tracking-widest transition-colors ${currentThemeConfig.subText}`}>Theme</p>
+                             <p className={`text-lg font-black transition-colors ${currentThemeConfig.text}`}>{themeConf.label}</p>
+                           </div>
                          </div>
-                         <div>
-                           <p className="text-[11px] font-bold uppercase tracking-widest text-slate-400">Theme</p>
-                           <p className="text-lg font-black text-slate-900">{THEME_CONFIG[themeKey].label}</p>
-                         </div>
+                         {isActive && (
+                           <span className="text-[10px] font-black uppercase tracking-widest text-white bg-emerald-500 px-3 py-1.5 rounded-full shadow-lg animate-in slide-in-from-right">
+                             ✓ Active
+                           </span>
+                         )}
                        </div>
-                       {isActive && (
-                         <span className="text-[10px] font-black uppercase tracking-widest text-emerald-600 bg-emerald-50 px-3 py-1 rounded-full">
-                           Active
-                         </span>
-                       )}
+                       <p className={`text-sm mt-3 transition-colors ${currentThemeConfig.text} opacity-90`}>{story.tagline}</p>
+                       <p className={`text-xs mt-1.5 font-semibold transition-colors ${currentThemeConfig.subText}`}>{story.highlight}</p>
+                       
+                       {/* Color Swatch Preview */}
+                       <div className="mt-4 flex items-center gap-2">
+                         <div className={`flex-1 h-10 rounded-xl ${story.swatch} shadow-inner`}></div>
+                         {isActive && (
+                           <div className="text-emerald-500 animate-pulse">
+                             <CheckCircle className="w-6 h-6" />
+                           </div>
+                         )}
+                       </div>
                      </div>
-                     <p className="text-sm text-slate-600 mt-3">{story.tagline}</p>
-                     <p className="text-xs text-slate-400 font-semibold">{story.highlight}</p>
-                     <div className={`mt-4 h-10 rounded-xl ${story.swatch}`}></div>
                    </button>
                  );
                })}
              </div>
            </div>
 
-           <div className="relative mb-6">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t-2 border-slate-200"></div>
-              </div>
-              <div className="relative flex justify-center">
-                <span className="px-4 bg-gradient-to-b from-white to-slate-50 text-slate-400 font-bold text-xs uppercase tracking-wider">or</span>
-              </div>
-           </div>
-
            <button 
              onClick={() => setTutorialStep(1)}
-             className="w-full py-5 bg-gradient-to-r from-brand-50 to-blue-50 text-brand-700 hover:from-brand-100 hover:to-blue-100 border-2 border-brand-200 rounded-xl font-bold transition-all flex items-center justify-center gap-3 group shadow-md hover:shadow-xl"
+             className={`w-full py-5 text-white hover:opacity-90 rounded-xl font-bold transition-all flex items-center justify-center gap-3 group shadow-lg hover:shadow-2xl hover:scale-[1.02] ${currentThemeConfig.accent}`}
            >
              <div className="flex items-center gap-3">
-               <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center border-2 border-brand-300 shadow-sm">
-                 <Play className="w-5 h-5 text-brand-600" />
+               <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center border-2 border-white/30 shadow-sm">
+                 <Play className="w-5 h-5 text-white" />
                </div>
                <div className="text-left">
-                 <span className="block text-xs uppercase tracking-wider text-brand-500 font-bold">New Student?</span>
+                 <span className="block text-xs uppercase tracking-wider text-white/80 font-bold">{isNewUser ? 'Let\'s Get Started' : 'New Student?'}</span>
                  <span className="text-xl font-black">Start Tutorial</span>
                </div>
              </div>
