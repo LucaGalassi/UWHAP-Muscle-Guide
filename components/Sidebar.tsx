@@ -20,6 +20,7 @@ interface SidebarProps {
   onResetProgress?: () => void;
   currentTheme: AppTheme;
   onSetTheme: (theme: AppTheme) => void;
+  daysUntilExam: number;
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ 
@@ -38,7 +39,8 @@ const Sidebar: React.FC<SidebarProps> = ({
   progressMap,
   onResetProgress,
   currentTheme,
-  onSetTheme
+  onSetTheme,
+  daysUntilExam
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterGroup, setFilterGroup] = useState<'ALL' | 'A' | 'B'>('ALL');
@@ -100,36 +102,50 @@ const Sidebar: React.FC<SidebarProps> = ({
 
   return (
     <>
-      <div className={`fixed inset-y-0 left-0 z-30 w-80 ${theme.sidebarBg} ${theme.sidebarBorder} border-r transform transition-transform duration-300 ease-in-out ${isOpen ? 'translate-x-0' : '-translate-x-full'} md:relative md:translate-x-0 flex flex-col h-full`}>
+      <div className={`fixed inset-y-0 left-0 z-30 w-80 ${theme.sidebarBg} ${theme.sidebarBorder} border-r transform transition-transform duration-300 ease-in-out ${isOpen ? 'translate-x-0' : '-translate-x-full'} md:relative md:translate-x-0 flex flex-col h-full shadow-2xl`}>
         {/* Header */}
-        <div className={`p-5 border-b ${theme.sidebarBorder} ${theme.sidebarBg}`}>
-          <div className="flex items-center justify-between mb-5">
-            <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 bg-brand-600 rounded-lg flex items-center justify-center text-white shadow-brand-200 shadow-lg">
-                <BookOpen className="w-4 h-4" />
+        <div className={`p-5 border-b ${theme.sidebarBorder}`}>
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-gradient-to-br from-brand-500 to-blue-600 rounded-xl flex items-center justify-center text-white shadow-lg shadow-brand-500/30">
+                <BookOpen className="w-5 h-5" />
               </div>
-              <h1 className={`text-lg font-extrabold tracking-tight leading-none ${theme.sidebarText}`}>
-                A&P Muscle<br/>Guide
-              </h1>
+              <div>
+                <h1 className={`text-lg font-black tracking-tight leading-none ${theme.sidebarText}`}>
+                  Muscle<br/>Guide
+                </h1>
+              </div>
             </div>
             <button 
               onClick={() => {
                 setTempKey(apiKey);
                 setShowSettingsModal(true);
               }}
-              className={`p-2 rounded-full transition-colors ${theme.sidebarSubText} ${theme.sidebarHover} hover:${theme.sidebarText}`}
+              className={`p-2 rounded-full transition-all ${theme.sidebarSubText} hover:bg-black/5 hover:${theme.sidebarText}`}
             >
-              <Settings className="w-4 h-4" />
+              <Settings className="w-5 h-5" />
             </button>
           </div>
 
+          {/* Exam Countdown Widget */}
+          <div className={`mb-6 p-4 rounded-2xl border ${theme.sidebarBorder} bg-gradient-to-br from-brand-500/5 to-blue-500/5 flex items-center gap-4 relative overflow-hidden group`}>
+             <div className={`absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-100%] group-hover:animate-shimmer`}></div>
+             <div className="p-2.5 bg-white rounded-xl shadow-sm text-red-500 ring-1 ring-black/5">
+               <Timer className="w-5 h-5" />
+             </div>
+             <div>
+               <p className={`text-[10px] font-bold uppercase tracking-wider ${theme.sidebarSubText} mb-0.5`}>Final Exam</p>
+               <p className={`text-sm font-black ${theme.sidebarText}`}>{daysUntilExam} Days Left</p>
+             </div>
+          </div>
+
           {/* Mode Switcher */}
-          <div className={`flex ${theme.inputBg} p-1 rounded-xl mb-6`}>
+          <div className={`flex ${theme.inputBg} p-1.5 rounded-xl mb-6`}>
             <button 
               onClick={() => onSetMode('REFERENCE')}
-              className={`flex-1 py-2 rounded-lg text-xs font-bold flex items-center justify-center gap-2 transition-all ${
+              className={`flex-1 py-2.5 rounded-lg text-xs font-bold flex items-center justify-center gap-2 transition-all ${
                 currentMode === 'REFERENCE' 
-                ? `${theme.cardBg} shadow-sm ${theme.sidebarText}`
+                ? `${theme.cardBg} shadow-sm ${theme.sidebarText} ring-1 ring-black/5`
                 : `${theme.sidebarSubText} hover:${theme.sidebarText}`
               }`}
             >
@@ -137,9 +153,9 @@ const Sidebar: React.FC<SidebarProps> = ({
             </button>
             <button 
               onClick={() => onSetMode('STUDY')}
-              className={`flex-1 py-2 rounded-lg text-xs font-bold flex items-center justify-center gap-2 transition-all ${
+              className={`flex-1 py-2.5 rounded-lg text-xs font-bold flex items-center justify-center gap-2 transition-all ${
                 currentMode === 'STUDY' 
-                ? `${theme.cardBg} shadow-sm text-brand-600`
+                ? `${theme.cardBg} shadow-sm text-brand-600 ring-1 ring-black/5`
                 : `${theme.sidebarSubText} hover:${theme.sidebarText}`
               }`}
             >
@@ -151,47 +167,47 @@ const Sidebar: React.FC<SidebarProps> = ({
           {currentMode === 'REFERENCE' && (
             <>
               {/* Progress Tracker */}
-              <div className="mb-5 bg-gradient-to-br from-brand-50 to-white p-4 rounded-xl border border-brand-100 shadow-sm">
-                <div className="flex justify-between items-end mb-2">
-                  <span className="text-xs font-bold text-brand-800 uppercase tracking-wider flex items-center gap-1">
-                    <Trophy className="w-3 h-3" /> Mastery
+              <div className="mb-5 bg-gradient-to-br from-brand-500/10 to-blue-500/10 p-5 rounded-2xl border border-brand-500/20 relative overflow-hidden">
+                <div className="flex justify-between items-end mb-3 relative z-10">
+                  <span className="text-xs font-bold text-brand-700 uppercase tracking-wider flex items-center gap-1.5">
+                    <Trophy className="w-3.5 h-3.5" /> Mastery
                   </span>
-                  <span className="text-xs font-bold text-brand-600">{learnedIds.size} / {MUSCLE_DATA.length}</span>
+                  <span className="text-sm font-black text-brand-700">{learnedIds.size} / {MUSCLE_DATA.length}</span>
                 </div>
-                <div className="h-2.5 w-full bg-slate-200 rounded-full overflow-hidden mb-3">
+                <div className="h-3 w-full bg-white/50 rounded-full overflow-hidden mb-4 ring-1 ring-black/5">
                   <div 
-                    className="h-full bg-gradient-to-r from-brand-400 to-brand-600 rounded-full transition-all duration-500" 
+                    className="h-full bg-gradient-to-r from-brand-400 to-brand-600 rounded-full transition-all duration-1000 ease-out" 
                     style={{ width: `${progress}%` }}
                   />
                 </div>
                 <button 
                   onClick={() => setShowShareModal(true)}
-                  className="w-full flex items-center justify-center gap-2 text-xs font-bold text-brand-700 hover:text-brand-800 py-2 bg-white border border-brand-200 hover:border-brand-300 rounded-lg shadow-sm hover:shadow transition-all"
+                  className="w-full flex items-center justify-center gap-2 text-xs font-bold text-brand-700 hover:text-brand-800 py-2.5 bg-white/80 hover:bg-white border border-brand-200/50 rounded-xl shadow-sm hover:shadow transition-all backdrop-blur-sm"
                 >
-                  <Save className="w-3 h-3" />
+                  <Save className="w-3.5 h-3.5" />
                   Save & Share Stats
                 </button>
               </div>
               
               <div className="relative mb-4">
-                <Search className={`absolute left-3 top-2.5 w-4 h-4 ${theme.sidebarSubText}`} />
+                <Search className={`absolute left-3.5 top-3 w-4 h-4 ${theme.sidebarSubText}`} />
                 <input
                   type="text"
-                  placeholder="Search all muscles..."
-                  className={`w-full pl-9 pr-3 py-2 ${theme.inputBg} border-none rounded-lg text-sm ${theme.sidebarText} placeholder-${theme.sidebarSubText} focus:ring-2 focus:ring-brand-500/20 transition-all outline-none`}
+                  placeholder="Search muscles..."
+                  className={`w-full pl-10 pr-4 py-2.5 ${theme.inputBg} border-none rounded-xl text-sm ${theme.sidebarText} placeholder-${theme.sidebarSubText} focus:ring-2 focus:ring-brand-500/20 transition-all outline-none font-medium`}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
               </div>
 
-              <div className={`flex ${theme.inputBg} p-1 rounded-lg transition-opacity duration-200 ${searchTerm ? 'opacity-50 pointer-events-none' : 'opacity-100'}`}>
+              <div className={`flex ${theme.inputBg} p-1 rounded-xl transition-opacity duration-200 ${searchTerm ? 'opacity-50 pointer-events-none' : 'opacity-100'}`}>
                 {(['ALL', 'A', 'B'] as const).map(g => (
                   <button
                     key={g}
                     onClick={() => setFilterGroup(g)}
-                    className={`flex-1 py-1 text-xs font-semibold rounded-md transition-all ${
+                    className={`flex-1 py-1.5 text-xs font-bold rounded-lg transition-all ${
                       filterGroup === g 
-                        ? `${theme.cardBg} ${theme.sidebarText} shadow-sm` 
+                        ? `${theme.cardBg} ${theme.sidebarText} shadow-sm ring-1 ring-black/5` 
                         : `${theme.sidebarSubText} hover:${theme.sidebarText}`
                     }`}
                   >

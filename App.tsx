@@ -443,8 +443,12 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className={`flex flex-col h-screen overflow-hidden transition-colors duration-500 ${currentThemeConfig.appBg}`}>
+    <div className={`flex flex-col h-screen overflow-hidden transition-colors duration-500 ${currentThemeConfig.appBg} relative`}>
       
+      {/* Background Blobs */}
+      <div className={`absolute top-[-20%] left-[-10%] w-[50%] h-[50%] rounded-full mix-blend-multiply filter blur-[100px] animate-blob ${currentThemeConfig.blobColor1} ${currentThemeConfig.blobOpacity}`}></div>
+      <div className={`absolute bottom-[-20%] right-[-10%] w-[50%] h-[50%] rounded-full mix-blend-multiply filter blur-[100px] animate-blob animation-delay-2000 ${currentThemeConfig.blobColor2} ${currentThemeConfig.blobOpacity}`}></div>
+
       {/* Welcome Modal */}
       {showWelcome && (
         <WelcomeModal 
@@ -456,37 +460,11 @@ const App: React.FC = () => {
         />
       )}
 
-      {/* EXAM COUNTDOWN BANNER */}
-      <div className="bg-gradient-to-r from-slate-900 to-slate-800 text-white px-4 py-3 flex items-center justify-between shadow-md z-40 relative">
-        <div className="flex items-center gap-4">
-          <div className="bg-red-500/20 p-2 rounded-lg border border-red-500/50 animate-pulse">
-            <Timer className="w-5 h-5 text-red-400" />
-          </div>
-          <div>
-            <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-0.5">Final Exam Countdown</div>
-            <div className="text-sm font-bold text-white flex items-center gap-2">
-               Monday, Dec 8 <span className="w-1.5 h-1.5 rounded-full bg-slate-500"></span> <span className="text-red-300">{daysUntilExam} Days Remaining</span>
-            </div>
-          </div>
-        </div>
-        
-        {studentName && (
-           <div className="hidden md:block text-sm font-medium text-slate-300 bg-slate-700/50 px-3 py-1 rounded-full border border-slate-600">
-             Welcome back, <span className="text-white font-bold">{studentName}</span>
-           </div>
-        )}
-
-        <div className="hidden md:flex items-center gap-2 text-xs font-bold text-slate-900 bg-yellow-400 px-3 py-1.5 rounded-full shadow-lg shadow-yellow-500/20">
-          <AlertTriangle className="w-3.5 h-3.5" />
-          Focus: {currentFocusGroup}
-        </div>
-      </div>
-
-      <div className="flex flex-1 overflow-hidden">
+      <div className="flex flex-1 overflow-hidden z-10">
         {/* Mobile Menu Button */}
         <button 
           onClick={() => setIsMobileMenuOpen(true)}
-          className="md:hidden fixed top-24 left-4 z-40 p-2 bg-brand-600 text-white rounded-md shadow-lg"
+          className="md:hidden fixed top-4 left-4 z-40 p-2 bg-brand-600 text-white rounded-md shadow-lg"
         >
           <Menu className="w-6 h-6" />
         </button>
@@ -520,6 +498,7 @@ const App: React.FC = () => {
           onResetProgress={handleResetProgress}
           currentTheme={theme}
           onSetTheme={setTheme}
+          daysUntilExam={daysUntilExam}
         />
 
         {/* Main Content */}

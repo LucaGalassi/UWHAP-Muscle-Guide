@@ -12,90 +12,110 @@ export const THEME_CONFIG: Record<AppTheme, ThemeConfig> = {
   modern: {
     label: 'Modern',
     appBg: 'bg-slate-50',
-    cardBg: 'bg-white',
+    cardBg: 'bg-white/80 backdrop-blur-md',
     text: 'text-slate-900',
     subText: 'text-slate-500',
     border: 'border-slate-200',
-    accent: 'bg-gradient-to-r from-brand-400 to-blue-600',
-    badge: 'bg-white/90 text-brand-600 border-brand-100 shadow-sm',
-    infoBox: 'bg-slate-50 border-slate-200 text-slate-700',
-    iconLoc: 'bg-emerald-100 text-emerald-600',
-    iconFunc: 'bg-blue-100 text-blue-600',
+    accent: 'bg-gradient-to-r from-brand-500 to-blue-600',
+    badge: 'bg-white/90 text-brand-700 border-brand-100 shadow-sm',
+    infoBox: 'bg-white/60 border-slate-200 text-slate-700',
+    iconLoc: 'bg-emerald-100 text-emerald-700',
+    iconFunc: 'bg-blue-100 text-blue-700',
     
     // Sidebar
-    sidebarBg: 'bg-white',
+    sidebarBg: 'bg-white/90 backdrop-blur-xl',
     sidebarBorder: 'border-slate-200',
     sidebarText: 'text-slate-900',
     sidebarSubText: 'text-slate-500',
-    sidebarHover: 'hover:bg-slate-50',
-    sidebarActive: 'bg-slate-100 text-brand-700',
+    sidebarHover: 'hover:bg-slate-100',
+    sidebarActive: 'bg-brand-50 text-brand-700 border-brand-100',
     inputBg: 'bg-slate-100',
+
+    // Blobs
+    blobColor1: 'bg-brand-200',
+    blobColor2: 'bg-blue-200',
+    blobOpacity: 'opacity-30',
   },
   midnight: {
     label: 'Midnight',
     appBg: 'bg-slate-950',
-    cardBg: 'bg-slate-900',
-    text: 'text-white',
+    cardBg: 'bg-slate-900/80 backdrop-blur-md',
+    text: 'text-slate-100',
     subText: 'text-slate-400',
     border: 'border-slate-800',
     accent: 'bg-gradient-to-r from-indigo-500 to-purple-600',
-    badge: 'bg-slate-800 text-indigo-400 border-slate-700 shadow-lg',
-    infoBox: 'bg-slate-800 border-slate-700 text-slate-300',
-    iconLoc: 'bg-emerald-900/50 text-emerald-400',
-    iconFunc: 'bg-blue-900/50 text-blue-400',
+    badge: 'bg-slate-800 text-indigo-300 border-slate-700 shadow-lg',
+    infoBox: 'bg-slate-800/60 border-slate-700 text-slate-300',
+    iconLoc: 'bg-emerald-900/50 text-emerald-300',
+    iconFunc: 'bg-blue-900/50 text-blue-300',
 
     // Sidebar
-    sidebarBg: 'bg-slate-900',
+    sidebarBg: 'bg-slate-900/90 backdrop-blur-xl',
     sidebarBorder: 'border-slate-800',
     sidebarText: 'text-slate-200',
     sidebarSubText: 'text-slate-500',
     sidebarHover: 'hover:bg-slate-800',
-    sidebarActive: 'bg-slate-800 text-indigo-400 border border-slate-700',
+    sidebarActive: 'bg-slate-800 text-indigo-300 border border-slate-700',
     inputBg: 'bg-slate-950',
+
+    // Blobs
+    blobColor1: 'bg-indigo-900',
+    blobColor2: 'bg-purple-900',
+    blobOpacity: 'opacity-40',
   },
   blueprint: {
     label: 'Blueprint',
-    appBg: 'bg-blue-50',
-    cardBg: 'bg-blue-900',
-    text: 'text-white',
-    subText: 'text-blue-200',
-    border: 'border-blue-700',
-    accent: 'bg-white',
-    badge: 'bg-blue-800 text-white border-blue-600 shadow-lg',
-    infoBox: 'bg-blue-950/50 border-blue-700 text-blue-100',
-    iconLoc: 'bg-white/10 text-white',
-    iconFunc: 'bg-white/10 text-white',
+    appBg: 'bg-[#0f172a]', // Darker slate/blue
+    cardBg: 'bg-[#1e293b]/90 backdrop-blur-md border border-blue-700/50',
+    text: 'text-blue-50',
+    subText: 'text-blue-300',
+    border: 'border-blue-800',
+    accent: 'bg-blue-500',
+    badge: 'bg-blue-900/50 text-blue-200 border-blue-700 shadow-lg',
+    infoBox: 'bg-blue-900/30 border-blue-800 text-blue-200',
+    iconLoc: 'bg-blue-500/20 text-blue-200',
+    iconFunc: 'bg-blue-500/20 text-blue-200',
 
     // Sidebar
-    sidebarBg: 'bg-blue-50',
-    sidebarBorder: 'border-blue-200',
-    sidebarText: 'text-slate-900',
-    sidebarSubText: 'text-blue-600',
-    sidebarHover: 'hover:bg-blue-100',
-    sidebarActive: 'bg-white border border-blue-200 shadow-sm text-blue-700',
-    inputBg: 'bg-white',
+    sidebarBg: 'bg-[#0f172a]/95 backdrop-blur-xl',
+    sidebarBorder: 'border-blue-800',
+    sidebarText: 'text-blue-100',
+    sidebarSubText: 'text-blue-400',
+    sidebarHover: 'hover:bg-blue-900/50',
+    sidebarActive: 'bg-blue-900/50 text-blue-200 border border-blue-700',
+    inputBg: 'bg-[#1e293b]',
+
+    // Blobs
+    blobColor1: 'bg-blue-600',
+    blobColor2: 'bg-sky-600',
+    blobOpacity: 'opacity-10',
   },
   nature: {
     label: 'Nature',
-    appBg: 'bg-stone-100',
-    cardBg: 'bg-[#fafaf9]',
-    text: 'text-stone-900',
-    subText: 'text-stone-600',
-    border: 'border-stone-300',
+    appBg: 'bg-[#f5f5f4]', // stone-100
+    cardBg: 'bg-[#fafaf9]/90 backdrop-blur-md', // stone-50
+    text: 'text-[#292524]', // stone-800
+    subText: 'text-[#78716c]', // stone-500
+    border: 'border-[#e7e5e4]', // stone-200
     accent: 'bg-gradient-to-r from-emerald-600 to-teal-700',
     badge: 'bg-white text-emerald-800 border-emerald-200 shadow-sm',
-    infoBox: 'bg-white border-stone-200 text-stone-800',
-    iconLoc: 'bg-emerald-100 text-emerald-800',
-    iconFunc: 'bg-amber-100 text-amber-800',
+    infoBox: 'bg-white/60 border-[#e7e5e4] text-[#44403c]', // stone-700
+    iconLoc: 'bg-[#dcfce7] text-[#15803d]', // emerald-100, emerald-700
+    iconFunc: 'bg-[#fef3c7] text-[#b45309]', // amber-100, amber-700
 
     // Sidebar
-    sidebarBg: 'bg-[#fafaf9]', // stone-50
-    sidebarBorder: 'border-stone-200',
-    sidebarText: 'text-stone-800',
-    sidebarSubText: 'text-stone-500',
-    sidebarHover: 'hover:bg-stone-200/50',
-    sidebarActive: 'bg-white shadow-sm border border-stone-200 text-emerald-700',
-    inputBg: 'bg-stone-200/50',
+    sidebarBg: 'bg-[#fafaf9]/90 backdrop-blur-xl',
+    sidebarBorder: 'border-[#e7e5e4]',
+    sidebarText: 'text-[#292524]',
+    sidebarSubText: 'text-[#78716c]',
+    sidebarHover: 'hover:bg-[#e7e5e4]/50',
+    sidebarActive: 'bg-white shadow-sm border border-[#e7e5e4] text-[#15803d]',
+    inputBg: 'bg-[#e7e5e4]/50',
+
+    // Blobs
+    blobColor1: 'bg-emerald-200',
+    blobColor2: 'bg-amber-200',
+    blobOpacity: 'opacity-30',
   }
 };
 

@@ -78,4 +78,9 @@ export interface ThemeConfig {
   sidebarHover: string;
   sidebarActive: string; // For selected items
   inputBg: string; // For search bars and toggle backgrounds
+  
+  // Background Blobs
+  blobColor1: string;
+  blobColor2: string;
+  blobOpacity: string;
 }
