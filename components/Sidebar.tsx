@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { MUSCLE_DATA, THEME_CONFIG } from '../constants';
 import { MuscleItem, StudyMode, MuscleProgress, AppTheme } from '../types';
-import { Search, ChevronRight, BookOpen, CheckCircle2, Share2, Circle, X, Copy, Check, GraduationCap, LayoutList, Settings, Key, Trash2, Trophy, Clock, Sun, Moon, DraftingCompass, Leaf, Palette, Save, AlertTriangle } from 'lucide-react';
+import { Search, ChevronRight, BookOpen, CheckCircle2, Share2, Circle, X, Copy, Check, GraduationCap, LayoutList, Settings, Key, Trash2, Trophy, Clock, Sun, Moon, DraftingCompass, Leaf, Palette, Save, AlertTriangle, Timer } from 'lucide-react';
 
 interface SidebarProps {
   onSelectMuscle: (muscle: MuscleItem) => void;
