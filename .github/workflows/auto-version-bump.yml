@@ -7,8 +7,14 @@ on:
 
 jobs:
   bump:
-    if: github.actor != 'github-actions[bot]'
+    # Skip if triggered by bot or if commit has [skip ci]
+    if: |
+      github.actor != 'github-actions[bot]' &&
+      !contains(github.event.head_commit.message, '[skip ci]')
     runs-on: ubuntu-latest
+    # Grant write permissions to commit and push changes
+    permissions:
+      contents: write
 
     steps:
       - name: Checkout repository
@@ -21,23 +27,44 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Increment minor version
-        run: npm version minor --no-git-tag-version
+      - name: Check if package.json exists
+        run: |
+          if [ ! -f package.json ]; then
+            echo "Error: package.json not found"
+            exit 1
+          fi
+          echo "package.json found"
+
+      - name: Increment patch version
+        run: npm version patch --no-git-tag-version
 
       - name: Configure git
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
 
       - name: Commit and push changes
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          if git diff --quiet; then
-            echo "No changes to commit";
-            exit 0;
+          # Check if there are any changes to commit using git diff-index
+          git update-index --refresh
+          if git diff-index --quiet HEAD --; then
+            echo "No changes to commit"
+            exit 0
           fi
-          git add package.json package-lock.json
+
+          # Only add files that were actually modified
+          if git diff --name-only | grep -q "package.json"; then
+            git add package.json
+          fi
+
+          # Add package-lock.json only if it exists and modified
+          if [ -f package-lock.json ] && \
+             git diff --name-only | grep -q "package-lock.json"; then
+            git add package-lock.json
+          fi
+
+          # Commit and push with [skip ci] to prevent infinite loops
           git commit -m "chore: bump version [skip ci]"
           git push origin HEAD:main
