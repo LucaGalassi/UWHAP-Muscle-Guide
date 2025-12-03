@@ -87,7 +87,7 @@ const WelcomeModal: React.FC<WelcomeModalProps> = ({ onDismiss, onResume, daysUn
     },
     {
       title: "How to Study",
-      subtitle: "Smart Guide & Flashcards",
+      subtitle: "Smart Guide, Flashcards & More",
       icon: <Brain className="w-12 h-12 text-blue-600" />,
       content: (
         <div className="space-y-4 text-sm text-slate-600 leading-relaxed">
@@ -104,6 +104,20 @@ const WelcomeModal: React.FC<WelcomeModalProps> = ({ onDismiss, onResume, daysUn
               <div>
                 <span className="block font-bold text-slate-900">Flashcards</span>
                 <span>Flip cards to test your memory. Rate yourself "Hard", "Good", or "Easy" to adjust your study schedule.</span>
+              </div>
+            </li>
+            <li className="flex gap-3">
+              <div className="w-6 h-6 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center font-bold text-xs shrink-0">3</div>
+              <div>
+                <span className="block font-bold text-slate-900">Lightning Round</span>
+                <span>A fast-paced game to identify muscles quickly. Great for testing your speed and recognition.</span>
+              </div>
+            </li>
+            <li className="flex gap-3">
+              <div className="w-6 h-6 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center font-bold text-xs shrink-0">4</div>
+              <div>
+                <span className="block font-bold text-slate-900">Quiz Mode</span>
+                <span>Generate custom multiple-choice quizzes to simulate exam conditions.</span>
               </div>
             </li>
           </ul>
