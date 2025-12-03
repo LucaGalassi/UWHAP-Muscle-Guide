@@ -1,62 +1,40 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+# UWHAP Muscle Guide
 
-# Run and deploy your AI Studio app
+An interactive muscle reference and study companion built with React, Vite, and Tailwind CSS. Browse key anatomy facts, practice with multiple study modes, and keep your spaced-repetition progress synced across devices.
 
-This contains everything you need to run your app locally.
+[![Deploy static content to Pages](https://github.com/LucaGalassi/UWHAP-Muscle-Guide/actions/workflows/pages-build-deployment.yml/badge.svg)](https://github.com/LucaGalassi/UWHAP-Muscle-Guide/actions/workflows/pages-build-deployment.yml)
+[![Auto version bump](https://github.com/LucaGalassi/UWHAP-Muscle-Guide/actions/workflows/auto-version-bump.yml/badge.svg)](https://github.com/LucaGalassi/UWHAP-Muscle-Guide/actions/workflows/auto-version-bump.yml)
+[![Build and Deploy from Main](https://github.com/LucaGalassi/UWHAP-Muscle-Guide/actions/workflows/build-on-gh-pages.yml/badge.svg)](https://github.com/LucaGalassi/UWHAP-Muscle-Guide/actions/workflows/build-on-gh-pages.yml)
+## Live site
+- The app is hosted on GitHub Pages: https://lucagalassi.github.io/UWHAP-Muscle-Guide/
+- No setup is required—open the link to start studying.
 
-View your app in AI Studio: https://ai.studio/apps/drive/1Cr_IBWJ19pE25MdcvfcCQFNmT-6gJ69k
+## Features
+- **Muscle explorer & study dashboard**: Browse muscles, track progress, and view essential metadata in one place.
+- **Study modes**: Flashcards, quizzes, smart guidance, and lightning rounds tailored for rapid review.
+- **Spaced-repetition friendly**: Persisted progress map with compressed shareable state so you can move between devices.
+- **Optional AI assistance**: Paste a Gemini API key into the in-app Settings prompt to generate supplemental explanations. Core content works without any key.
+- **Motion previews**: Inline animations for common actions to give quick visual context.
+- **Modern tooling**: TypeScript, Vite dev server, hot reload, and Tailwind-based styling.
 
-## Run Locally
+## Using the Gemini assistant
+- AI lookups are opt-in and handled entirely in the browser.
+- When prompted in Settings (or via the welcome flow), paste a Gemini API key; no `.env` file is required.
+- If you leave the field blank, the app uses the built-in lab manual content instead.
 
-**Prerequisites:**  Node.js
+## Local development (optional)
+Prerequisites: [Node.js](https://nodejs.org/) (LTS recommended)
 
-
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+1. Install dependencies
+   ```bash
+   npm install
+   ```
+2. Start the development server
+   ```bash
+   npm run dev
+   ```
+   Vite will print a local URL (typically `http://localhost:5173`).
 
 ## Deployment
-
-This project auto-deploys to GitHub Pages using the modern Pages workflow.
-
-- Trigger: any push to `main` (and `workflow_dispatch` from the Actions tab).
-- Workflow: `.github/workflows/deploy.yml` builds the app (`npm run build`), uploads the `dist` artifact, and publishes with `actions/deploy-pages@v4`.
-- No `gh-pages` branch is used anymore; deployments happen directly from the build artifact.
-
-To deploy manually without pushing, open the Actions tab and run the "Deploy to GitHub Pages" workflow via "Run workflow".
-
-## Beta Animation Viewer (V6.5)
-- Purpose: Preview simple, in-app animations for common motions (flexion, extension, abduction, etc.) without relying on external image search.
-- Access: In any muscle view header, click the `Beta Animation` (sparkles) button.
-- Behavior: Opens a modal with a motion selector and a basic SVG animation. Includes play/pause.
-- Disclaimer: This feature is experimental. Animations are rough approximations and may not match exact joint axes, ranges of motion, or specific muscle biomechanics. Use for general visualization only.
-- Future improvements:
-  - Use Three.js/WebGL with rigged skeletons (GLTF) for articulated motion.
-  - Parameterize joint axes and ranges per region.
-  - Overlay labels, angles, and dynamic guidance.
-
-## Advanced 3D Animation Viewer (Experimental)
-- Purpose: A more accurate, articulated visualization using `react-three-fiber`.
-- Access: Click the `Target` icon in the muscle header to open the Advanced Viewer.
-- Install deps:
-
-```zsh
-npm install three @react-three/fiber @react-three/drei
-```
-
-- Capabilities:
-   - Articulated limb rig (shoulder, elbow, forearm, hip) with parameterized axes.
-   - Motion presets (Elbow Flexion/Extension, Shoulder Abd/Add, Medial/Lateral Rot, Forearm Pro/Sup, Hip Flex/Ext).
-   - Camera presets (Front/Side/Top) + Orbit controls.
-   - Angle readout and basic axis helpers.
-- Limitations:
-   - Approximations only; not a medical simulation. No GLTF skeleton/bones yet.
-   - Axes and ranges simplified; coupling motions not modeled.
-- Roadmap:
-   - Load rigged GLTF skeleton, map bones to anatomical joints.
-   - Joint constraints per anatomical axes and region.
-   - Dynamic overlays: labels, angle arcs, axes, ranges.
+- Deployments are automated to GitHub Pages via `.github/workflows/deploy.yml` on every push to `main` or via the **Deploy to GitHub Pages** workflow dispatch.
+- Artifacts are built with `npm run build` and published directly to the `github-pages` environment.
