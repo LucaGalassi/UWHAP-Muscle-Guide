@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState, Suspense } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
-import { OrbitControls, useGLTF } from '@react-three/drei';
+import { OrbitControls, useGLTF, Html } from '@react-three/drei';
 import { AppTheme } from '../types';
 import { THEME_CONFIG } from '../constants';
 import { X, PlayCircle, PauseCircle, Compass, Camera } from 'lucide-react';
@@ -112,11 +112,22 @@ function ArmRig({ motion, playing, angleOut, skeleton }: { motion: MotionName; p
     }
   });
 
-  // If a GLTF skeleton is provided, try to map bones by name
-  const shoulderBone = skeleton?.nodes?.Shoulder_R || skeleton?.nodes?.shoulder_R || null;
-  const elbowBone = skeleton?.nodes?.Elbow_R || skeleton?.nodes?.elbow_R || null;
-  const forearmBone = skeleton?.nodes?.Forearm_R || skeleton?.nodes?.forearm_R || null;
-  const hipBone = skeleton?.nodes?.Hip_R || skeleton?.nodes?.hip_R || null;
+  // If a GLTF skeleton is provided, try to map bones by fuzzy name matching
+  const findBone = (patterns: string[]) => {
+    if (!skeleton?.nodes) return null;
+    const keys = Object.keys(skeleton.nodes);
+    const lower = keys.map(k => ({ k, l: k.toLowerCase() }));
+    for (const p of patterns) {
+      const pl = p.toLowerCase();
+      const hit = lower.find(({ l }) => l.includes(pl));
+      if (hit) return (skeleton.nodes as any)[hit.k];
+    }
+    return null;
+  };
+  const shoulderBone = findBone(['shoulder_r', 'r_shoulder', 'shoulder', 'upperarm_r', 'humerus_r']);
+  const elbowBone = findBone(['elbow_r', 'r_elbow', 'lowerarm_r', 'ulna_r', 'radius_r', 'forearm_r']);
+  const forearmBone = findBone(['forearm_r', 'radius_r', 'ulna_r', 'r_forearm']);
+  const hipBone = findBone(['hip_r', 'r_hip', 'thigh_r', 'femur_r', 'pelvis']);
 
   if (skeleton && skeleton.scene) {
     // drive bones if available
@@ -226,6 +237,7 @@ export const AdvancedAnimationViewer: React.FC<AdvancedAnimationViewerProps> = (
       .catch(() => {
         setModels([{ label: 'Skeleton (Default Path)', url: '/models/skeleton.glb' }]);
         if (!selectedModelUrl) setSelectedModelUrl('/models/skeleton.glb');
+                {/* Model selector injected earlier via manifest in previous patch */}
       });
   }, []);
 
@@ -253,6 +265,18 @@ export const AdvancedAnimationViewer: React.FC<AdvancedAnimationViewerProps> = (
               <p className={`${theme.text} text-sm font-semibold`}>{muscleName}</p>
               <p className={`text-xs ${theme.subText}`}>Motion: {motion} • Angle: {angle.toFixed(0)}°</p>
             </div>
+                {/* HUD overlays for axes legend */}
+                <Html position={[0, -0.6, 0]} center>
+                  <div style={{
+                    background: 'rgba(0,0,0,0.4)', color: 'white', padding: '6px 8px', borderRadius: 8,
+                    fontSize: 10, lineHeight: 1.2, textAlign: 'center'
+                  }}>
+                    <div><strong>Axes Legend</strong></div>
+                    <div><span style={{color:'#ef4444'}}>X</span>= Med/Lat Rotation</div>
+                    <div><span style={{color:'#22c55e'}}>Y</span>= Pro/Supination</div>
+                    <div><span style={{color:'#3b82f6'}}>Z</span>= Abd/Add, Flex/Ext</div>
+                  </div>
+                </Html>
             <div className="flex items-center gap-2">
               <select value={selectedModelUrl ?? ''} onChange={(e)=> setSelectedModelUrl(e.target.value || null)} className={`px-3 py-2 rounded-lg border ${theme.border} text-sm ${theme.text} ${theme.inputBg}`}>
                 {models.map(m => <option key={m.url} value={m.url}>{m.label}</option>)}
@@ -260,6 +284,9 @@ export const AdvancedAnimationViewer: React.FC<AdvancedAnimationViewerProps> = (
               </select>
               <select value={motion} onChange={(e)=>setMotion(e.target.value as MotionName)} className={`px-3 py-2 rounded-lg border ${theme.border} text-sm ${theme.text} ${theme.inputBg}`}>
                 {MOTIONS.map(m => <option key={m} value={m}>{m}</option>)}
+              <p>
+                Tip: Switch camera presets for clearer views. The model selector (if present) can load different regions (upper limb, lower limb, hand, vertebrae) to match the motion being studied.
+              </p>
               </select>
               <button onClick={()=>setPlaying(p=>!p)} className={`px-3 py-2 rounded-lg border ${theme.border} ${theme.inputBg} ${theme.text} text-sm font-semibold`}>
                 {playing ? <PauseCircle className="w-4 h-4 inline-block mr-1" /> : <PlayCircle className="w-4 h-4 inline-block mr-1" />} {playing ? 'Pause' : 'Play'}
