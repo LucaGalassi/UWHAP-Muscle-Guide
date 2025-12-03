@@ -35,8 +35,6 @@ const FlashcardView: React.FC<FlashcardViewProps> = ({ muscle, onRate, onNext, a
         const data = await fetchMuscleDetails(muscle, apiKey);
         if (mounted) {
           setContent(data);
-          // Auto-open 3D viewer if we have content
-          setShowAdvancedAnim(true);
         }
       } catch (e) {
         console.error('Failed to load muscle details:', e);
@@ -67,13 +65,13 @@ const FlashcardView: React.FC<FlashcardViewProps> = ({ muscle, onRate, onNext, a
       <div className="h-full flex flex-col items-center justify-center p-8 space-y-6">
         <Activity className="w-10 h-10 text-brand-300 animate-pulse" />
         <p className="text-slate-400 text-sm font-medium">Preparing flashcard...</p>
+      </div>
+    );
+  }
+
   return (
     <>
     <div className="flex flex-col items-center justify-center h-full w-full max-w-[95vw] mx-auto p-2 md:p-4 relative">
-      
-      {showAiPrompt && (
-    <>
-    <div className="flex flex-col items-center justify-center h-full max-w-6xl mx-auto p-4 md:p-6 relative">
       
       {showAiPrompt && (
         <div className="absolute top-4 left-4 right-4 bg-purple-50 border border-purple-100 p-3 rounded-xl flex items-center gap-3 z-10 animate-in fade-in slide-in-from-top-2 shadow-sm max-w-md mx-auto">
@@ -326,16 +324,10 @@ const FlashcardView: React.FC<FlashcardViewProps> = ({ muscle, onRate, onNext, a
                 return (
                   <div className="space-y-2">
                     <button
-                      onClick={() => { window.open(`https://www.google.com/search?tbm=isch&q=${encodeURIComponent(`${muscle.name} ${actionText} animation gif`)}`,'_blank'); setShowActionPopup(false); }}
-                      className={`w-full p-3 rounded-xl border ${theme.border} hover:border-brand-500 hover:bg-brand-50 text-left`}
-                    >
-                      <span className={`font-medium ${theme.text}`}>Search GIF: {muscle.name} {actionText}</span>
-                    </button>
-                    <button
                       onClick={() => { setSelectedMotion('Elbow Flexion'); setShowActionPopup(false); setShowAdvancedAnim(true); }}
                       className={`w-full p-3 rounded-xl border ${theme.border} hover:border-brand-500 hover:bg-brand-50 text-left`}
                     >
-                      <span className={`font-medium ${theme.text}`}>Open Advanced 3D Viewer</span>
+                      <span className={`font-medium ${theme.text}`}>Open 3D Viewer & Search</span>
                     </button>
                   </div>
                 );

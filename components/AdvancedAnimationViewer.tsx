@@ -103,10 +103,10 @@ function ArmRig({ motion, playing, angleOut, skeleton }: { motion: MotionName; p
       return null;
     };
     return {
-      shoulder: find(['shoulder_r', 'r_shoulder', 'shoulder', 'upperarm_r', 'humerus_r', 'rightarm', 'mixamorigrightarm']),
-      elbow: find(['elbow_r', 'r_elbow', 'lowerarm_r', 'ulna_r', 'radius_r', 'forearm_r', 'rightforearm', 'mixamorigrightforearm']),
-      forearm: find(['forearm_r', 'radius_r', 'ulna_r', 'r_forearm', 'rightforearm', 'mixamorigrightforearm']),
-      hip: find(['hip_r', 'r_hip', 'thigh_r', 'femur_r', 'pelvis', 'rightupleg', 'mixamorigrightupleg']),
+      shoulder: find(['shoulder_r', 'r_shoulder', 'shoulder', 'upperarm_r', 'humerus_r', 'rightarm', 'mixamorigrightarm', 'right_arm', 'arm_r']),
+      elbow: find(['elbow_r', 'r_elbow', 'lowerarm_r', 'ulna_r', 'radius_r', 'forearm_r', 'rightforearm', 'mixamorigrightforearm', 'right_forearm', 'forearm_r']),
+      forearm: find(['forearm_r', 'radius_r', 'ulna_r', 'r_forearm', 'rightforearm', 'mixamorigrightforearm', 'right_forearm']),
+      hip: find(['hip_r', 'r_hip', 'thigh_r', 'femur_r', 'pelvis', 'rightupleg', 'mixamorigrightupleg', 'right_leg', 'leg_r']),
     };
   }, [skeleton]);
 
