@@ -19,6 +19,13 @@ jobs:
         with:
           ref: main
           path: app
+          lfs: true
+
+      - name: Ensure Git LFS is installed
+        run: |
+          git lfs version || (curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | sudo bash && sudo apt-get install git-lfs -y)
+          git lfs install
+        working-directory: app
 
       - name: Setup Node.js
         uses: actions/setup-node@v4

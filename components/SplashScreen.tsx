@@ -4,19 +4,28 @@ import { Activity } from 'lucide-react';
 interface SplashScreenProps {
   onFinish: () => void;
   studentName?: string;
+  hasSavedSession?: boolean;
+  onResume?: () => void;
+  onReset?: () => void;
+  onImport?: (input: string) => void;
 }
 
-const SplashScreen: React.FC<SplashScreenProps> = ({ onFinish, studentName }) => {
+const SplashScreen: React.FC<SplashScreenProps> = ({ onFinish, studentName, hasSavedSession=false, onResume, onReset, onImport }) => {
   const [isExiting, setIsExiting] = useState(false);
+  const [showPrompt, setShowPrompt] = useState(false);
+  const [importValue, setImportValue] = useState('');
 
   useEffect(() => {
+    if (hasSavedSession) {
+      setShowPrompt(true);
+      return;
+    }
     const timer = setTimeout(() => {
       setIsExiting(true);
-      setTimeout(onFinish, 700); // Wait for fade out animation
-    }, 2500);
-
+      setTimeout(onFinish, 700);
+    }, 1800);
     return () => clearTimeout(timer);
-  }, [onFinish]);
+  }, [onFinish, hasSavedSession]);
 
   return (
     <div className={`fixed inset-0 z-[100] flex flex-col items-center justify-center bg-slate-950 transition-all duration-700 ease-in-out ${isExiting ? 'opacity-0 scale-110 pointer-events-none' : 'opacity-100 scale-100'}`}>
@@ -45,10 +54,52 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onFinish, studentName }) =>
         </div>
       )}
       
-      <div className="relative z-10 flex items-center gap-3 text-slate-400 text-xs md:text-sm font-bold uppercase tracking-[0.2em] animate-in fade-in delay-500 duration-1000">
-        <Activity className="w-4 h-4 text-sky-500 animate-spin" />
-        Initializing Learning Engine...
-      </div>
+      {!showPrompt && (
+        <div className="relative z-10 flex items-center gap-3 text-slate-400 text-xs md:text-sm font-bold uppercase tracking-[0.2em] animate-in fade-in delay-500 duration-1000">
+          <Activity className="w-4 h-4 text-sky-500 animate-spin" />
+          Initializing Learning Engine...
+        </div>
+      )}
+
+      {showPrompt && (
+        <div className="relative z-20 w-full max-w-lg mx-auto px-4">
+          <div className="bg-white/95 backdrop-blur-md rounded-2xl border border-slate-200 shadow-2xl p-5 space-y-4">
+            <div className="text-center">
+              <h2 className="text-lg font-black text-slate-900">Resume previous session?</h2>
+              <p className="text-xs text-slate-600 mt-1">We found saved progress and preferences in this browser.</p>
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                onClick={() => { setIsExiting(true); setTimeout(() => { onResume?.(); onFinish(); }, 300); }}
+                className="px-3 py-2 rounded-lg bg-emerald-600 text-white text-sm font-bold hover:bg-emerald-700"
+              >Resume</button>
+              <button
+                onClick={() => { onReset?.(); setIsExiting(true); setTimeout(onFinish, 300); }}
+                className="px-3 py-2 rounded-lg bg-slate-100 text-slate-700 text-sm font-bold hover:bg-slate-200 border border-slate-200"
+              >Start Fresh</button>
+            </div>
+            <div className="space-y-2">
+              <label className="text-xs font-bold text-slate-600">Or paste a Save Code / Link</label>
+              <input
+                value={importValue}
+                onChange={(e)=>setImportValue(e.target.value)}
+                className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm"
+                placeholder="Paste code or URL here"
+              />
+              <div className="flex gap-2">
+                <button
+                  onClick={() => { if (importValue.trim()) { try { onImport?.(importValue.trim()); } catch {} } setIsExiting(true); setTimeout(onFinish, 300); }}
+                  className="px-3 py-2 rounded-lg bg-blue-600 text-white text-sm font-bold hover:bg-blue-700"
+                >Load</button>
+                <button
+                  onClick={() => { setShowPrompt(false); setIsExiting(true); setTimeout(onFinish, 300); }}
+                  className="px-3 py-2 rounded-lg bg-white text-slate-700 text-sm font-bold border border-slate-200 hover:bg-slate-50"
+                >Skip</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
