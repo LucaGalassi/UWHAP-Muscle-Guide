@@ -183,7 +183,7 @@ const MuscleView: React.FC<MuscleViewProps> = ({ muscle, onSelectMuscle, isLearn
 
           {/* Requirements Box (centered container) */}
           <div className="px-8">
-            <div className={`max-w-5xl mx-auto w-full mt-8 pt-6 border-t ${theme.border}`}>
+            <div className="max-w-5xl mx-auto w-full mt-8 pt-6">
               <h4 className={`text-xs font-bold ${theme.subText} uppercase tracking-wider mb-3 flex items-center gap-2`}>
                 <Target className="w-3 h-3" />
                 Study Requirements
