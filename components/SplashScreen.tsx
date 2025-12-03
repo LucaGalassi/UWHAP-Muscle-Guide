@@ -62,15 +62,8 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onFinish, studentName, hasS
   return (
     <div className={`fixed inset-0 z-[100] flex flex-col items-center justify-center bg-slate-950 transition-all duration-700 ease-in-out ${isExiting ? 'opacity-0 scale-110 pointer-events-none' : 'opacity-100 scale-100'}`}>
       {/* Version Badge - Top Right Corner */}
-      <div className="absolute top-4 right-4 flex items-center gap-2 text-slate-500 text-xs font-bold z-10">
-        <span className="opacity-50">v{pkg.version}</span>
-        <span className="opacity-30">|</span>
-        <div className="flex items-center gap-1 opacity-50">
-          <Key className="w-3 h-3" />
-          <span>AI</span>
-        </div>
-        <span className="opacity-30">|</span>
-        <Settings className="w-3 h-3 opacity-50" />
+      <div className="absolute top-4 right-4 text-slate-500 text-xs font-bold opacity-50 z-10">
+        v{pkg.version}
       </div>
 
       <div className="relative mb-12">

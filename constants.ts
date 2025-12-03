@@ -93,24 +93,24 @@ export const THEME_CONFIG: Record<AppTheme, ThemeConfig> = {
   nature: {
     label: 'Nature',
     appBg: 'bg-[#f5f5f4]', // stone-100
-    cardBg: 'bg-[#fafaf9]/90 backdrop-blur-md', // stone-50
-    text: 'text-[#292524]', // stone-800
-    subText: 'text-[#78716c]', // stone-500
-    border: 'border-[#e7e5e4]', // stone-200
+    cardBg: 'bg-white/95 backdrop-blur-md', // brighter white
+    text: 'text-[#1c1917]', // stone-900 - much darker
+    subText: 'text-[#57534e]', // stone-600 - darker
+    border: 'border-[#d6d3d1]', // stone-300 - more visible
     accent: 'bg-gradient-to-r from-emerald-600 to-teal-700',
-    badge: 'bg-white text-emerald-800 border-emerald-200 shadow-sm',
-    infoBox: 'bg-white/60 border-[#e7e5e4] text-[#44403c]', // stone-700
+    badge: 'bg-white text-emerald-800 border-emerald-300 shadow-sm',
+    infoBox: 'bg-white/80 border-[#d6d3d1] text-[#292524]', // stone-800
     iconLoc: 'bg-[#dcfce7] text-[#15803d]', // emerald-100, emerald-700
-    iconFunc: 'bg-[#fef3c7] text-[#b45309]', // amber-100, amber-700
+    iconFunc: 'bg-[#fef3c7] text-[#92400e]', // amber-100, amber-800
 
     // Sidebar
-    sidebarBg: 'bg-[#fafaf9]/90 backdrop-blur-xl',
-    sidebarBorder: 'border-[#e7e5e4]',
-    sidebarText: 'text-[#292524]',
-    sidebarSubText: 'text-[#78716c]',
-    sidebarHover: 'hover:bg-[#e7e5e4]/50',
-    sidebarActive: 'bg-white shadow-sm border border-[#e7e5e4] text-[#15803d]',
-    inputBg: 'bg-[#e7e5e4]/50',
+    sidebarBg: 'bg-white/95 backdrop-blur-xl',
+    sidebarBorder: 'border-[#d6d3d1]',
+    sidebarText: 'text-[#1c1917]',
+    sidebarSubText: 'text-[#57534e]',
+    sidebarHover: 'hover:bg-[#e7e5e4]/80',
+    sidebarActive: 'bg-white shadow-sm border border-[#d6d3d1] text-[#15803d]',
+    inputBg: 'bg-[#f5f5f4]',
 
     // Blobs
     blobColor1: 'bg-emerald-200',

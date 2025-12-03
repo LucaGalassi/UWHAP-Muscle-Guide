@@ -197,15 +197,19 @@ const WelcomeModal: React.FC<WelcomeModalProps> = ({ onDismiss, onResume, daysUn
              ))}
           </div>
 
-          <div className={`flex-1 p-4 md:p-8 flex flex-col items-center text-center animate-in slide-in-from-right-4 duration-300 key={stepIndex} overflow-y-auto ${currentThemeConfig.appBg}`}>
-             <div className={`w-16 h-16 md:w-20 md:h-20 rounded-full flex items-center justify-center mb-4 md:mb-6 shadow-sm border shrink-0 ${currentThemeConfig.iconFunc}`}>
+          <div className={`flex-1 p-4 md:p-8 flex flex-col items-center text-center animate-in slide-in-from-right-4 duration-300 key={stepIndex} overflow-y-auto transition-colors ${currentThemeConfig.appBg}`}>
+             <div className={`w-16 h-16 md:w-20 md:h-20 rounded-full flex items-center justify-center mb-4 md:mb-6 shadow-sm border shrink-0 transition-all ${currentThemeConfig.iconFunc}`}>
                {step.icon}
              </div>
              
              <h2 className={`text-xl md:text-2xl font-black mb-1 transition-colors ${currentThemeConfig.text}`}>{step.title}</h2>
-             <p className="text-brand-600 font-bold text-xs uppercase tracking-widest mb-6 md:mb-8">{step.subtitle}</p>
+             <p className={`font-bold text-xs uppercase tracking-widest mb-6 md:mb-8 transition-colors ${
+               currentTheme === 'blueprint' || currentTheme === 'midnight' 
+               ? 'text-indigo-400' 
+               : 'text-brand-600'
+             }`}>{step.subtitle}</p>
              
-             <div className={`w-full text-left rounded-xl ${currentThemeConfig.cardBg}`}>
+             <div className={`w-full text-left rounded-xl p-4 transition-all ${currentThemeConfig.cardBg}`}>
                {step.content}
              </div>
           </div>
@@ -362,18 +366,13 @@ const WelcomeModal: React.FC<WelcomeModalProps> = ({ onDismiss, onResume, daysUn
            )}
 
            <div className="mb-10">
-             <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
-               <div className="flex items-center gap-3">
-                 <div className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-all ${currentThemeConfig.iconFunc}`}>
-                   <Palette className="w-6 h-6" />
-                 </div>
-                 <div>
-                   <p className="text-xs font-bold text-brand-500 uppercase tracking-widest">Live Preview</p>
-                   <p className={`text-xl font-black transition-colors ${currentThemeConfig.text}`}>Choose Your Theme</p>
-                 </div>
+             <div className="flex items-center gap-3 mb-6">
+               <div className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-all ${currentThemeConfig.iconFunc}`}>
+                 <Palette className="w-6 h-6" />
                </div>
-               <div className={`px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest animate-pulse ${currentThemeConfig.badge}`}>
-                 ✨ Updates Live
+               <div>
+                 <p className="text-xs font-bold text-brand-500 uppercase tracking-widest">Live Preview</p>
+                 <p className={`text-xl font-black transition-colors ${currentThemeConfig.text}`}>Choose Your Theme</p>
                </div>
              </div>
              <div className="grid gap-4 md:grid-cols-2">
