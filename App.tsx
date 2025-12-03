@@ -130,7 +130,7 @@ const App: React.FC = () => {
   const [examDate, setExamDate] = useState<number>(DEFAULT_EXAM_DATE);
 
   // Welcome Modal State
-  const [showWelcome, setShowWelcome] = useState(true);
+  const [showWelcome, setShowWelcome] = useState(false);
   const [isNewUser, setIsNewUser] = useState(false);
   // Resume prompt moved into SplashScreen
   
@@ -228,9 +228,13 @@ const App: React.FC = () => {
   // Initialize state from URL params and LocalStorage on mount
   useEffect(() => {
     // Detect whether we have meaningful saved data (not just defaults)
+    let hasProgress = false;
+    let hasName = false;
+    let hasKey = false;
+    let welcomeDismissed = false;
+    
     try {
       const rawProgress = localStorage.getItem('srs_progress');
-      let hasProgress = false;
       if (rawProgress) {
         try {
           const parsed = JSON.parse(rawProgress);
@@ -239,7 +243,19 @@ const App: React.FC = () => {
       }
       const storedName = localStorage.getItem('student_name');
       const storedKey = localStorage.getItem('user_gemini_key');
-      setHasSavedSession(!!(hasProgress || storedName || storedKey));
+      hasName = !!storedName;
+      hasKey = !!storedKey;
+      
+      // Check if welcome was previously dismissed
+      const dismissed = localStorage.getItem('welcome_dismissed');
+      welcomeDismissed = dismissed === '1';
+      
+      // Determine if this is a new user (no saved data at all)
+      const isNew = !hasProgress && !hasName && !hasKey && !welcomeDismissed;
+      setIsNewUser(isNew);
+      
+      // Has any saved session data?
+      setHasSavedSession(hasProgress || hasName || hasKey);
     } catch {}
 
     // Load settings
@@ -252,12 +268,6 @@ const App: React.FC = () => {
 
     // Splash: show unless user disabled in settings
     setShowSplash(!hideSplashAlways);
-
-    // Welcome dialog: honor prior dismissal
-    try {
-      const dismissed = localStorage.getItem('welcome_dismissed');
-      if (dismissed === '1') setShowWelcome(false);
-    } catch {}
 
     // 1. Load API Key
     try {
@@ -337,6 +347,17 @@ const App: React.FC = () => {
       localStorage.setItem('app_stats', JSON.stringify(next));
     } catch {}
   }, []);
+
+  // Show welcome modal for new users after splash finishes
+  useEffect(() => {
+    if (!showSplash && isNewUser) {
+      // Small delay to ensure smooth transition from splash
+      const timer = setTimeout(() => {
+        setShowWelcome(true);
+      }, 300);
+      return () => clearTimeout(timer);
+    }
+  }, [showSplash, isNewUser]);
 
   // Save Progress whenever it changes
   useEffect(() => {
@@ -430,6 +451,12 @@ const App: React.FC = () => {
     if (confirm("Are you sure you want to reset all study progress? This cannot be undone.")) {
       setProgressMap({});
       localStorage.removeItem('srs_progress');
+      localStorage.removeItem('last_save_timestamp');
+      
+      // Show welcome tutorial after reset
+      setIsNewUser(true);
+      setShowWelcome(true);
+      setHasSavedSession(false);
     }
   };
 
@@ -631,6 +658,7 @@ const App: React.FC = () => {
               localStorage.removeItem('app_theme');
               localStorage.removeItem('user_gemini_key');
               localStorage.removeItem('welcome_dismissed');
+              localStorage.removeItem('last_save_timestamp');
             } catch {}
             setProgressMap({});
             setStudentName('');

@@ -52,12 +52,14 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onFinish, studentName, hasS
       setShowPrompt(true);
       return;
     }
+    
+    // For new users, show splash briefly then exit to show welcome modal
     const timer = setTimeout(() => {
       setIsExiting(true);
       setTimeout(onFinish, 700);
     }, 1800);
     return () => clearTimeout(timer);
-  }, [onFinish, hasSavedSession]);
+  }, [onFinish, hasSavedSession, autoResume, onResume]);
 
   return (
     <div className={`fixed inset-0 z-[100] flex flex-col items-center justify-center bg-slate-950 transition-all duration-700 ease-in-out ${isExiting ? 'opacity-0 scale-110 pointer-events-none' : 'opacity-100 scale-100'}`}>
@@ -91,10 +93,16 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onFinish, studentName, hasS
         </div>
       )}
       
+      {!hasSavedSession && (
+        <div className="relative z-10 text-xl md:text-2xl font-bold text-emerald-400 mb-8 animate-in fade-in slide-in-from-bottom-4 delay-300 duration-1000">
+          🎓 Welcome, New Student!
+        </div>
+      )}
+      
       {!showPrompt && (
         <div className="relative z-10 flex items-center gap-3 text-slate-400 text-xs md:text-sm font-bold uppercase tracking-[0.2em] animate-in fade-in delay-500 duration-1000">
           <Activity className="w-4 h-4 text-sky-500 animate-spin" />
-          Starting Learning Engine...
+          {hasSavedSession ? 'Loading Your Progress...' : 'Preparing Your Study Guide...'}
         </div>
       )}
 
