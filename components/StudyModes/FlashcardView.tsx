@@ -74,13 +74,13 @@ const FlashcardView: React.FC<FlashcardViewProps> = ({ muscle, onRate, onNext, a
 
       {/* Card Container - Widened */}
       <div 
-        className="relative w-full h-[65vh] md:h-[70vh] cursor-pointer perspective-1000 group mb-6"
+        className="flashcard-flip-container relative w-full h-[65vh] md:h-[70vh] cursor-pointer group mb-6"
         onClick={() => setIsFlipped(!isFlipped)}
       >
-        <div className={`relative w-full h-full transition-transform duration-500 transform-style-3d shadow-2xl rounded-3xl ${isFlipped ? 'rotate-y-180' : ''}`}>
+        <div className={`flashcard-inner shadow-2xl rounded-3xl ${isFlipped ? 'flashcard-flipped' : ''}`}>
           
           {/* Front (Question) */}
-          <div className={`absolute inset-0 backface-hidden rounded-3xl flex flex-col items-center justify-center p-6 md:p-10 text-center border relative overflow-hidden ring-1 ring-black/5 transition-colors duration-300 ${theme.cardBg} ${theme.border}`}>
+          <div className={`flashcard-face rounded-3xl flex flex-col items-center justify-center p-6 md:p-10 text-center border overflow-hidden ring-1 ring-black/5 transition-colors duration-300 ${theme.cardBg} ${theme.border}`}>
             {/* Decoration */}
             <div className={`absolute top-0 left-0 w-full h-3 ${theme.accent}`}></div>
             
@@ -136,7 +136,7 @@ const FlashcardView: React.FC<FlashcardViewProps> = ({ muscle, onRate, onNext, a
           </div>
 
           {/* Back (Answer) - Now uses Theme Config! */}
-          <div className={`absolute inset-0 backface-hidden rotate-y-180 rounded-3xl flex flex-col overflow-hidden border shadow-2xl transition-colors duration-300 ${theme.cardBg} ${theme.border}`}>
+          <div className={`flashcard-face flashcard-back rounded-3xl flex flex-col overflow-hidden border shadow-2xl transition-colors duration-300 ${theme.cardBg} ${theme.border}`}>
             <div className="flex-1 overflow-y-auto custom-scrollbar p-8 md:p-12 space-y-8">
                <div className={`flex items-center justify-between border-b pb-6 sticky top-0 z-10 pt-2 ${theme.cardBg} ${currentTheme === 'midnight' ? 'border-slate-800' : 'border-slate-100'}`}>
                  <div>

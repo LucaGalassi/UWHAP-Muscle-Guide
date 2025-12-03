@@ -30,7 +30,7 @@ export interface ApiKeyContextType {
 
 // Learning Types
 export type StudyMode = 'REFERENCE' | 'STUDY';
-export type LearningTool = 'FLASHCARDS' | 'QUIZ' | 'SMART_GUIDE' | 'NONE';
+export type LearningTool = 'FLASHCARDS' | 'QUIZ' | 'SMART_GUIDE' | 'LIGHTNING' | 'NONE';
 
 export interface QuizQuestion {
   id: string;

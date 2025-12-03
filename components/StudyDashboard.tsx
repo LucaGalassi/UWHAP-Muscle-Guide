@@ -1,6 +1,6 @@
 import React from 'react';
 import { LearningTool } from '../types';
-import { Brain, Layers, GraduationCap, ArrowRight } from 'lucide-react';
+import { Brain, Layers, GraduationCap, ArrowRight, Zap } from 'lucide-react';
 
 interface StudyDashboardProps {
   onSelectTool: (tool: LearningTool) => void;
@@ -16,7 +16,7 @@ const StudyDashboard: React.FC<StudyDashboardProps> = ({ onSelectTool, learnedCo
         <p className="text-slate-500">Choose a mode to accelerate your anatomy mastery.</p>
       </div>
 
-      <div className="grid md:grid-cols-3 gap-6">
+      <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
         {/* Flashcards */}
         <button 
           onClick={() => onSelectTool('FLASHCARDS')}
@@ -66,6 +66,23 @@ const StudyDashboard: React.FC<StudyDashboardProps> = ({ onSelectTool, learnedCo
           </p>
           <span className="text-white text-xs font-bold uppercase tracking-wider flex items-center gap-1 group-hover:gap-2 transition-all">
             Start Guided Session <ArrowRight className="w-3 h-3" />
+          </span>
+        </button>
+
+        {/* Lightning Round */}
+        <button 
+          onClick={() => onSelectTool('LIGHTNING')}
+          className="group relative p-8 bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-lg hover:border-brand-200 transition-all text-left"
+        >
+          <div className="w-12 h-12 bg-emerald-100 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+            <Zap className="w-6 h-6 text-emerald-600" />
+          </div>
+          <h3 className="text-xl font-bold text-slate-900 mb-2">Lightning Round</h3>
+          <p className="text-sm text-slate-500 leading-relaxed mb-6">
+            8-question speed drill with instant scoring. Perfect for quick daily streaks.
+          </p>
+          <span className="text-emerald-600 text-xs font-bold uppercase tracking-wider flex items-center gap-1 group-hover:gap-2 transition-all">
+            Start Lightning Round <ArrowRight className="w-3 h-3" />
           </span>
         </button>
       </div>

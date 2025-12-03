@@ -11,6 +11,7 @@ interface SidebarProps {
   learnedIds: Set<string>;
   toggleLearned: (id: string) => void;
   getShareLink: (name: string) => string;
+  getSaveCode: (name: string) => string;
   currentMode: StudyMode;
   onSetMode: (mode: StudyMode) => void;
   apiKey: string;
@@ -29,6 +30,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   learnedIds,
   toggleLearned,
   getShareLink,
+  getSaveCode,
   currentMode,
   onSetMode,
   apiKey,
@@ -43,6 +45,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   const [showShareModal, setShowShareModal] = useState(false);
   const [showSettingsModal, setShowSettingsModal] = useState(false);
   const [copyFeedback, setCopyFeedback] = useState(false);
+  const [copyCodeFeedback, setCopyCodeFeedback] = useState(false);
   const [tempKey, setTempKey] = useState(apiKey);
   const [shareName, setShareName] = useState('');
 
@@ -76,6 +79,12 @@ const Sidebar: React.FC<SidebarProps> = ({
     navigator.clipboard.writeText(getShareLink(shareName));
     setCopyFeedback(true);
     setTimeout(() => setCopyFeedback(false), 2000);
+  };
+
+  const handleCopyCode = () => {
+    navigator.clipboard.writeText(getSaveCode(shareName));
+    setCopyCodeFeedback(true);
+    setTimeout(() => setCopyCodeFeedback(false), 2000);
   };
 
   const handleSaveKey = () => {
@@ -289,7 +298,7 @@ const Sidebar: React.FC<SidebarProps> = ({
         
         {/* Footer */}
         <div className={`p-4 border-t ${theme.sidebarBorder} ${theme.sidebarBg} text-[10px] ${theme.sidebarSubText} text-center uppercase tracking-wider font-semibold`}>
-          V3.8 • Made by Luca G • {apiKey ? 'AI Enabled' : 'AI Optional'}
+          V4.5 • Made by Luca G • {apiKey ? 'AI Link Enabled' : 'AI Link Disabled'}
         </div>
       </div>
 
@@ -297,63 +306,120 @@ const Sidebar: React.FC<SidebarProps> = ({
       {showShareModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md animate-in fade-in duration-200">
            <div className="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden transform transition-all scale-100 border border-slate-100">
-            <div className="p-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/80">
+            <div className="p-4 border-b border-slate-100 flex items-center justify-between bg-gradient-to-r from-brand-50 to-blue-50">
               <div className="flex items-center gap-2">
                 <div className="bg-gradient-to-br from-brand-400 to-blue-600 p-1.5 rounded-lg shadow-sm">
                   <Share2 className="w-4 h-4 text-white" />
                 </div>
-                <h3 className="font-bold text-slate-900">Save Your Journey</h3>
+                <h3 className="font-bold text-slate-900">Save Your Progress</h3>
               </div>
               <button 
                 onClick={() => setShowShareModal(false)}
-                className="p-1 hover:bg-slate-200 rounded-full transition-colors"
+                className="p-1 hover:bg-white/50 rounded-full transition-colors"
               >
                 <X className="w-5 h-5 text-slate-400 hover:text-slate-600" />
               </button>
             </div>
             
             <div className="p-6 space-y-6">
-               <div className="bg-brand-50 p-4 rounded-xl border border-brand-100 flex items-start gap-3">
-                  <AlertTriangle className="w-5 h-5 text-brand-600 mt-0.5 shrink-0" />
-                  <p className="text-xs text-brand-800 leading-relaxed">
-                    <strong>Important:</strong> We do not have accounts. To save your progress, you <strong>must copy and save the link below</strong>.
-                  </p>
+               <div className="bg-gradient-to-r from-amber-50 to-yellow-50 p-4 rounded-xl border-2 border-amber-200 flex items-start gap-3">
+                  <AlertTriangle className="w-5 h-5 text-amber-600 mt-0.5 shrink-0" />
+                  <div>
+                    <p className="text-xs text-amber-900 font-bold mb-1">Privacy First!</p>
+                    <p className="text-xs text-amber-800 leading-relaxed">
+                      No accounts needed. Choose a save code for notebooks or a shareable link for digital use—or both for backup.
+                    </p>
+                  </div>
                </div>
 
                <div className="space-y-3">
-                 <label className="text-xs font-bold text-slate-400 uppercase tracking-wider block">Customize your link (Fun!)</label>
-                 <div className="relative group">
-                   <input 
-                      type="text" 
-                      placeholder="Enter your name (e.g. Dr. Muscle)" 
-                      value={shareName}
-                      onChange={(e) => setShareName(e.target.value)}
-                      className="w-full pl-3 pr-3 py-3 bg-white border-2 border-slate-100 rounded-xl text-sm font-semibold focus:outline-none focus:border-brand-500 focus:ring-4 focus:ring-brand-500/10 transition-all placeholder:font-normal"
+                 <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block">Personalize (optional)</label>
+                 <input 
+                    type="text" 
+                    placeholder="Add a label (e.g. Dr. Muscle)" 
+                    value={shareName}
+                    onChange={(e) => setShareName(e.target.value)}
+                    className="w-full pl-3 pr-3 py-3 bg-white border-2 border-slate-100 rounded-xl text-sm font-semibold focus:outline-none focus:border-brand-500 focus:ring-4 focus:ring-brand-500/10 transition-all placeholder:font-normal"
+                 />
+               </div>
+
+               <div className="grid gap-4 md:grid-cols-2">
+                 {/* Save Code */}
+                 <div className="p-4 bg-slate-900 rounded-2xl border border-slate-800 text-slate-100 flex flex-col gap-3 shadow-lg">
+                   <div className="flex items-center justify-between">
+                     <div>
+                       <p className="text-xs uppercase tracking-widest text-slate-400">Offline Friendly</p>
+                       <h4 className="font-bold text-white">Save Code</h4>
+                     </div>
+                     <div className="px-2 py-1 text-[10px] bg-slate-800 rounded-full uppercase tracking-wider">Encrypted</div>
+                   </div>
+                   <textarea
+                      readOnly 
+                      value={getSaveCode(shareName)} 
+                      rows={4}
+                      className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-[11px] text-emerald-400 font-mono focus:outline-none resize-none"
+                      onClick={(e) => e.currentTarget.select()}
                    />
+                   <button 
+                      onClick={handleCopyCode}
+                      className={`w-full py-2 rounded-xl text-sm font-bold flex items-center justify-center gap-2 transition-all ${
+                        copyCodeFeedback
+                        ? 'bg-emerald-500 text-white'
+                        : 'bg-white/10 text-white hover:bg-white/20'
+                      }`}
+                   >
+                      {copyCodeFeedback ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                      {copyCodeFeedback ? 'Code Copied!' : 'Copy Save Code'}
+                   </button>
+                   <p className="text-[11px] text-slate-400">
+                      Perfect for paper planners or when switching devices later.
+                   </p>
                  </div>
-              </div>
-              
-              <div className="space-y-2">
-                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider ml-1">Your Unique Magic Link</label>
-                <div className="flex gap-2">
-                  <input 
+
+                 {/* Share Link */}
+                 <div className="p-4 bg-white rounded-2xl border border-slate-200 flex flex-col gap-3 shadow-sm">
+                   <div>
+                     <p className="text-xs uppercase tracking-widest text-slate-400">Instant Resume</p>
+                     <h4 className="font-bold text-slate-900">Shareable Link</h4>
+                   </div>
+                   <input 
                     readOnly 
                     value={getShareLink(shareName)} 
-                    className="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-600 font-mono focus:outline-none truncate cursor-text hover:bg-slate-100 transition-colors"
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-[11px] text-slate-600 font-mono focus:outline-none truncate cursor-text hover:bg-slate-100 transition-colors"
                     onClick={(e) => e.currentTarget.select()}
-                  />
-                  <button 
-                    onClick={handleCopyLink}
-                    className={`px-4 py-2 rounded-xl text-sm font-bold transition-all flex items-center gap-2 min-w-[110px] justify-center transform active:scale-95 ${
-                      copyFeedback 
-                      ? 'bg-green-500 text-white shadow-green-200 shadow-lg' 
-                      : 'bg-slate-900 hover:bg-slate-800 text-white shadow-xl hover:shadow-2xl'
-                    }`}
-                  >
-                    {copyFeedback ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
-                    {copyFeedback ? "Copied!" : "Copy"}
-                  </button>
-                </div>
+                   />
+                   <button 
+                      onClick={handleCopyLink}
+                      className={`w-full py-2 rounded-xl text-sm font-bold flex items-center justify-center gap-2 transition-all ${
+                        copyFeedback
+                        ? 'bg-brand-600 text-white'
+                        : 'bg-slate-900 text-white hover:bg-slate-800'
+                      }`}
+                   >
+                      {copyFeedback ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                      {copyFeedback ? 'Link Copied!' : 'Copy Link'}
+                   </button>
+                   <p className="text-[11px] text-slate-500">
+                      Great for texting or emailing yourself a quick resume link.
+                   </p>
+                 </div>
+               </div>
+
+               <div className="bg-blue-50 p-3 rounded-lg border border-blue-100">
+                 <p className="text-xs text-blue-800 leading-relaxed">
+                   <strong>💡 Pro tip:</strong> Save both the code <em>and</em> the link for maximum safety.
+                 </p>
+               </div>
+              
+              <div className="pt-4 border-t border-slate-100 space-y-3">
+                 <div className="flex items-center gap-2 text-xs text-slate-500">
+                   <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+                   <span>Progress: <strong className="text-slate-700">{learnedIds.size}/{MUSCLE_DATA.length}</strong> muscles</span>
+                 </div>
+                 <div className="flex items-center gap-2 text-xs text-slate-500">
+                   <Palette className="w-4 h-4 text-purple-500" />
+                   <span>Theme: <strong className="text-slate-700">{THEME_CONFIG[currentTheme].label}</strong></span>
+                 </div>
               </div>
             </div>
            </div>

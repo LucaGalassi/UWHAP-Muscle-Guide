@@ -5,6 +5,7 @@ import StudyDashboard from './components/StudyDashboard';
 import FlashcardView from './components/StudyModes/FlashcardView';
 import QuizView from './components/StudyModes/QuizView';
 import SmartGuideView from './components/StudyModes/SmartGuideView';
+import LightningRoundView from './components/StudyModes/LightningRoundView';
 import WelcomeModal from './components/WelcomeModal';
 import { MuscleItem, StudyMode, LearningTool, MuscleProgress, AppTheme } from './types';
 import { MUSCLE_DATA, THEME_CONFIG } from './constants';
@@ -12,6 +13,7 @@ import { Menu, ArrowLeft, AlertTriangle, Timer } from 'lucide-react';
 
 // Compression Helpers
 const STATUS_MAP = ['NEW', 'LEARNING', 'REVIEW', 'MASTERED'];
+const EXAM_DATE = new Date('2025-12-08T09:00:00'); // Exam Date reference
 
 const compressProgress = (map: Record<string, MuscleProgress>): string => {
   const minified = Object.values(map).map(p => {
@@ -126,13 +128,19 @@ const App: React.FC = () => {
   const [showWelcome, setShowWelcome] = useState(true);
 
   // Exam Date Logic
-  const EXAM_DATE = new Date('2025-12-08T09:00:00'); // Exam Date
   const [daysUntilExam, setDaysUntilExam] = useState(0);
 
   useEffect(() => {
-    const now = new Date();
-    const diff = EXAM_DATE.getTime() - now.getTime();
-    setDaysUntilExam(Math.ceil(diff / (1000 * 60 * 60 * 24)));
+    const updateCountdown = () => {
+      const now = new Date();
+      const diff = EXAM_DATE.getTime() - now.getTime();
+      const days = Math.ceil(diff / (1000 * 60 * 60 * 24));
+      setDaysUntilExam(Math.max(0, days));
+    };
+
+    updateCountdown();
+    const timer = setInterval(updateCountdown, 60 * 60 * 1000); // refresh hourly
+    return () => clearInterval(timer);
   }, []);
 
   const parseUrlParams = (search: string) => {
@@ -264,12 +272,31 @@ const App: React.FC = () => {
     }
   };
 
-  const handleResumeFromLink = (url: string) => {
+  const handleResumeData = (input: string) => {
+     const trimmed = input.trim();
+     if (!trimmed) return;
      try {
-       const urlObj = new URL(url);
-       parseUrlParams(urlObj.search);
+       if (trimmed.startsWith('http')) {
+         const urlObj = new URL(trimmed);
+         parseUrlParams(urlObj.search);
+         return;
+       }
+
+       if (trimmed.startsWith('?')) {
+         parseUrlParams(trimmed);
+         return;
+       }
+
+       // Attempt to decode save code payload
+       const decoded = JSON.parse(atob(trimmed));
+       if (decoded && decoded.params) {
+         const params = new URLSearchParams(decoded.params);
+         parseUrlParams(`?${params.toString()}`);
+         return;
+       }
+       throw new Error('Invalid save code format');
      } catch (e) {
-       console.error("Invalid URL");
+       console.error("Invalid resume data", e);
        throw e;
      }
   };
@@ -304,30 +331,48 @@ const App: React.FC = () => {
     });
   };
 
-  const getShareLink = (name: string) => {
+  const buildShareParams = (name?: string) => {
      const params = new URLSearchParams();
      params.set('current', selectedMuscle.id);
      if (name) params.set('name', encodeURIComponent(name));
      params.set('theme', theme);
      
-     // Encode progress map using compression
      if (Object.keys(progressMap).length > 0) {
        try {
          const encoded = compressProgress(progressMap);
          if (encoded) {
            params.set('p', encoded);
          } else {
-           console.warn('Failed to encode progress - link will not include progress data');
+           console.warn('Failed to encode progress - payload will omit progress data');
          }
        } catch (e) {
          console.error("Failed to encode progress", e);
        }
      }
-     
+     return params;
+  };
+
+  const getShareLink = (name: string) => {
+     const params = buildShareParams(name);
      return `${window.location.protocol}//${window.location.host}${window.location.pathname}?${params.toString()}`;
   };
 
+  const getSaveCode = (name: string) => {
+     try {
+       const params = buildShareParams(name);
+       const payload = {
+         version: 1,
+         params: Object.fromEntries(params.entries())
+       };
+       return btoa(JSON.stringify(payload));
+     } catch (e) {
+       console.error('Failed to generate save code', e);
+       return '';
+     }
+  };
+
   const currentThemeConfig = THEME_CONFIG[theme];
+  const currentFocusGroup = daysUntilExam > 0 ? 'Group A' : 'Group B';
 
   const renderMainContent = () => {
     if (currentMode === 'REFERENCE') {
@@ -338,6 +383,7 @@ const App: React.FC = () => {
           isLearned={(progressMap[selectedMuscle.id] as MuscleProgress | undefined)?.status === 'MASTERED'}
           toggleLearned={() => toggleLearnedSimple(selectedMuscle.id)}
           apiKey={apiKey}
+          currentTheme={theme}
         />
       );
     }
@@ -381,6 +427,9 @@ const App: React.FC = () => {
             />
           )}
           {activeTool === 'QUIZ' && <QuizView />}
+          {activeTool === 'LIGHTNING' && (
+            <LightningRoundView onExit={() => setActiveTool('NONE')} />
+          )}
           {activeTool === 'SMART_GUIDE' && (
             <SmartGuideView 
               progressMap={progressMap}
@@ -400,9 +449,10 @@ const App: React.FC = () => {
       {showWelcome && (
         <WelcomeModal 
           onDismiss={() => setShowWelcome(false)}
-          onResume={handleResumeFromLink}
+          onResume={handleResumeData}
           daysUntilExam={daysUntilExam}
           currentTheme={theme}
+          onSelectTheme={setTheme}
         />
       )}
 
@@ -428,7 +478,7 @@ const App: React.FC = () => {
 
         <div className="hidden md:flex items-center gap-2 text-xs font-bold text-slate-900 bg-yellow-400 px-3 py-1.5 rounded-full shadow-lg shadow-yellow-500/20">
           <AlertTriangle className="w-3.5 h-3.5" />
-          Focus: Group A
+          Focus: {currentFocusGroup}
         </div>
       </div>
 
@@ -458,6 +508,7 @@ const App: React.FC = () => {
           learnedIds={new Set((Object.values(progressMap) as MuscleProgress[]).filter(p => p.status === 'MASTERED').map(p => p.muscleId))}
           toggleLearned={toggleLearnedSimple}
           getShareLink={getShareLink}
+          getSaveCode={getSaveCode}
           currentMode={currentMode}
           onSetMode={(m) => {
             setCurrentMode(m);

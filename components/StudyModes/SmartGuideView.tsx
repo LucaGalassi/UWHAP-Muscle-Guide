@@ -308,6 +308,7 @@ const SmartGuideView: React.FC<SmartGuideViewProps> = ({ progressMap, onUpdatePr
                    toggleLearned={() => {}}
                    apiKey={apiKey}
                    onRelatedMuscleClick={(m) => setRelatedMusclePopup(m)}
+                   currentTheme={'modern'}
                 />
              </div>
            </div>
@@ -344,6 +345,7 @@ const SmartGuideView: React.FC<SmartGuideViewProps> = ({ progressMap, onUpdatePr
                  toggleLearned={() => {}} 
                  apiKey={apiKey} 
                  onRelatedMuscleClick={(m) => setRelatedMusclePopup(m)}
+                 currentTheme={'modern'}
                />
                <div className="absolute bottom-8 right-8 z-20">
                  <button 

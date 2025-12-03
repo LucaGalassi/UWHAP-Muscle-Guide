@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { MuscleItem, MuscleContent } from '../types';
+import { MuscleItem, MuscleContent, AppTheme } from '../types';
 import { fetchMuscleDetails } from '../services/geminiService';
-import { MUSCLE_DETAILS, MUSCLE_DATA } from '../constants';
+import { MUSCLE_DETAILS, MUSCLE_DATA, THEME_CONFIG } from '../constants';
 import { 
   Play, 
   MapPin, 
@@ -28,13 +28,15 @@ interface MuscleViewProps {
   toggleLearned: () => void;
   apiKey: string;
   onRelatedMuscleClick?: (muscle: MuscleItem) => void; // New optional prop for Study Mode override
+  currentTheme: AppTheme;
 }
 
-const MuscleView: React.FC<MuscleViewProps> = ({ muscle, onSelectMuscle, isLearned, toggleLearned, apiKey, onRelatedMuscleClick }) => {
+const MuscleView: React.FC<MuscleViewProps> = ({ muscle, onSelectMuscle, isLearned, toggleLearned, apiKey, onRelatedMuscleClick, currentTheme }) => {
   const [content, setContent] = useState<MuscleContent | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isBannerDismissed, setIsBannerDismissed] = useState(false);
+  const theme = THEME_CONFIG[currentTheme];
 
   // Check if we have static data for this muscle
   const hasStaticData = !!MUSCLE_DETAILS[muscle.id];
@@ -104,9 +106,9 @@ const MuscleView: React.FC<MuscleViewProps> = ({ muscle, onSelectMuscle, isLearn
   const showAiBanner = !hasStaticData && !apiKey && !isBannerDismissed;
 
   return (
-    <div className="h-full flex flex-col overflow-y-auto bg-white custom-scrollbar">
+    <div className={`h-full flex flex-col overflow-y-auto ${theme.cardBg} custom-scrollbar transition-colors duration-300`}>
       {/* Clean Header */}
-      <div className="bg-white border-b border-slate-100 px-8 py-8 md:py-10">
+      <div className={`${theme.cardBg} border-b ${theme.border} px-8 py-8 md:py-10 transition-colors`}>
         <div className="max-w-5xl mx-auto w-full">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
             <div className="flex-1">
@@ -119,13 +121,13 @@ const MuscleView: React.FC<MuscleViewProps> = ({ muscle, onSelectMuscle, isLearn
                   Group {muscle.group}
                 </span>
                 {muscle.subCategory && (
-                  <span className="text-[11px] font-bold text-slate-400 tracking-wider uppercase">
+                  <span className={`text-[11px] font-bold ${theme.subText} tracking-wider uppercase`}>
                     • {muscle.subCategory}
                   </span>
                 )}
               </div>
               <div className="flex items-center gap-4">
-                <h1 className="text-4xl font-extrabold text-slate-900 tracking-tight">
+                <h1 className={`text-4xl font-extrabold ${theme.text} tracking-tight`}>
                   {muscle.name}
                 </h1>
                 <button 
@@ -146,7 +148,7 @@ const MuscleView: React.FC<MuscleViewProps> = ({ muscle, onSelectMuscle, isLearn
             <div className="flex gap-2">
               <button 
                 onClick={() => openSearchPopup(`${muscle.name} muscle anatomy`)}
-                className="p-3 bg-slate-50 hover:bg-slate-100 rounded-xl text-slate-600 hover:text-slate-900 transition-colors border border-slate-200"
+                className={`p-3 ${theme.inputBg} hover:bg-slate-100 rounded-xl ${theme.subText} hover:text-brand-600 transition-colors border ${theme.border}`}
                 title="Show Muscle Image"
               >
                 <ImageIcon className="w-5 h-5" />
@@ -154,7 +156,7 @@ const MuscleView: React.FC<MuscleViewProps> = ({ muscle, onSelectMuscle, isLearn
               
               <button 
                 onClick={() => openSearchPopup(`${muscle.name} muscle origin insertion diagram`)}
-                className="p-3 bg-slate-50 hover:bg-slate-100 rounded-xl text-slate-600 hover:text-brand-600 transition-colors border border-slate-200"
+                className={`p-3 ${theme.inputBg} hover:bg-slate-100 rounded-xl ${theme.subText} hover:text-brand-600 transition-colors border ${theme.border}`}
                 title="Show Origin & Insertion Diagram"
               >
                 <MapPin className="w-5 h-5" />
@@ -163,12 +165,12 @@ const MuscleView: React.FC<MuscleViewProps> = ({ muscle, onSelectMuscle, isLearn
           </div>
 
           {/* Requirements Box */}
-          <div className="mt-8 pt-6 border-t border-slate-100">
-            <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3 flex items-center gap-2">
+          <div className={`mt-8 pt-6 border-t ${theme.border}`}>
+            <h4 className={`text-xs font-bold ${theme.subText} uppercase tracking-wider mb-3 flex items-center gap-2`}>
               <Target className="w-3 h-3" />
               Study Requirements
             </h4>
-            <ul className="grid md:grid-cols-2 gap-x-8 gap-y-2 text-sm text-slate-600">
+            <ul className={`grid md:grid-cols-2 gap-x-8 gap-y-2 text-sm ${currentTheme === 'midnight' ? 'text-slate-300' : 'text-slate-600'}`}>
               {(muscle.group === 'A' ? GROUP_A_REQUIREMENTS : GROUP_B_REQUIREMENTS).map((req, i) => (
                 <li key={i} className="flex items-start gap-2">
                   <span className="mt-1.5 w-1 h-1 rounded-full bg-slate-300 shrink-0"></span>
@@ -191,8 +193,8 @@ const MuscleView: React.FC<MuscleViewProps> = ({ muscle, onSelectMuscle, isLearn
                   <Sparkles className="w-5 h-5" />
                 </div>
                 <div className="flex-1">
-                  <h4 className="text-sm font-bold text-purple-900">AI Features Available</h4>
-                  <p className="text-sm text-purple-700 mt-1 leading-relaxed">
+                  <h4 className={`text-sm font-bold ${theme.text}`}>AI Features Available</h4>
+                  <p className={`text-sm mt-1 leading-relaxed ${theme.subText}`}>
                     Detailed content for <strong>{muscle.name}</strong> is not available in the local database. 
                     You can add a Gemini API key in Settings to generate details.
                   </p>
@@ -214,6 +216,7 @@ const MuscleView: React.FC<MuscleViewProps> = ({ muscle, onSelectMuscle, isLearn
               content={content.origin}
               className="md:col-span-1"
               onSearch={() => openSearchPopup(`${muscle.name} muscle origin anatomy`)}
+              currentTheme={currentTheme}
             />
             <InfoCard 
               title="Insertion" 
@@ -221,6 +224,7 @@ const MuscleView: React.FC<MuscleViewProps> = ({ muscle, onSelectMuscle, isLearn
               content={content.insertion}
               className="md:col-span-1"
               onSearch={() => openSearchPopup(`${muscle.name} muscle insertion anatomy`)}
+              currentTheme={currentTheme}
             />
             <InfoCard 
               title="Action" 
@@ -229,17 +233,18 @@ const MuscleView: React.FC<MuscleViewProps> = ({ muscle, onSelectMuscle, isLearn
               className="md:col-span-1 bg-blue-50/50 border-blue-100"
               onSearch={() => openSearchPopup(`${muscle.name} muscle action animation gif`)}
               isAction={true}
+              currentTheme={currentTheme}
             />
           </div>
 
           {/* Demonstration */}
           {muscle.group === 'A' && (
-            <div className="bg-slate-50 rounded-2xl p-8 border border-slate-100">
+            <div className={`${theme.infoBox} rounded-2xl p-8 border ${theme.border}`}>
               <h3 className="text-lg font-bold text-slate-900 mb-4 flex items-center gap-2">
                 <Activity className="w-5 h-5 text-slate-400" />
                 Demonstration
               </h3>
-              <div className="text-slate-700 leading-relaxed text-base whitespace-pre-line">
+              <div className={`${theme.text} leading-relaxed text-base whitespace-pre-line`}>
                 {content.demonstration}
               </div>
               <p className="mt-6 text-xs font-medium text-orange-600 flex items-center gap-1.5 bg-orange-50 p-2 rounded-lg inline-block">
@@ -253,13 +258,13 @@ const MuscleView: React.FC<MuscleViewProps> = ({ muscle, onSelectMuscle, isLearn
           <div className="grid md:grid-cols-2 gap-8">
             {content.tips && content.tips.length > 0 && (
               <div>
-                <h3 className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-4 flex items-center gap-2">
+                <h3 className={`text-sm font-bold ${theme.subText} uppercase tracking-wider mb-4 flex items-center gap-2`}>
                   <Lightbulb className="w-4 h-4" />
                   Tips
                 </h3>
                 <ul className="space-y-4">
                   {content.tips.map((tip, idx) => (
-                    <li key={idx} className="flex gap-3 text-slate-600 text-sm">
+                    <li key={idx} className={`flex gap-3 ${theme.text} text-sm`}>
                       <span className="flex-shrink-0 w-6 h-6 rounded-full bg-amber-100 text-amber-700 flex items-center justify-center text-xs font-bold">
                         {idx + 1}
                       </span>
@@ -277,8 +282,8 @@ const MuscleView: React.FC<MuscleViewProps> = ({ muscle, onSelectMuscle, isLearn
                     <Info className="w-4 h-4" />
                     Clinical Connection
                   </h3>
-                  <div className="p-5 bg-white border border-slate-200 rounded-xl shadow-sm">
-                    <p className="text-sm text-slate-600 leading-relaxed">
+                  <div className={`p-5 ${theme.cardBg} border ${theme.border} rounded-xl shadow-sm`}>
+                    <p className={`text-sm ${theme.text} leading-relaxed`}>
                       {content.clinicalConnection}
                     </p>
                   </div>
@@ -300,11 +305,11 @@ const MuscleView: React.FC<MuscleViewProps> = ({ muscle, onSelectMuscle, isLearn
                         <button 
                           key={i}
                           onClick={() => handleRelatedClick(relatedMuscle)}
-                          className="group flex items-center justify-between p-3 bg-white border border-slate-200 hover:border-brand-300 hover:ring-1 hover:ring-brand-200 rounded-xl text-left transition-all shadow-sm"
+                          className={`group flex items-center justify-between p-3 ${theme.cardBg} border ${theme.border} hover:border-brand-300 hover:ring-1 hover:ring-brand-200 rounded-xl text-left transition-all shadow-sm`}
                         >
                           <div>
-                            <span className="block text-sm font-bold text-slate-700 group-hover:text-brand-700">{rm.name}</span>
-                            <span className="block text-xs text-slate-500 mt-0.5">{rm.relation}</span>
+                            <span className={`block text-sm font-bold ${theme.text} group-hover:text-brand-700`}>{rm.name}</span>
+                            <span className={`block text-xs ${theme.subText} mt-0.5`}>{rm.relation}</span>
                           </div>
                           {onRelatedMuscleClick ? (
                             <Info className="w-4 h-4 text-slate-300 group-hover:text-brand-500" />
@@ -332,31 +337,35 @@ interface InfoCardProps {
   className?: string;
   onSearch: () => void;
   isAction?: boolean;
+  currentTheme: AppTheme;
 }
 
-const InfoCard: React.FC<InfoCardProps> = ({ title, icon, content, className, onSearch, isAction }) => (
-  <div className={`p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col h-full hover:border-slate-300 transition-colors bg-white ${className}`}>
-    <div className="flex items-center justify-between mb-4">
-      <div className="flex items-center gap-2.5">
-        <div className="p-1.5 rounded-md bg-slate-50">{icon}</div>
-        <h3 className="font-bold text-slate-800 text-sm uppercase tracking-wide">{title}</h3>
+const InfoCard: React.FC<InfoCardProps> = ({ title, icon, content, className, onSearch, isAction, currentTheme }) => {
+  const theme = THEME_CONFIG[currentTheme];
+  return (
+    <div className={`p-6 rounded-2xl border ${theme.border} shadow-sm flex flex-col h-full hover:border-slate-300 transition-colors ${theme.cardBg} ${className}`}>
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-2.5">
+          <div className={`p-1.5 rounded-md ${theme.inputBg}`}>{icon}</div>
+          <h3 className={`font-bold ${theme.text} text-sm uppercase tracking-wide`}>{title}</h3>
+        </div>
       </div>
+      <div className={`text-sm ${currentTheme === 'midnight' ? 'text-slate-300' : 'text-slate-600'} leading-relaxed whitespace-pre-line flex-1 mb-4`}>
+        {content}
+      </div>
+      <button 
+        onClick={onSearch}
+        className={`w-full mt-auto py-2.5 px-3 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-2 active:scale-[0.98] ${
+          isAction 
+          ? 'bg-blue-600 text-white hover:bg-blue-700 shadow-sm' 
+          : `${theme.inputBg} hover:bg-slate-100 border ${theme.border} hover:border-slate-300 ${theme.subText} hover:text-brand-600`
+        }`}
+      >
+        {isAction ? <PlayCircle className="w-4 h-4" /> : <Search className="w-3.5 h-3.5" />}
+        {isAction ? "Show Action Animation" : `Show ${title} Image`}
+      </button>
     </div>
-    <div className="text-sm text-slate-600 leading-relaxed whitespace-pre-line flex-1 mb-4">
-      {content}
-    </div>
-    <button 
-      onClick={onSearch}
-      className={`w-full mt-auto py-2.5 px-3 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-2 active:scale-[0.98] ${
-        isAction 
-        ? 'bg-blue-600 text-white hover:bg-blue-700 shadow-sm' 
-        : 'bg-slate-50 hover:bg-slate-100 border border-slate-200 hover:border-slate-300 text-slate-600 hover:text-brand-600'
-      }`}
-    >
-      {isAction ? <PlayCircle className="w-4 h-4" /> : <Search className="w-3.5 h-3.5" />}
-      {isAction ? "Show Action Animation" : `Show ${title} Image`}
-    </button>
-  </div>
-);
+  );
+};
 
 export default MuscleView;
