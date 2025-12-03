@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { MuscleItem, MuscleContent, ConfidenceRating, AppTheme } from '../../types';
 import { fetchMuscleDetails } from '../../services/geminiService';
 import { THEME_CONFIG } from '../../constants';
-import { Sparkles, Activity, RotateCw, MapPin, Play, List } from 'lucide-react';
+import { Sparkles, Activity, RotateCw, MapPin, Play, List, PlayCircle, X, ArrowRight } from 'lucide-react';
+import AdvancedAnimationViewer from '../AdvancedAnimationViewer';
 
 interface FlashcardViewProps {
   muscle: MuscleItem;
@@ -17,10 +18,16 @@ const FlashcardView: React.FC<FlashcardViewProps> = ({ muscle, onRate, onNext, a
   const [isFlipped, setIsFlipped] = useState(false);
   const [content, setContent] = useState<MuscleContent | null>(null);
   const [loading, setLoading] = useState(false);
+  const [showActionPopup, setShowActionPopup] = useState(false);
+  const [showAdvancedAnim, setShowAdvancedAnim] = useState(false);
+  const [selectedMotion, setSelectedMotion] = useState<string | null>(null);
   
   useEffect(() => {
     setIsFlipped(false); // Reset flip on new muscle
     setContent(null); // Clear old content immediately
+    setShowActionPopup(false);
+    setShowAdvancedAnim(false);
+    setSelectedMotion(null);
     let mounted = true;
     const load = async () => {
       setLoading(true);
@@ -61,6 +68,7 @@ const FlashcardView: React.FC<FlashcardViewProps> = ({ muscle, onRate, onNext, a
   }
 
   return (
+    <>
     <div className="flex flex-col items-center justify-center h-full max-w-6xl mx-auto p-4 md:p-6 relative">
       
       {showAiPrompt && (
@@ -164,8 +172,18 @@ const FlashcardView: React.FC<FlashcardViewProps> = ({ muscle, onRate, onNext, a
                    <h3 className={`text-3xl font-bold mb-1 ${theme.text}`}>{muscle.name}</h3>
                    <span className={`text-sm font-mono px-2 py-0.5 rounded ${theme.infoBox} ${theme.subText}`}>Group {muscle.group}</span>
                  </div>
-                 <div className={`w-10 h-10 rounded-full flex items-center justify-center border ${theme.border}`}>
-                   <List className={`w-5 h-5 ${theme.subText}`} />
+                 <div className="flex items-center gap-3">
+                   <button
+                     onClick={(e) => { e.stopPropagation(); setShowActionPopup(true); }}
+                     className={`flex items-center gap-2 px-3 py-2 rounded-xl border ${theme.border} ${theme.inputBg} ${theme.text} hover:scale-105 active:scale-95 text-xs font-bold uppercase tracking-wider`}
+                     title="Show Action Animation"
+                   >
+                     <PlayCircle className="w-4 h-4" />
+                     Show Action Animation
+                   </button>
+                   <div className={`w-10 h-10 rounded-full flex items-center justify-center border ${theme.border}`}>
+                     <List className={`w-5 h-5 ${theme.subText}`} />
+                   </div>
                  </div>
                </div>
                
@@ -187,6 +205,14 @@ const FlashcardView: React.FC<FlashcardViewProps> = ({ muscle, onRate, onNext, a
                        <Play className="w-4 h-4" /> Action
                     </span>
                     <p className={`text-lg font-medium leading-relaxed ${theme.text}`}>{content?.action || "..."}</p>
+                    <div className="mt-4">
+                      <button
+                        onClick={(e) => { e.stopPropagation(); setShowActionPopup(true); }}
+                        className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 text-xs font-bold uppercase tracking-wider shadow-sm"
+                      >
+                        <PlayCircle className="w-4 h-4" /> Show Action Animation
+                      </button>
+                    </div>
                  </div>
                </div>
             </div>
@@ -241,6 +267,67 @@ const FlashcardView: React.FC<FlashcardViewProps> = ({ muscle, onRate, onNext, a
         </div>
       )}
     </div>
+
+    {/* Action Animation Popup (filtered to card actions) */}
+    {showActionPopup && (
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
+        <div className={`w-full max-w-md rounded-2xl shadow-2xl overflow-hidden ${theme.cardBg} border ${theme.border} animate-in zoom-in-95 duration-200`} onClick={(e)=>e.stopPropagation()}>
+          <div className={`p-4 border-b ${theme.border} flex items-center justify-between`}>
+            <h3 className={`font-bold ${theme.text}`}>Select Action to Animate</h3>
+            <button onClick={() => setShowActionPopup(false)} className={`p-2 rounded-full hover:bg-slate-100 ${theme.subText}`}>
+              <X className="w-5 h-5" />
+            </button>
+          </div>
+          <div className="p-4 max-h-[60vh] overflow-y-auto custom-scrollbar">
+            <div className="grid grid-cols-1 gap-2">
+              {(() => {
+                const actionText = content?.action || '';
+                const lines = actionText.split('\n').map(l => l.replace(/^\d+\.\s*/, '').trim());
+                const mapping: Record<string, string> = {
+                  'flexes': 'Elbow Flexion',
+                  'extends': 'Elbow Extension',
+                  'abducts': 'Shoulder Abduction',
+                  'adducts': 'Shoulder Adduction',
+                  'medially rotates': 'Shoulder Medial Rotation',
+                  'laterally rotates': 'Shoulder Lateral Rotation',
+                  'supinates': 'Forearm Supination',
+                  'pronates': 'Forearm Pronation',
+                  'dorsiflexes': 'Dorsiflexion',
+                  'plantarflexes': 'Plantarflexion'
+                };
+                const motions = Array.from(new Set(lines.map(l => {
+                  const lower = l.toLowerCase();
+                  for (const key of Object.keys(mapping)) {
+                    if (lower.includes(key)) return mapping[key];
+                  }
+                  return null;
+                }).filter(Boolean) as string[]));
+                return motions.length ? motions.map(motion => (
+                  <button key={motion} onClick={() => { setSelectedMotion(motion); setShowActionPopup(false); setShowAdvancedAnim(true); }}
+                    className={`flex items-center justify-between p-3 rounded-xl border ${theme.border} hover:border-brand-500 hover:bg-brand-50 transition-all group text-left`}>
+                    <span className={`font-medium ${theme.text} group-hover:text-brand-700`}>{motion}</span>
+                    <ArrowRight className="w-4 h-4 text-slate-300 group-hover:text-brand-500 transition-colors" />
+                  </button>
+                )) : (
+                  <p className={`${theme.subText} text-sm`}>No recognized actions found on this card.</p>
+                );
+              })()}
+            </div>
+          </div>
+        </div>
+      </div>
+    )}
+
+    {/* Advanced 3D Viewer (react-three-fiber) */}
+    {showAdvancedAnim && (
+      <AdvancedAnimationViewer
+        muscleName={muscle.name}
+        currentTheme={currentTheme}
+        defaultMotion={selectedMotion || 'Elbow Flexion'}
+        onClose={() => setShowAdvancedAnim(false)}
+      />
+    )}
+    </>
   );
 };
 
