@@ -322,32 +322,32 @@ const AdvancedAnimationViewer: React.FC<AdvancedAnimationViewerProps> = ({
                   <MapPin className="w-4 h-4" />
                   Anatomy Images
                 </p>
-                <div className="flex flex-wrap gap-2">
-                  <button
-                    onClick={() =>
-                      window.open(
-                        `https://www.google.com/search?tbm=isch&q=${encodeURIComponent(
+                  <div className="flex flex-wrap gap-2">
+                    <button
+                      onClick={() =>
+                        window.open(
+                          `https://www.google.com/search?tbm=isch&q=${encodeURIComponent(
                           `${muscleName} muscle origin anatomy diagram`
                         )}`,
                         '_blank'
                       )
                     }
-                    className={`px-3 py-2 rounded-lg border ${theme.border} ${theme.cardBg} text-xs font-medium hover:border-emerald-400 transition-colors ${theme.text}`}
+                      className={`px-3 py-2 rounded-lg border ${theme.border} ${theme.cardBg} text-xs font-medium hover:border-emerald-400 transition-colors ${theme.text}`}
                   >
-                    Origin
+                    <span className="text-blue-600 font-semibold">Origin</span>
                   </button>
-                  <button
-                    onClick={() =>
-                      window.open(
-                        `https://www.google.com/search?tbm=isch&q=${encodeURIComponent(
+                    <button
+                      onClick={() =>
+                        window.open(
+                          `https://www.google.com/search?tbm=isch&q=${encodeURIComponent(
                           `${muscleName} muscle insertion anatomy diagram`
                         )}`,
                         '_blank'
                       )
                     }
-                    className={`px-3 py-2 rounded-lg border ${theme.border} ${theme.cardBg} text-xs font-medium hover:border-rose-400 transition-colors ${theme.text}`}
+                      className={`px-3 py-2 rounded-lg border ${theme.border} ${theme.cardBg} text-xs font-medium hover:border-rose-400 transition-colors ${theme.text}`}
                   >
-                    Insertion
+                    <span className="text-rose-600 font-semibold">Insertion</span>
                   </button>
                   <button
                     onClick={() =>
@@ -394,7 +394,7 @@ const AdvancedAnimationViewer: React.FC<AdvancedAnimationViewerProps> = ({
             </section>
 
             <section className="grid md:grid-cols-2 gap-4">
-              {(actionString || demonstrationText) && (
+              {!browserMode && (actionString || demonstrationText) && (
                 <div className={`p-4 rounded-xl border ${theme.border} ${theme.cardBg} space-y-3`}>
                   <div className="flex items-center gap-2">
                     <Info className="w-4 h-4 text-blue-500" />
@@ -415,26 +415,28 @@ const AdvancedAnimationViewer: React.FC<AdvancedAnimationViewerProps> = ({
                 </div>
               )}
 
-              <div className={`p-4 rounded-xl border ${theme.border} ${theme.cardBg} space-y-3`}>
-                <div className="flex items-center gap-2">
-                  <Brain className="w-4 h-4 text-emerald-500" />
-                  <p className={`text-sm font-semibold ${theme.text}`}>Origin & Insertion</p>
+              {(originString || insertionString) && (
+                <div className={`p-4 rounded-xl border ${theme.border} ${theme.cardBg} space-y-3`}>
+                  <div className="flex items-center gap-2">
+                    <Brain className="w-4 h-4 text-emerald-500" />
+                    <p className={`text-sm font-semibold ${theme.text}`}>Origin & Insertion</p>
+                  </div>
+                  <div className="space-y-2 text-sm">
+                    {originString && (
+                      <div className={`p-3 rounded-lg border ${theme.border} ${theme.infoBox}`}>
+                        <p className="text-[11px] font-bold uppercase tracking-wider text-blue-600 mb-1">Origin</p>
+                        <p className={`${theme.text} text-blue-600`}>{originString}</p>
+                      </div>
+                    )}
+                    {insertionString && (
+                      <div className={`p-3 rounded-lg border ${theme.border} ${theme.infoBox}`}>
+                        <p className="text-[11px] font-bold uppercase tracking-wider text-rose-600 mb-1">Insertion</p>
+                        <p className={`${theme.text} text-rose-600`}>{insertionString}</p>
+                      </div>
+                    )}
+                  </div>
                 </div>
-                <div className="space-y-2 text-sm">
-                  {originString && (
-                    <div className={`p-3 rounded-lg border ${theme.border} ${theme.infoBox}`}>
-                      <p className="text-[11px] font-bold uppercase tracking-wider text-emerald-600 mb-1">Origin</p>
-                      <p className={theme.text}>{originString}</p>
-                    </div>
-                  )}
-                  {insertionString && (
-                    <div className={`p-3 rounded-lg border ${theme.border} ${theme.infoBox}`}>
-                      <p className="text-[11px] font-bold uppercase tracking-wider text-rose-600 mb-1">Insertion</p>
-                      <p className={theme.text}>{insertionString}</p>
-                    </div>
-                  )}
-                </div>
-              </div>
+              )}
             </section>
 
             <section className={`p-4 rounded-xl border ${theme.border} ${theme.cardBg} space-y-4`}>
