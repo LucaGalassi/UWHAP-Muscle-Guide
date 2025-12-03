@@ -48,7 +48,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           # Check if there are any changes to commit using git diff-index
-          git update-index --refresh
+          git update-index --refresh || true
           if git diff-index --quiet HEAD --; then
             echo "No changes to commit"
             exit 0
