@@ -3,7 +3,7 @@ import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { OrbitControls, useGLTF, Bounds, Html } from '@react-three/drei';
 import { AppTheme } from '../types';
 import { THEME_CONFIG } from '../constants';
-import { X, PlayCircle, PauseCircle, Compass, Camera, HelpCircle, Info } from 'lucide-react';
+import { X, PlayCircle, PauseCircle, Compass, Camera, HelpCircle, Info, BookOpen, ListChecks } from 'lucide-react';
 import * as THREE from 'three';
 
 interface AdvancedAnimationViewerProps {
@@ -13,6 +13,7 @@ interface AdvancedAnimationViewerProps {
   onClose: () => void;
   referenceText?: string;
   actionString?: string;
+  demonstrationText?: string;
 }
 
 type MotionName =
@@ -429,7 +430,7 @@ function ArmRig({ motion, playing, angleOut, skeleton }: { motion: MotionName; p
 
 type ModelEntry = { label: string; url: string };
 
-export const AdvancedAnimationViewer: React.FC<AdvancedAnimationViewerProps> = ({ muscleName, currentTheme, defaultMotion='Elbow Flexion', onClose, referenceText, actionString }) => {
+export const AdvancedAnimationViewer: React.FC<AdvancedAnimationViewerProps> = ({ muscleName, currentTheme, defaultMotion='Elbow Flexion', onClose, referenceText, actionString, demonstrationText }) => {
   const theme = THEME_CONFIG[currentTheme];
   const [motion, setMotion] = useState<MotionName>(defaultMotion as MotionName);
   const [playing, setPlaying] = useState(true);
@@ -669,9 +670,36 @@ export const AdvancedAnimationViewer: React.FC<AdvancedAnimationViewerProps> = (
                   </ul>
               </div>
 
-              {referenceText ? (
-                <div className={`text-sm ${theme.subText} whitespace-pre-line mb-4`}>
-                  <strong>Action:</strong> {referenceText}
+              {(referenceText || demonstrationText || actionList.length > 0) ? (
+                <div className={`mb-4 p-4 rounded-xl border ${theme.border} ${theme.cardBg}`}>
+                  <div className="flex items-center gap-2 mb-3">
+                    <BookOpen className="w-4 h-4 text-indigo-500" />
+                    <h4 className={`text-sm font-bold ${theme.text}`}>Card Context</h4>
+                  </div>
+                  {referenceText && (
+                    <div className="mb-3">
+                      <p className={`text-[10px] font-semibold uppercase tracking-wider ${theme.subText}`}>Action Notes</p>
+                      <p className={`text-sm ${theme.text} whitespace-pre-line`}>{referenceText}</p>
+                    </div>
+                  )}
+                  {demonstrationText && (
+                    <div className="mb-3">
+                      <p className={`text-[10px] font-semibold uppercase tracking-wider ${theme.subText}`}>Demonstration</p>
+                      <p className={`text-sm ${theme.text} whitespace-pre-line`}>{demonstrationText}</p>
+                    </div>
+                  )}
+                  {actionList.length > 0 && (
+                    <div>
+                      <p className={`text-[10px] font-semibold uppercase tracking-wider ${theme.subText} flex items-center gap-1`}>
+                        <ListChecks className="w-3.5 h-3.5" /> Motion Cues
+                      </p>
+                      <ul className={`text-sm ${theme.text} list-disc pl-4 space-y-1 mt-1`}>
+                        {actionList.map((action, idx) => (
+                          <li key={`${action}-${idx}`}>{action}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
                 </div>
               ) : (
                 <div className={`text-sm ${theme.subText} mb-4`}>

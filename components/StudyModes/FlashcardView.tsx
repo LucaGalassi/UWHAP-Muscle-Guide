@@ -347,6 +347,7 @@ const FlashcardView: React.FC<FlashcardViewProps> = ({ muscle, onRate, onNext, a
         onClose={() => setShowAdvancedAnim(false)}
         referenceText={content?.action}
         actionString={content?.action}
+        demonstrationText={content?.demonstration}
       />
     )}
     </>

@@ -505,6 +505,8 @@ const MuscleView: React.FC<MuscleViewProps> = ({ muscle, onSelectMuscle, isLearn
           currentTheme={currentTheme}
           defaultMotion={selectedMotion || "Elbow Flexion"}
           referenceText={selectedActionRef || undefined}
+          actionString={selectedActionRef || content?.action}
+          demonstrationText={content?.demonstration}
           onClose={() => setShowAdvancedAnim(false)}
         />
       )}
