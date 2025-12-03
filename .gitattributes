@@ -1,0 +1,7 @@
+# Track large model and texture assets via Git LFS
+public/models/*.glb filter=lfs diff=lfs merge=lfs -text
+public/models/*.gltf filter=lfs diff=lfs merge=lfs -text
+public/models/*.bin filter=lfs diff=lfs merge=lfs -text
+public/models/*.png filter=lfs diff=lfs merge=lfs -text
+public/models/*.jpg filter=lfs diff=lfs merge=lfs -text
+public/models/*.jpeg filter=lfs diff=lfs merge=lfs -text
