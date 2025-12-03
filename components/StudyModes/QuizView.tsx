@@ -20,6 +20,7 @@ const QuizView: React.FC<QuizViewProps> = ({ onComplete, questionCount, currentT
   const [sessionScore, setSessionScore] = useState(0);
 
   const theme = THEME_CONFIG[currentTheme];
+  const isDarkTheme = currentTheme === 'midnight' || currentTheme === 'blueprint';
 
   const loadNextQuestion = () => {
     // If we have a target count and reached it, finish
@@ -58,12 +59,12 @@ const QuizView: React.FC<QuizViewProps> = ({ onComplete, questionCount, currentT
     setTotalAnswered(t => t + 1);
   };
 
-  if (!question) return <div className="p-10 text-center">Loading Quiz...</div>;
+  if (!question) return <div className={`p-10 text-center rounded-2xl border ${THEME_CONFIG[currentTheme].border} ${THEME_CONFIG[currentTheme].cardBg} ${THEME_CONFIG[currentTheme].text}`}>Loading Quiz...</div>;
 
   const isLastQuestion = questionCount && totalAnswered >= questionCount;
 
   return (
-    <div className="max-w-3xl mx-auto p-6 flex flex-col h-full justify-center">
+    <div className={`max-w-3xl mx-auto p-6 flex flex-col h-full justify-center ${theme.cardBg} rounded-3xl shadow-sm border ${theme.border}`}>
       {/* Header Stats */}
       <div className="flex justify-between items-center mb-8">
         <div className="flex items-center gap-2">
@@ -89,11 +90,15 @@ const QuizView: React.FC<QuizViewProps> = ({ onComplete, questionCount, currentT
           let stateStyles = `${theme.cardBg} ${theme.border} hover:border-brand-300 ${theme.text}`;
           if (selectedOption) {
              if (option === question.correctAnswer) {
-               stateStyles = "bg-green-50 border-green-500 text-green-700 ring-1 ring-green-500";
+               stateStyles = isDarkTheme
+                 ? 'bg-emerald-900/60 border-emerald-400 text-emerald-100 ring-1 ring-emerald-300'
+                 : 'bg-emerald-50 border-emerald-500 text-emerald-700 ring-1 ring-emerald-500';
              } else if (option === selectedOption && !isCorrect) {
-               stateStyles = "bg-red-50 border-red-500 text-red-700";
+               stateStyles = isDarkTheme
+                 ? 'bg-red-900/60 border-red-500 text-red-100'
+                 : 'bg-red-50 border-red-500 text-red-700';
              } else {
-               stateStyles = `opacity-50 ${theme.cardBg} ${theme.border} ${theme.text}`;
+               stateStyles = `opacity-60 ${theme.cardBg} ${theme.border} ${theme.text}`;
              }
           }
 

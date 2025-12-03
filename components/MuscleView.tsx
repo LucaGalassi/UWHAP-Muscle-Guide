@@ -105,9 +105,9 @@ const MuscleView: React.FC<MuscleViewProps> = ({ muscle, onSelectMuscle, isLearn
 
   if (loading) {
     return (
-      <div className="h-full flex flex-col items-center justify-center p-8 space-y-6">
-        <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center">
-          <Activity className="w-8 h-8 text-slate-300 animate-pulse" />
+      <div className={`h-full flex flex-col items-center justify-center p-8 space-y-6 ${theme.cardBg}`}>
+        <div className={`w-16 h-16 rounded-full flex items-center justify-center border ${theme.border}`}>
+          <Activity className={`w-8 h-8 ${theme.subText} animate-pulse`} />
         </div>
       </div>
     );
@@ -115,11 +115,11 @@ const MuscleView: React.FC<MuscleViewProps> = ({ muscle, onSelectMuscle, isLearn
 
   if (error) {
     return (
-      <div className="h-full flex flex-col items-center justify-center p-8 text-center">
+      <div className={`h-full flex flex-col items-center justify-center p-8 text-center ${theme.cardBg}`}>
         <div className="bg-red-50 p-4 rounded-full mb-4">
           <AlertCircle className="w-8 h-8 text-red-500" />
         </div>
-        <p className="text-slate-500 max-w-sm mt-2">{error}</p>
+        <p className={`max-w-sm mt-2 ${theme.subText}`}>{error}</p>
       </div>
     );
   }
@@ -335,9 +335,9 @@ const MuscleView: React.FC<MuscleViewProps> = ({ muscle, onSelectMuscle, isLearn
                             <span className={`block text-xs ${theme.subText} mt-0.5`}>{rm.relation}</span>
                           </div>
                           {onRelatedMuscleClick ? (
-                            <Info className="w-4 h-4 text-slate-300 group-hover:text-brand-500" />
+                            <Info className={`w-4 h-4 ${theme.subText} group-hover:text-brand-500`} />
                           ) : (
-                            <ArrowRight className="w-4 h-4 text-slate-300 group-hover:text-brand-500" />
+                            <ArrowRight className={`w-4 h-4 ${theme.subText} group-hover:text-brand-500`} />
                           )}
                         </button>
                       );
