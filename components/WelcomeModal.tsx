@@ -42,6 +42,7 @@ const WelcomeModal: React.FC<WelcomeModalProps> = ({ onDismiss, onResume, daysUn
     currentThemeConfig.iconLoc,
     `${currentThemeConfig.accent} text-white`
   ];
+  const natureStartButtonEmphasis = currentTheme === 'nature' ? 'ring-2 ring-emerald-500/50 shadow-emerald-200' : '';
 
   const themeShowcase: Record<AppTheme, { tagline: string; highlight: string; swatch: string; icon: React.ReactNode }> = {
     modern: {
@@ -465,11 +466,11 @@ const WelcomeModal: React.FC<WelcomeModalProps> = ({ onDismiss, onResume, daysUn
              </div>
            </div>
 
-           <button 
-             onClick={() => setTutorialStep(1)}
-             className={`w-full py-5 text-white hover:opacity-90 rounded-xl font-bold transition-all flex items-center justify-center gap-3 group shadow-lg hover:shadow-2xl hover:scale-[1.02] ${currentThemeConfig.accent}`}
-           >
-             <div className="flex items-center gap-3">
+          <button
+            onClick={() => setTutorialStep(1)}
+            className={`w-full py-5 text-white hover:opacity-90 rounded-xl font-bold transition-all flex items-center justify-center gap-3 group shadow-lg hover:shadow-2xl hover:scale-[1.02] ${currentThemeConfig.accent} ${natureStartButtonEmphasis}`}
+          >
+            <div className="flex items-center gap-3">
                <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center border-2 border-white/30 shadow-sm">
                  <Play className="w-5 h-5 text-white" />
                </div>
