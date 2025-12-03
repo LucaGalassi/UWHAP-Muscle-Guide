@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState, Suspense } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
-import { OrbitControls, useGLTF } from '@react-three/drei';
+import { OrbitControls, useGLTF, Bounds } from '@react-three/drei';
 import { AppTheme } from '../types';
 import { THEME_CONFIG } from '../constants';
 import { X, PlayCircle, PauseCircle, Compass, Camera } from 'lucide-react';
@@ -127,8 +127,8 @@ function ArmRig({ motion, playing, angleOut, skeleton }: { motion: MotionName; p
     };
     return {
       shoulder: find(['Humerusr', 'shoulder_r', 'r_shoulder', 'shoulder', 'upperarm_r', 'humerus_r', 'rightarm', 'mixamorigrightarm', 'right_arm', 'arm_r', 'clavicle_r']),
-      elbow: find(['Ulnar', 'ulna_r', 'elbow_r', 'r_elbow', 'lowerarm_r', 'radius_r', 'forearm_r', 'rightforearm', 'mixamorigrightforearm', 'right_forearm', 'forearm_r']),
-      forearm: find(['Radiusr', 'radius_r', 'forearm_r', 'ulna_r', 'r_forearm', 'rightforearm', 'mixamorigrightforearm', 'right_forearm', 'wrist_r']),
+      elbow: find(['Ulnar', 'ulna_r', 'elbow_r', 'r_elbow', 'lowerarm_r', 'radius_r', 'forearm_r', 'rightforearm', 'mixamorigrightforearm', 'right_forearm', 'forearm_r', 'Bones']),
+      forearm: find(['Radius', 'Radiusr', 'radius_r', 'forearm_r', 'ulna_r', 'r_forearm', 'rightforearm', 'mixamorigrightforearm', 'right_forearm', 'wrist_r']),
       hip: find(['Femurr', 'femur_r', 'hip_r', 'r_hip', 'thigh_r', 'pelvis', 'rightupleg', 'mixamorigrightupleg', 'right_leg', 'leg_r']),
       knee: find(['Tibiar', 'tibia_r', 'knee_r', 'r_knee', 'shin_r', 'calf_r', 'rightleg', 'mixamorigrightleg', 'right_shin', 'shin_r']),
       ankle: find(['Talusr', 'talus_r', 'ankle_r', 'r_ankle', 'foot_r', 'rightfoot', 'mixamorigrightfoot', 'right_foot', 'foot_r', 'toe_r']),
@@ -308,8 +308,10 @@ export const AdvancedAnimationViewer: React.FC<AdvancedAnimationViewerProps> = (
       .then(r => r.ok ? r.json() : Promise.reject())
       .then((json) => {
         if (Array.isArray(json.models)) {
-          // map model URLs to respect base path
-          const mapped = json.models.map((m: any) => ({ label: m.label, url: toUrl(m.url) }));
+          // map model URLs to respect base path and filter out unwanted models
+          const mapped = json.models
+            .filter((m: any) => !m.label.toLowerCase().includes('cervical'))
+            .map((m: any) => ({ label: m.label, url: toUrl(m.url) }));
           setModels(mapped);
           if (mapped.length && !selectedModelUrl) setSelectedModelUrl(mapped[0].url);
         }
@@ -374,16 +376,18 @@ export const AdvancedAnimationViewer: React.FC<AdvancedAnimationViewerProps> = (
             <div className={`rounded-2xl border ${theme.border} ${theme.inputBg} p-2 flex-1 min-h-0`}>
               <Canvas camera={{ position: cameraPosition as any, fov: 45 }} dpr={[1, 2]} frameloop="always">
                 <ambientLight intensity={0.7} />
+                <directionalLight position={[5,5,5]} intensity={0.8} />
                 <gridHelper args={[10, 20]} />
                 {selectedModelUrl && !forceBoxRig ? (
                   <Suspense fallback={null}>
-                    <GLTFArmRig url={selectedModelUrl} />
+                    <Bounds fit clip observe margin={1.2}>
+                      <GLTFArmRig url={selectedModelUrl} />
+                    </Bounds>
                   </Suspense>
                 ) : (
                   <ArmRig motion={motion} playing={playing} angleOut={setAngle} />
                 )}
-                <OrbitControls enablePan={true} enableZoom={true} enableRotate={true} />
-                <OrbitControls enablePan={true} enableZoom={true} enableRotate={true} />
+                <OrbitControls enablePan={true} enableZoom={true} enableRotate={true} makeDefault />
               </Canvas>
             </div>
             <aside className={`w-80 rounded-2xl border ${theme.border} ${theme.inputBg} p-4 flex flex-col overflow-y-auto`}>
