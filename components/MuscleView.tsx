@@ -169,27 +169,6 @@ const MuscleView: React.FC<MuscleViewProps> = ({ muscle, onSelectMuscle, isLearn
             {/* Header Icon Buttons */}
             <div className="flex gap-2">
               <button 
-                onClick={() => openSearchPopup(`${muscle.name} muscle medical illustration anatomy`)}
-                className={`p-2.5 rounded-xl border transition-all ${theme.inputBg} ${theme.border} ${theme.text} hover:scale-105 active:scale-95`}
-                title="Search Images"
-              >
-                <ImageIcon className="w-5 h-5" />
-              </button>
-              <button 
-                onClick={() => openSearchPopup(`${muscle.name} muscle origin insertion anatomy diagram`)}
-                className={`p-2.5 rounded-xl border transition-all ${theme.inputBg} ${theme.border} ${theme.text} hover:scale-105 active:scale-95`}
-                title="Search Origin/Insertion"
-              >
-                <MapPin className="w-5 h-5" />
-              </button>
-              <button 
-                onClick={() => setShowAdvancedAnim(true)}
-                className={`p-2.5 rounded-xl border transition-all ${theme.inputBg} ${theme.border} ${theme.text} hover:scale-105 active:scale-95`}
-                title="Open 3D Animation Viewer"
-              >
-                <Move className="w-5 h-5" />
-              </button>
-              <button 
                 onClick={() => setShowAdvancedAnim(true)}
                 className={`p-2.5 rounded-xl border transition-all bg-gradient-to-r from-brand-500 to-blue-600 text-white border-brand-500 hover:scale-105 active:scale-95 shadow-lg`}
                 title="Open 3D Animation Viewer"
