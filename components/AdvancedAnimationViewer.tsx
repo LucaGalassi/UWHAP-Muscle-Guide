@@ -324,7 +324,7 @@ const AdvancedAnimationViewer: React.FC<AdvancedAnimationViewerProps> = ({
                 <section className={`rounded-xl border ${theme.border} ${theme.cardBg} p-5 shadow-sm`}>
                   <div className="flex items-center gap-2 mb-4">
                     <PlayCircle className="w-5 h-5 text-brand-500" />
-                    <p className={`text-base font-bold ${theme.text}`}>Quick GIF Search</p>
+                    <p className={`text-base font-bold ${theme.text}`}>Animation Finder</p>
                   </div>
                   
                   {/* Primary Search Button */}
@@ -333,14 +333,14 @@ const AdvancedAnimationViewer: React.FC<AdvancedAnimationViewerProps> = ({
                       onClick={() => {
                         const query = generateGifSearchQuery(muscleId || '', muscleName, selectedMotion.id);
                         window.open(
-                          `https://www.google.com/search?tbm=isch&q=${encodeURIComponent(query + ' animation gif')}`,
+                          `https://www.google.com/search?tbm=isch&q=${encodeURIComponent(query + ' medical animation gif')}`,
                           '_blank'
                         );
                       }}
                       className="w-full px-5 py-4 rounded-xl bg-gradient-to-r from-brand-500 to-blue-600 text-white font-bold text-base flex items-center justify-center gap-3 hover:shadow-xl transition-all"
                     >
                       <PlayCircle className="w-6 h-6" />
-                      Search {selectedMotion.displayName} GIF/Animation
+                      Find {selectedMotion.displayName} Animation
                     </button>
                   </div>
 
@@ -348,14 +348,14 @@ const AdvancedAnimationViewer: React.FC<AdvancedAnimationViewerProps> = ({
                   <div className={`p-4 rounded-xl border ${theme.border} ${theme.infoBox} overflow-hidden`}>
                     <p className={`text-xs uppercase tracking-wider ${theme.subText} flex items-center gap-2 mb-3`}>
                       <Activity className="w-4 h-4" />
-                      Motion-Specific GIF Search
+                      Motion-Specific Search
                     </p>
                     <div className="flex flex-wrap gap-2">
                       {extractedMotions.length === 0 ? (
                         <button
                           onClick={() =>
                             window.open(
-                              `https://www.google.com/search?tbm=isch&q=${encodeURIComponent(`${muscleName} muscle action animation gif`)}`,
+                              `https://www.google.com/search?tbm=isch&q=${encodeURIComponent(`${muscleName} muscle action medical animation gif`)}`,
                               '_blank'
                             )
                           }
@@ -372,7 +372,7 @@ const AdvancedAnimationViewer: React.FC<AdvancedAnimationViewerProps> = ({
                               key={i}
                               onClick={() =>
                                 window.open(
-                                  `https://www.google.com/search?tbm=isch&q=${encodeURIComponent(`${muscleName} ${motion} animation gif`)}`,
+                                  `https://www.google.com/search?tbm=isch&q=${encodeURIComponent(`${muscleName} ${motion} medical animation gif`)}`,
                                   '_blank'
                                 )
                               }
@@ -386,7 +386,7 @@ const AdvancedAnimationViewer: React.FC<AdvancedAnimationViewerProps> = ({
                           <button
                             onClick={() =>
                               window.open(
-                                `https://www.google.com/search?tbm=isch&q=${encodeURIComponent(`${muscleName} muscle action animation gif`)}`,
+                                `https://www.google.com/search?tbm=isch&q=${encodeURIComponent(`${muscleName} muscle action medical animation gif`)}`,
                                 '_blank'
                               )
                             }
@@ -523,14 +523,14 @@ const AdvancedAnimationViewer: React.FC<AdvancedAnimationViewerProps> = ({
 
                   {getClinicalRelevanceForMotion(selectedMotion.id) && (
                     <div className={`p-3 rounded-lg ${currentTheme === 'midnight' || currentTheme === 'blueprint' ? 'bg-blue-900/30' : 'bg-blue-50'} border border-blue-400/30 overflow-hidden`}>
-                      <p className="text-[11px] font-bold uppercase tracking-wider text-blue-600 mb-1">Clinical Relevance</p>
+                      <p className={`text-[11px] font-bold uppercase tracking-wider ${currentTheme === 'midnight' || currentTheme === 'blueprint' ? 'text-blue-300' : 'text-blue-600'} mb-1`}>Clinical Relevance</p>
                       <p className={`text-sm ${theme.text} break-words`}>{getClinicalRelevanceForMotion(selectedMotion.id)}</p>
                     </div>
                   )}
 
                   {getCommonErrorsForMotion(selectedMotion.id).length > 0 && (
                     <div className={`p-3 rounded-lg ${currentTheme === 'midnight' || currentTheme === 'blueprint' ? 'bg-amber-900/30' : 'bg-amber-50'} border border-amber-400/30 overflow-hidden`}>
-                      <p className="text-[11px] font-bold uppercase tracking-wider text-amber-600 mb-1">Common Mistakes</p>
+                      <p className={`text-[11px] font-bold uppercase tracking-wider ${currentTheme === 'midnight' || currentTheme === 'blueprint' ? 'text-amber-300' : 'text-amber-600'} mb-1`}>Common Mistakes</p>
                       <ul className={`text-sm ${theme.text} space-y-1`}>
                         {getCommonErrorsForMotion(selectedMotion.id).map((error, i) => (
                           <li key={i} className="flex gap-2">

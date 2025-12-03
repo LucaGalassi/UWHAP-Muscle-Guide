@@ -690,6 +690,8 @@ const App: React.FC = () => {
           currentTheme={theme}
           onSelectTheme={setTheme}
           isNewUser={isNewUser}
+          studentName={studentName}
+          onSetStudentName={setStudentName}
         />
       )}
 

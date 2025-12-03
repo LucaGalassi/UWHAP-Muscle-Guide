@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Play, Download, AlertTriangle, Timer, CheckCircle, ArrowRight, GraduationCap, Brain, Save, ShieldAlert, ChevronRight, Palette, Sparkles, Moon, Ruler, Leaf } from 'lucide-react';
+import { Play, Download, AlertTriangle, Timer, CheckCircle, ArrowRight, GraduationCap, Brain, Save, ShieldAlert, ChevronRight, Palette, Sparkles, Moon, Ruler, Leaf, User } from 'lucide-react';
 import { THEME_CONFIG } from '../constants';
 import appPackage from '../package.json';
 import { AppTheme } from '../types';
@@ -11,11 +11,13 @@ interface WelcomeModalProps {
   currentTheme: AppTheme;
   onSelectTheme: (theme: AppTheme) => void;
   isNewUser?: boolean;
+  studentName: string;
+  onSetStudentName: (name: string) => void;
 }
 
 const APP_VERSION = appPackage.version ?? 'dev';
 
-const WelcomeModal: React.FC<WelcomeModalProps> = ({ onDismiss, onResume, daysUntilExam, currentTheme, onSelectTheme, isNewUser = false }) => {
+const WelcomeModal: React.FC<WelcomeModalProps> = ({ onDismiss, onResume, daysUntilExam, currentTheme, onSelectTheme, isNewUser = false, studentName, onSetStudentName }) => {
   const [resumeLink, setResumeLink] = useState('');
   const [error, setError] = useState('');
   const [tutorialStep, setTutorialStep] = useState<number>(0); // 0 = Landing, 1+ = Tutorial
@@ -129,8 +131,33 @@ const WelcomeModal: React.FC<WelcomeModalProps> = ({ onDismiss, onResume, daysUn
             </div>
           </div>
         </div>
+    {
+      title: "Who are you?",
+      subtitle: "Personalize your experience",
+      icon: <User className="w-12 h-12 text-brand-600" />,
+      content: (
+        <div className={`space-y-4 text-sm leading-relaxed ${tutorialMuted}`}>
+          <p className={tutorialText}>
+            Enter your name so we can personalize your save codes and progress reports.
+          </p>
+          <div className="space-y-2">
+            <label className={`text-xs font-bold uppercase tracking-wider ${tutorialMuted}`}>Student Name</label>
+            <input
+              type="text"
+              value={studentName}
+              onChange={(e) => onSetStudentName(e.target.value)}
+              placeholder="Enter your name..."
+              className={`w-full px-4 py-3 rounded-xl text-lg font-bold focus:ring-2 focus:ring-brand-500/20 outline-none border ${currentThemeConfig.border} ${isDarkTutorial ? 'bg-slate-900 text-white' : currentTheme === 'nature' ? 'bg-[#f5f5f4] text-stone-800' : 'bg-slate-50 text-slate-900'}`}
+            />
+            <p className={`text-xs italic ${tutorialMuted}`}>
+              This name will be embedded in your save codes so you can easily identify your progress.
+            </p>
+          </div>
+        </div>
       )
     },
+    {
+      title: "How to Study",
     {
       title: "How to Study",
       subtitle: "Smart Guide, Flashcards & More",

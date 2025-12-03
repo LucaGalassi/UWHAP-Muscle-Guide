@@ -83,7 +83,7 @@ const StudyDashboard: React.FC<StudyDashboardProps> = ({ onSelectTool, learnedCo
           <p className={`text-sm leading-relaxed mb-6 ${theme.subText}`}>
             Multiple choice challenges generated dynamically from your curriculum.
           </p>
-          <span className="text-blue-600 text-xs font-bold uppercase tracking-wider flex items-center gap-1 group-hover:gap-2 transition-all">
+          <span className={`${currentTheme === 'blueprint' || currentTheme === 'midnight' ? 'text-blue-400' : 'text-blue-600'} text-xs font-bold uppercase tracking-wider flex items-center gap-1 group-hover:gap-2 transition-all`}>
             Start Quiz <ArrowRight className="w-3 h-3" />
           </span>
         </button>
@@ -126,7 +126,7 @@ const StudyDashboard: React.FC<StudyDashboardProps> = ({ onSelectTool, learnedCo
           <p className={`text-sm leading-relaxed mb-6 ${theme.subText}`}>
             8-question speed drill with instant scoring. Perfect for quick daily streaks.
           </p>
-          <span className="text-emerald-600 text-xs font-bold uppercase tracking-wider flex items-center gap-1 group-hover:gap-2 transition-all">
+          <span className={`${currentTheme === 'blueprint' || currentTheme === 'midnight' ? 'text-emerald-400' : 'text-emerald-600'} text-xs font-bold uppercase tracking-wider flex items-center gap-1 group-hover:gap-2 transition-all`}>
             Start Lightning Round <ArrowRight className="w-3 h-3" />
           </span>
         </button>

@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { MUSCLE_DATA, THEME_CONFIG } from '../constants';
 import { MuscleItem, StudyMode, MuscleProgress, AppTheme } from '../types';
-import { Search, ChevronRight, BookOpen, CheckCircle2, Share2, Circle, X, Copy, Check, GraduationCap, LayoutList, Settings, Key, Trash2, Trophy, Clock, Sun, Moon, DraftingCompass, Leaf, Palette, Save, AlertTriangle, Timer, Play } from 'lucide-react';
+import { Search, ChevronRight, BookOpen, CheckCircle2, Share2, Circle, X, Copy, Check, GraduationCap, LayoutList, Settings, Key, Trash2, Trophy, Clock, Sun, Moon, DraftingCompass, Leaf, Palette, Save, AlertTriangle, Timer, Play, User } from 'lucide-react';
 import pkg from '../package.json';
 
 interface SidebarProps {
@@ -595,7 +595,32 @@ const Sidebar: React.FC<SidebarProps> = ({
              </div>
              <div className={`p-6 space-y-6 max-h-[75vh] overflow-y-auto ${theme.text}`}>
 
-                {/* Theme Selector */}
+                {/* Student Profile */}
+                <div className="space-y-3">
+                  <div className="flex items-start gap-3">
+                     <div className={`p-2 rounded-lg ${isDarkTheme ? 'bg-brand-900/40 text-brand-200' : 'bg-brand-50 text-brand-600'}`}>
+                       <User className="w-5 h-5" />
+                     </div>
+                     <div>
+                       <h4 className="text-sm font-bold">Student Profile</h4>
+                       <p className={`text-xs mt-1 ${theme.subText}`}>
+                         Your name is embedded in save codes.
+                       </p>
+                     </div>
+                  </div>
+                  <div className="space-y-2">
+                    <input
+                      type="text"
+                      value={studentName}
+                      onChange={(e) => onSetStudentName(e.target.value)}
+                      placeholder="Enter your name..."
+                      className={`w-full px-3 py-2 rounded-lg text-sm focus:ring-2 focus:ring-brand-500/20 outline-none border ${theme.border} ${isDarkTheme ? 'bg-slate-900' : currentTheme === 'nature' ? 'bg-[#f5f5f4]' : 'bg-slate-50'}`}
+                    />
+                  </div>
+                </div>
+
+                <div className={`border-t pt-6 space-y-4 ${theme.border}`}>
+                  {/* Theme Selector */}
                 <div className="space-y-3">
                   <div className="flex items-start gap-3">
                      <div className={`p-2 rounded-lg ${isDarkTheme ? 'bg-indigo-900/40 text-indigo-200' : 'bg-purple-50 text-purple-600'}`}>
