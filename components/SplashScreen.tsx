@@ -94,7 +94,7 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onFinish, studentName, hasS
       {!showPrompt && (
         <div className="relative z-10 flex items-center gap-3 text-slate-400 text-xs md:text-sm font-bold uppercase tracking-[0.2em] animate-in fade-in delay-500 duration-1000">
           <Activity className="w-4 h-4 text-sky-500 animate-spin" />
-          Initializing Learning Engine...
+          Starting Learning Engine...
         </div>
       )}
 
