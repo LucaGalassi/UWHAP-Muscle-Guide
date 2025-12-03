@@ -21,6 +21,22 @@ const WelcomeModal: React.FC<WelcomeModalProps> = ({ onDismiss, onResume, daysUn
   const [tutorialStep, setTutorialStep] = useState<number>(0); // 0 = Landing, 1+ = Tutorial
   const [resumeMode, setResumeMode] = useState<'CODE' | 'LINK'>('CODE');
 
+  const isDarkTutorial = currentTheme === 'midnight' || currentTheme === 'blueprint';
+  const tutorialText = isDarkTutorial ? 'text-slate-50' : 'text-slate-800';
+  const tutorialMuted = isDarkTutorial ? 'text-slate-200/90' : 'text-slate-600';
+  const tutorialPanel = isDarkTutorial
+    ? 'bg-slate-900/70 border border-slate-700'
+    : 'bg-slate-100 border border-slate-200';
+  const tutorialGoal = isDarkTutorial
+    ? 'bg-indigo-950/60 border border-indigo-800 text-indigo-100'
+    : 'bg-brand-50 border border-brand-100 text-brand-700';
+  const tutorialWarning = isDarkTutorial
+    ? 'bg-slate-900/70 border border-amber-500/70 text-amber-100'
+    : 'bg-slate-100 border border-slate-200 text-slate-700';
+  const tutorialNumberVariants = isDarkTutorial
+    ? ['bg-blue-900/60 text-blue-100', 'bg-orange-900/60 text-orange-100', 'bg-purple-900/60 text-purple-100']
+    : ['bg-blue-100 text-blue-700', 'bg-orange-100 text-orange-700', 'bg-purple-100 text-purple-700'];
+
   const themeShowcase: Record<AppTheme, { tagline: string; highlight: string; swatch: string; icon: React.ReactNode }> = {
     modern: {
       tagline: 'Clinically clean gradients and crisp panels built for bright classrooms.',
@@ -69,18 +85,18 @@ const WelcomeModal: React.FC<WelcomeModalProps> = ({ onDismiss, onResume, daysUn
       subtitle: "Customized for UW Health A&P",
       icon: <GraduationCap className="w-12 h-12 text-brand-600" />,
       content: (
-        <div className="space-y-4 text-sm text-slate-600 leading-relaxed">
-          <p>
+        <div className={`space-y-4 text-sm leading-relaxed ${tutorialMuted}`}>
+          <p className={tutorialText}>
             Welcome to your digital study companion, designed specifically for the <strong>UW Health RN Apprenticeship</strong> Anatomy & Physiology curriculum.
           </p>
-          <p>
+          <p className={tutorialText}>
             This tool is built to help you master the <strong>Group A & Group B muscles</strong> before your final exam on December 8th.
           </p>
-          <div className="bg-brand-50 p-4 rounded-xl border border-brand-100 flex items-start gap-3">
-            <Timer className="w-5 h-5 text-brand-600 mt-0.5 shrink-0" />
+          <div className={`p-4 rounded-xl flex items-start gap-3 ${tutorialGoal}`}>
+            <Timer className="w-5 h-5 text-inherit mt-0.5 shrink-0" />
             <div>
-              <p className="font-bold text-brand-800 text-xs uppercase tracking-wide">Goal</p>
-              <p className="text-brand-700 text-xs">Master origins, insertions, and actions through active recall.</p>
+              <p className="font-bold text-xs uppercase tracking-wide">Goal</p>
+              <p className="text-xs">Master origins, insertions, and actions through active recall.</p>
             </div>
           </div>
         </div>
@@ -91,37 +107,41 @@ const WelcomeModal: React.FC<WelcomeModalProps> = ({ onDismiss, onResume, daysUn
       subtitle: "Smart Guide, Flashcards & More",
       icon: <Brain className="w-12 h-12 text-blue-600" />,
       content: (
-        <div className="space-y-4 text-sm text-slate-600 leading-relaxed">
+        <div className={`space-y-4 text-sm leading-relaxed ${tutorialMuted}`}>
           <ul className="space-y-3">
             <li className="flex gap-3">
-              <div className="w-6 h-6 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-xs shrink-0">1</div>
+              <div className={`w-6 h-6 rounded-full flex items-center justify-center font-bold text-xs shrink-0 ${tutorialNumberVariants[0]}`}>1</div>
               <div>
-                <span className="block font-bold text-slate-900">Smart Guide Mode</span>
-                <span>Uses "Spaced Repetition" to calculate exactly when you need to review a muscle so you never forget it. Best for daily study.</span>
+                <span className={`block font-bold ${tutorialText}`}>Smart Guide Mode</span>
+                <span className={tutorialMuted}>Uses "Spaced Repetition" to calculate exactly when you need to review a muscle so you never forget it. Best for daily study.</span>
               </div>
             </li>
             <li className="flex gap-3">
-              <div className="w-6 h-6 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center font-bold text-xs shrink-0">2</div>
+              <div className={`w-6 h-6 rounded-full flex items-center justify-center font-bold text-xs shrink-0 ${tutorialNumberVariants[1]}`}>2</div>
               <div>
-                <span className="block font-bold text-slate-900">Flashcards</span>
-                <span>Flip cards to test your memory. Rate yourself "Hard", "Good", or "Easy" to adjust your study schedule.</span>
+                <span className={`block font-bold ${tutorialText}`}>Flashcards</span>
+                <span className={tutorialMuted}>Flip cards to test your memory. Rate yourself "Hard", "Good", or "Easy" to adjust your study schedule.</span>
               </div>
             </li>
             <li className="flex gap-3">
-              <div className="w-6 h-6 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center font-bold text-xs shrink-0">3</div>
+              <div className={`w-6 h-6 rounded-full flex items-center justify-center font-bold text-xs shrink-0 ${tutorialNumberVariants[2]}`}>3</div>
               <div>
-                <span className="block font-bold text-slate-900">Lightning Round</span>
-                <span>A fast-paced game! Start with 60 seconds. Correct answers add time, wrong answers subtract it. How long can you last?</span>
+                <span className={`block font-bold ${tutorialText}`}>Lightning Round</span>
+                <span className={tutorialMuted}>A fast-paced game! Start with 60 seconds. Correct answers add time, wrong answers subtract it. How long can you last?</span>
               </div>
             </li>
             <li className="flex gap-3">
               <div className="w-6 h-6 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center font-bold text-xs shrink-0">4</div>
               <div>
-                <span className="block font-bold text-slate-900">Quiz Mode</span>
-                <span>Generate custom multiple-choice quizzes to simulate exam conditions.</span>
+                <span className={`block font-bold ${tutorialText}`}>Quiz Mode</span>
+                <span className={tutorialMuted}>Generate custom multiple-choice quizzes to simulate exam conditions.</span>
               </div>
             </li>
           </ul>
+          <div className={`p-4 rounded-xl ${tutorialPanel}`}>
+            <p className={`text-xs font-bold uppercase tracking-wide ${tutorialText}`}>Pro Tip</p>
+            <p className={`text-xs mt-1 ${tutorialMuted}`}>Save progress often! Export your study data to re-import later.</p>
+          </div>
         </div>
       )
     },
@@ -130,29 +150,29 @@ const WelcomeModal: React.FC<WelcomeModalProps> = ({ onDismiss, onResume, daysUn
       subtitle: "CRITICAL: The Save Code System",
       icon: <Save className="w-12 h-12 text-emerald-600" />,
       content: (
-        <div className="space-y-4 text-sm text-slate-600 leading-relaxed">
-          <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded-r-xl">
-             <h4 className="font-bold text-red-700 flex items-center gap-2 mb-1">
+        <div className={`space-y-4 text-sm leading-relaxed ${tutorialMuted}`}>
+          <div className={`border-l-4 p-4 rounded-r-xl ${isDarkTutorial ? 'bg-red-900/40 border-red-500/80 text-red-100' : 'bg-red-50 border-red-500 text-red-700'}`}>
+             <h4 className={`font-bold flex items-center gap-2 mb-1 ${tutorialText}`}>
                <AlertTriangle className="w-4 h-4" /> No Accounts = Privacy
              </h4>
-             <p className="text-red-600 text-xs">
+             <p className={`text-xs ${isDarkTutorial ? 'text-red-100' : 'text-red-600'}`}>
                We do not store your data on a server. Your progress lives in your browser or your custom save code.
              </p>
           </div>
-          <p>
+          <p className={tutorialText}>
             To save your progress across devices or browsers, open the <strong>Sidebar</strong> and click the <strong>Settings / Save</strong> button.
           </p>
-          <p>
+          <p className={tutorialText}>
             This will generate your unique <strong>Save Code</strong>. Copy that code and keep it safe.
           </p>
-          <div className="bg-slate-900 p-3 rounded-lg border border-slate-700 relative overflow-hidden">
+          <div className={`p-3 rounded-lg relative overflow-hidden ${isDarkTutorial ? 'bg-slate-900 border border-slate-700' : 'bg-slate-100 border border-slate-300'}`}>
             <div className="absolute top-0 right-0 bg-red-600 text-white text-[10px] font-bold px-2 py-1 rounded-bl-lg">EXAMPLE ONLY</div>
-            <code className="text-xs text-emerald-400 font-mono break-all opacity-50">
+            <code className={`text-xs font-mono break-all opacity-80 ${isDarkTutorial ? 'text-emerald-200' : 'text-emerald-700'}`}>
               eyJtdXNjbGVzIjp7InRlc3QiOiJ2YWx1ZSJ9fQ==...
             </code>
           </div>
-          <p className="text-xs">
-            <strong className="text-red-600">DO NOT COPY THE CODE ABOVE.</strong> It is just an example. You must generate your own code from the sidebar.
+          <p className={`text-xs ${tutorialText}`}>
+            <strong className={`text-red-600 ${isDarkTutorial ? 'text-red-300' : ''}`}>DO NOT COPY THE CODE ABOVE.</strong> It is just an example. You must generate your own code from the sidebar.
           </p>
         </div>
       )
@@ -162,16 +182,16 @@ const WelcomeModal: React.FC<WelcomeModalProps> = ({ onDismiss, onResume, daysUn
       subtitle: "AI Assisted & Lab Manual",
       icon: <ShieldAlert className="w-12 h-12 text-purple-600" />,
       content: (
-        <div className="space-y-4 text-sm text-slate-600 leading-relaxed">
-          <p>
+        <div className={`space-y-4 text-sm leading-relaxed ${tutorialMuted}`}>
+          <p className={tutorialText}>
             The core muscle list and information matches your <strong>Lab Manual</strong>.
           </p>
-          <p>
+          <p className={tutorialText}>
             <strong>Note on Descriptions:</strong> Web and app scripting, detailed descriptions, demonstrations, mnemonics, were generated using AI to accelerate app production.
           </p>
-          <div className="bg-slate-100 p-4 rounded-xl border border-slate-200">
-            <p className="text-xs font-bold text-slate-700">
-              <span className="text-red-600">IMPORTANT:</span> ALWAYS verify specific origin/insertion, muscle information, text, etc with the official course materials if in doubt. The Lab Manual is your absolute source of truth for the exam. Once again this content was made heavly assited with AI, so mistakes are likely. Report any issues or mistakes to Luca for fixing.
+          <div className={`p-4 rounded-xl ${tutorialPanel}`}>
+            <p className={`text-xs font-bold ${tutorialText}`}>
+              <span className={`font-black ${isDarkTutorial ? 'text-red-300' : 'text-red-600'}`}>IMPORTANT:</span> ALWAYS verify specific origin/insertion, muscle information, text, etc with the official course materials if in doubt. The Lab Manual is your absolute source of truth for the exam. Once again this content was made heavly assited with AI, so mistakes are likely. Report any issues or mistakes to Luca for fixing.
             </p>
           </div>
         </div>

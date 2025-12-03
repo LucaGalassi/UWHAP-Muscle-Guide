@@ -39,7 +39,7 @@ export const THEME_CONFIG: Record<AppTheme, ThemeConfig> = {
   midnight: {
     label: 'Midnight',
     appBg: 'bg-slate-950',
-    cardBg: 'bg-slate-900/80 backdrop-blur-md',
+    cardBg: 'bg-slate-900/95 backdrop-blur-md',
     text: 'text-slate-100',
     subText: 'text-slate-300',
     border: 'border-slate-700',
