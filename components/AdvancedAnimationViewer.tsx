@@ -21,7 +21,9 @@ type MotionName =
   | 'Shoulder Medial Rotation' | 'Shoulder Lateral Rotation'
   | 'Shoulder Flexion' | 'Shoulder Extension'
   | 'Forearm Pronation' | 'Forearm Supination'
-  | 'Hip Flexion' | 'Hip Extension';
+  | 'Hip Flexion' | 'Hip Extension'
+  | 'Knee Flexion' | 'Knee Extension'
+  | 'Ankle Dorsiflexion' | 'Ankle Plantarflexion';
 
 const MOTIONS: MotionName[] = [
   'Elbow Flexion','Elbow Extension',
@@ -29,7 +31,9 @@ const MOTIONS: MotionName[] = [
   'Shoulder Abduction','Shoulder Adduction',
   'Shoulder Medial Rotation','Shoulder Lateral Rotation',
   'Forearm Pronation','Forearm Supination',
-  'Hip Flexion','Hip Extension'
+  'Hip Flexion','Hip Extension',
+  'Knee Flexion','Knee Extension',
+  'Ankle Dorsiflexion','Ankle Plantarflexion'
 ];
 
 interface JointSpec {
@@ -46,6 +50,8 @@ const JOINTS: Record<string, JointSpec> = {
   ElbowFlexExt: { name: 'Elbow Flex/Ext', axis: new THREE.Vector3(0,0,1), minDeg: 0, maxDeg: 145 },
   ForearmProSup: { name: 'Forearm Pro/Sup', axis: new THREE.Vector3(0,1,0), minDeg: -90, maxDeg: 90 },
   HipFlexExt: { name: 'Hip Flex/Ext', axis: new THREE.Vector3(0,0,1), minDeg: -10, maxDeg: 120 },
+  KneeFlexExt: { name: 'Knee Flex/Ext', axis: new THREE.Vector3(1,0,0), minDeg: 0, maxDeg: 130 },
+  AnkleFlexExt: { name: 'Ankle Flex/Ext', axis: new THREE.Vector3(1,0,0), minDeg: -20, maxDeg: 45 },
 };
 
 function motionToTargets(motion: MotionName) {
@@ -62,6 +68,10 @@ function motionToTargets(motion: MotionName) {
     case 'Forearm Supination': return { joint: JOINTS.ForearmProSup, targetDeg: -80 };
     case 'Hip Flexion': return { joint: JOINTS.HipFlexExt, targetDeg: 100 };
     case 'Hip Extension': return { joint: JOINTS.HipFlexExt, targetDeg: 0 };
+    case 'Knee Flexion': return { joint: JOINTS.KneeFlexExt, targetDeg: 120 };
+    case 'Knee Extension': return { joint: JOINTS.KneeFlexExt, targetDeg: 0 };
+    case 'Ankle Dorsiflexion': return { joint: JOINTS.AnkleFlexExt, targetDeg: -20 };
+    case 'Ankle Plantarflexion': return { joint: JOINTS.AnkleFlexExt, targetDeg: 45 };
     default: return { joint: JOINTS.ElbowFlexExt, targetDeg: 60 };
   }
 }
@@ -86,6 +96,8 @@ function ArmRig({ motion, playing, angleOut, skeleton }: { motion: MotionName; p
   const forearm = useRef<THREE.Group>(null);
   const shoulder = useRef<THREE.Group>(null);
   const hip = useRef<THREE.Group>(null);
+  const knee = useRef<THREE.Group>(null);
+  const ankle = useRef<THREE.Group>(null);
   const spec = motionToTargets(motion);
   const axisNorm = useMemo(() => spec.joint.axis.clone().normalize(), [spec.joint.axis]);
 
@@ -107,6 +119,8 @@ function ArmRig({ motion, playing, angleOut, skeleton }: { motion: MotionName; p
       elbow: find(['elbow_r', 'r_elbow', 'lowerarm_r', 'ulna_r', 'radius_r', 'forearm_r', 'rightforearm', 'mixamorigrightforearm', 'right_forearm', 'forearm_r']),
       forearm: find(['forearm_r', 'radius_r', 'ulna_r', 'r_forearm', 'rightforearm', 'mixamorigrightforearm', 'right_forearm']),
       hip: find(['hip_r', 'r_hip', 'thigh_r', 'femur_r', 'pelvis', 'rightupleg', 'mixamorigrightupleg', 'right_leg', 'leg_r']),
+      knee: find(['knee_r', 'r_knee', 'shin_r', 'tibia_r', 'calf_r', 'rightleg', 'mixamorigrightleg', 'right_shin', 'shin_r']),
+      ankle: find(['ankle_r', 'r_ankle', 'foot_r', 'rightfoot', 'mixamorigrightfoot', 'right_foot', 'foot_r']),
     };
   }, [skeleton]);
 
@@ -139,6 +153,14 @@ function ArmRig({ motion, playing, angleOut, skeleton }: { motion: MotionName; p
     if (spec.joint === JOINTS.HipFlexExt) {
       setQuat(hip.current);
       setQuat(bones.hip);
+    }
+    if (spec.joint === JOINTS.KneeFlexExt) {
+      setQuat(knee.current);
+      setQuat(bones.knee);
+    }
+    if (spec.joint === JOINTS.AnkleFlexExt) {
+      setQuat(ankle.current);
+      setQuat(bones.ankle);
     }
   });
 
@@ -189,10 +211,38 @@ function ArmRig({ motion, playing, angleOut, skeleton }: { motion: MotionName; p
           <boxGeometry args={[0.5, 0.09, 0.09]} />
           <meshStandardMaterial color="#22c55e" />
         </mesh>
+        
+        {/* Knee joint */}
+        <group ref={knee} position={[0.5, -0.05, 0]}>
+          <mesh>
+            <sphereGeometry args={[0.04, 16, 16]} />
+            <meshStandardMaterial color="#94a3b8" />
+          </mesh>
+          <AxisHelper axis={JOINTS.KneeFlexExt.axis} />
+          <mesh position={[0.2, 0, 0]}> {/* shin */}
+            <boxGeometry args={[0.4, 0.07, 0.07]} />
+            <meshStandardMaterial color="#0ea5e9" />
+          </mesh>
+          
+          {/* Ankle joint */}
+          <group ref={ankle} position={[0.4, 0, 0]}>
+            <mesh>
+              <sphereGeometry args={[0.03, 16, 16]} />
+              <meshStandardMaterial color="#94a3b8" />
+            </mesh>
+            <AxisHelper axis={JOINTS.AnkleFlexExt.axis} />
+            <mesh position={[0.1, 0, 0.05]}> {/* foot */}
+              <boxGeometry args={[0.2, 0.05, 0.1]} />
+              <meshStandardMaterial color="#22c55e" />
+            </mesh>
+          </group>
+        </group>
       </group>
     </group>
   );
 }
+
+
 
 type ModelEntry = { label: string; url: string };
 
@@ -222,8 +272,21 @@ export const AdvancedAnimationViewer: React.FC<AdvancedAnimationViewerProps> = (
         : name.includes('tricep') ? 'Elbow Extension'
         : name.includes('forearm') ? 'Forearm Supination'
         : name.includes('hip') ? 'Hip Flexion'
+        : name.includes('quad') ? 'Knee Extension'
+        : name.includes('hamstring') ? 'Knee Flexion'
+        : name.includes('calf') || name.includes('gastro') ? 'Ankle Plantarflexion'
+        : name.includes('tibialis') ? 'Ankle Dorsiflexion'
         : 'Shoulder Flexion';
       setMotion(pick);
+    } else if (defaultMotion) {
+      // Ensure defaultMotion is valid, otherwise fallback
+      if (MOTIONS.includes(defaultMotion as MotionName)) {
+        setMotion(defaultMotion as MotionName);
+      } else {
+        // Try to find a close match
+        const match = MOTIONS.find(m => m.includes(defaultMotion) || defaultMotion.includes(m));
+        if (match) setMotion(match);
+      }
     }
     setPlaying(true);
   }, [muscleName, defaultMotion]);
