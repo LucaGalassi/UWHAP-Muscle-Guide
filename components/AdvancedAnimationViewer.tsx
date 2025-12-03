@@ -193,16 +193,18 @@ function ArmRig({ motion, playing, angleOut, skeleton }: { motion: MotionName; p
 
   useEffect(() => {
     originalQuats.current.clear();
-  }, [motion, skeleton]);
+  }, [skeleton]);
 
     // Map bones if skeleton is provided
   const skeletonBones = useMemo(() => {
     if (!skeleton?.scene) return null;
 
-    const lookup: { bone: THREE.Bone; name: string }[] = [];
+    const lookup: { bone: THREE.Object3D; name: string }[] = [];
     skeleton.scene.traverse((node: THREE.Object3D) => {
-      if ((node as THREE.Bone).isBone) {
-        lookup.push({ bone: node as THREE.Bone, name: node.name.toLowerCase() });
+      // Relaxed check: accept Bones, Meshes, Groups, Object3D
+      // We want to animate anything that matches our anatomical names
+      if (node.type === 'Bone' || node.type === 'Mesh' || node.type === 'Group' || node.type === 'Object3D') {
+        lookup.push({ bone: node, name: node.name.toLowerCase() });
       }
     });
     if (!lookup.length) return null;
@@ -531,7 +533,8 @@ export const AdvancedAnimationViewer: React.FC<AdvancedAnimationViewerProps> = (
 
   function GLTFArmRig({ url }: { url: string }) {
     const gltf = useGLTF(url);
-    return <ArmRig motion={motion} playing={playing} angleOut={setAngle} skeleton={gltf} />;
+    const scene = useMemo(() => gltf.scene.clone(true), [gltf.scene]);
+    return <ArmRig motion={motion} playing={playing} angleOut={setAngle} skeleton={{ ...gltf, scene }} />;
   }
 
   const actionList = useMemo(() => {
