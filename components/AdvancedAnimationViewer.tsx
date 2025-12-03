@@ -320,53 +320,51 @@ const AdvancedAnimationViewer: React.FC<AdvancedAnimationViewerProps> = ({
                   </section>
                 )}
 
-                {/* GIF Search Section */}
+                {/* Animation & Video Search Section */}
                 <section className={`rounded-xl border ${theme.border} ${theme.cardBg} p-5 shadow-sm`}>
                   <div className="flex items-center gap-2 mb-4">
                     <PlayCircle className="w-5 h-5 text-brand-500" />
-                    <p className={`text-base font-bold ${theme.text}`}>Animation Finder</p>
+                    <p className={`text-base font-bold ${theme.text}`}>Find Animations</p>
                   </div>
                   
-                  {/* Primary Search Button */}
-                  <div className="mb-4">
-                    <button
-                      onClick={() => {
-                        const query = generateGifSearchQuery(muscleId || '', muscleName, selectedMotion.id);
-                        window.open(
-                          `https://www.google.com/search?tbm=isch&q=${encodeURIComponent(query + ' medical animation gif')}`,
-                          '_blank'
-                        );
-                      }}
-                      className="w-full px-5 py-4 rounded-xl bg-gradient-to-r from-brand-500 to-blue-600 text-white font-bold text-base flex items-center justify-center gap-3 hover:shadow-xl transition-all"
-                    >
-                      <PlayCircle className="w-6 h-6" />
-                      Find {selectedMotion.displayName} Animation
-                    </button>
-                  </div>
+                  {/* Motion Search Buttons */}
+                  <div className="space-y-3">
+                    {/* Primary action buttons row */}
+                    <div className="grid grid-cols-2 gap-3">
+                      <button
+                        onClick={() => {
+                          const query = generateGifSearchQuery(muscleId || '', muscleName, selectedMotion.id);
+                          window.open(
+                            `https://www.google.com/search?tbm=isch&q=${encodeURIComponent(query + ' medical animation gif')}`,
+                            '_blank'
+                          );
+                        }}
+                        className="px-4 py-3 rounded-xl bg-gradient-to-r from-brand-500 to-blue-600 text-white font-semibold text-sm flex items-center justify-center gap-2 hover:shadow-lg hover:scale-[1.02] transition-all"
+                      >
+                        <Search className="w-4 h-4" />
+                        <span className="truncate">{selectedMotion.displayName}</span>
+                      </button>
+                      <button
+                        onClick={() =>
+                          window.open(
+                            `https://www.youtube.com/results?search_query=${encodeURIComponent(
+                              `${selectedMotion.displayName} motion anatomy`
+                            )}`,
+                            '_blank'
+                          )
+                        }
+                        className={`px-4 py-3 rounded-xl border-2 ${theme.border} ${theme.cardBg} ${theme.text} font-semibold text-sm flex items-center justify-center gap-2 hover:border-red-400 hover:bg-red-50/50 transition-all`}
+                      >
+                        <ExternalLink className="w-4 h-4 text-red-500" />
+                        YouTube
+                      </button>
+                    </div>
 
-                  {/* Individual Motion GIF Shortcuts */}
-                  <div className={`p-4 rounded-xl border ${theme.border} ${theme.infoBox} overflow-hidden`}>
-                    <p className={`text-xs uppercase tracking-wider ${theme.subText} flex items-center gap-2 mb-3`}>
-                      <Activity className="w-4 h-4" />
-                      Motion-Specific Search
-                    </p>
-                    <div className="flex flex-wrap gap-2">
-                      {extractedMotions.length === 0 ? (
-                        <button
-                          onClick={() =>
-                            window.open(
-                              `https://www.google.com/search?tbm=isch&q=${encodeURIComponent(`${muscleName} muscle action medical animation gif`)}`,
-                              '_blank'
-                            )
-                          }
-                          className={`px-3 py-2 rounded-lg border ${theme.border} ${theme.cardBg} text-xs font-medium hover:border-brand-400 hover:bg-blue-50 transition-colors flex items-center gap-2 ${theme.text}`}
-                        >
-                          <Search className="w-4 h-4 text-brand-500" />
-                          Search all muscle actions
-                        </button>
-                      ) : (
-                        <>
-                          {/* Individual motion searches */}
+                    {/* Individual motion shortcuts */}
+                    {extractedMotions.length > 0 && (
+                      <div className={`p-3 rounded-lg border ${theme.border} ${theme.infoBox}`}>
+                        <p className={`text-[11px] uppercase tracking-wider ${theme.subText} mb-2`}>Quick Search by Motion</p>
+                        <div className="flex flex-wrap gap-2">
                           {extractedMotions.map((motion, i) => (
                             <button
                               key={i}
@@ -376,13 +374,12 @@ const AdvancedAnimationViewer: React.FC<AdvancedAnimationViewerProps> = ({
                                   '_blank'
                                 )
                               }
-                              className={`px-3 py-2 rounded-full border ${theme.border} ${theme.cardBg} text-xs font-medium capitalize hover:border-brand-400 transition-colors flex items-center gap-2 ${theme.text} max-w-full`}
+                              className={`px-3 py-1.5 rounded-full border ${theme.border} ${theme.cardBg} text-xs font-medium capitalize hover:border-brand-400 hover:bg-brand-50 transition-colors flex items-center gap-1.5 ${theme.text}`}
                             >
                               <Zap className="w-3 h-3 text-amber-500 flex-shrink-0" />
                               <span className="truncate">{motion}</span>
                             </button>
                           ))}
-                          {/* Main search when specific motions exist */}
                           <button
                             onClick={() =>
                               window.open(
@@ -390,32 +387,14 @@ const AdvancedAnimationViewer: React.FC<AdvancedAnimationViewerProps> = ({
                                 '_blank'
                               )
                             }
-                            className={`px-3 py-2 rounded-lg border ${theme.border} ${theme.cardBg} text-xs font-medium hover:border-emerald-400 hover:bg-emerald-50 transition-colors flex items-center gap-2 ${theme.text}`}
+                            className={`px-3 py-1.5 rounded-full border ${theme.border} ${theme.cardBg} text-xs font-medium hover:border-emerald-400 hover:bg-emerald-50 transition-colors flex items-center gap-1.5 ${theme.text}`}
                           >
-                            <Search className="w-3 h-3 text-emerald-500 flex-shrink-0" />
-                            All actions
+                            <Activity className="w-3 h-3 text-emerald-500 flex-shrink-0" />
+                            All motions
                           </button>
-                        </>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Video Resources */}
-                  <div className="mt-4">
-                    <button
-                      onClick={() =>
-                        window.open(
-                          `https://www.youtube.com/results?search_query=${encodeURIComponent(
-                            `${selectedMotion.displayName} motion anatomy`
-                          )}`,
-                          '_blank'
-                        )
-                      }
-                      className={`w-full px-4 py-3 rounded-lg border ${theme.border} ${theme.cardBg} ${theme.text} font-semibold flex items-center justify-center gap-2 hover:border-brand-400 transition-colors`}
-                    >
-                      <ExternalLink className="w-4 h-4" />
-                      Watch Video Demonstrations
-                    </button>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </section>
 
