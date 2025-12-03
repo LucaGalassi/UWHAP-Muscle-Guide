@@ -54,6 +54,18 @@ const Sidebar: React.FC<SidebarProps> = ({
   const [copyCodeFeedback, setCopyCodeFeedback] = useState(false);
   const [tempKey, setTempKey] = useState(apiKey);
   // Removed local shareName state in favor of prop
+  const [skipWelcome, setSkipWelcome] = useState<boolean>(() => {
+    try { return localStorage.getItem('welcome_dismissed') === '1'; } catch { return false; }
+  });
+  const [autoResume, setAutoResume] = useState<boolean>(() => {
+    try { return localStorage.getItem('settings_auto_resume') === '1'; } catch { return false; }
+  });
+  const [hideSplash, setHideSplash] = useState<boolean>(() => {
+    try { return localStorage.getItem('settings_hide_splash') === '1'; } catch { return false; }
+  });
+  const [statsPreview, setStatsPreview] = useState<any>(() => {
+    try { const raw = localStorage.getItem('app_stats'); return raw ? JSON.parse(raw) : null; } catch { return null; }
+  });
 
   const theme = THEME_CONFIG[currentTheme];
 
@@ -95,6 +107,11 @@ const Sidebar: React.FC<SidebarProps> = ({
 
   const handleSaveKey = () => {
     onSetApiKey(tempKey);
+    try {
+      localStorage.setItem('welcome_dismissed', skipWelcome ? '1' : '0');
+      localStorage.setItem('settings_auto_resume', autoResume ? '1' : '0');
+      localStorage.setItem('settings_hide_splash', hideSplash ? '1' : '0');
+    } catch {}
     setShowSettingsModal(false);
   };
 
@@ -515,6 +532,31 @@ const Sidebar: React.FC<SidebarProps> = ({
                 </div>
 
                 <div className="border-t border-slate-100 pt-6 space-y-4">
+                  {/* Session & Resume Settings */}
+                  <div className="space-y-3">
+                    <div className="flex items-start gap-3">
+                      <div className="p-2 bg-green-50 text-green-600 rounded-lg">
+                        <Save className="w-5 h-5" />
+                      </div>
+                      <div>
+                        <h4 className="text-sm font-bold text-slate-900">Session</h4>
+                        <p className="text-xs text-slate-500 mt-1">Control intros and auto-resume behavior.</p>
+                      </div>
+                    </div>
+                    <label className="flex items-center gap-3 text-sm">
+                      <input type="checkbox" className="rounded" checked={skipWelcome} onChange={(e)=>setSkipWelcome(e.target.checked)} />
+                      <span className="text-slate-700">Skip Welcome modal</span>
+                    </label>
+                    <label className="flex items-center gap-3 text-sm">
+                      <input type="checkbox" className="rounded" checked={autoResume} onChange={(e)=>setAutoResume(e.target.checked)} />
+                      <span className="text-slate-700">Auto-resume in new tabs (no prompt)</span>
+                    </label>
+                    <label className="flex items-center gap-3 text-sm">
+                      <input type="checkbox" className="rounded" checked={hideSplash} onChange={(e)=>setHideSplash(e.target.checked)} />
+                      <span className="text-slate-700">Hide splash animation</span>
+                    </label>
+                  </div>
+
                   <div className="flex items-start gap-3">
                     <div className="p-2 bg-blue-50 text-blue-600 rounded-lg">
                       <Key className="w-5 h-5" />
@@ -569,6 +611,37 @@ const Sidebar: React.FC<SidebarProps> = ({
                      </button>
                    </div>
                 )}
+
+                {/* Stats & Insights Preview */}
+                <div className="pt-6 border-t border-slate-100">
+                  <div className="flex items-start gap-3 mb-2">
+                    <div className="p-2 bg-amber-50 text-amber-600 rounded-lg">
+                      <Trophy className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <h4 className="text-sm font-bold text-slate-900">Stats & Insights</h4>
+                      <p className="text-xs text-slate-500 mt-1">Saved locally and used to show progress over time.</p>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-2 text-xs text-slate-600">
+                    <div className="p-3 rounded-lg border border-slate-200 bg-white">
+                      <div className="font-bold text-slate-800">Sessions</div>
+                      <div>{statsPreview?.totalSessions ?? 0}</div>
+                    </div>
+                    <div className="p-3 rounded-lg border border-slate-200 bg-white">
+                      <div className="font-bold text-slate-800">Muscles Viewed</div>
+                      <div>{statsPreview?.musclesViewed ?? 0}</div>
+                    </div>
+                    <div className="p-3 rounded-lg border border-slate-200 bg-white">
+                      <div className="font-bold text-slate-800">Flashcards</div>
+                      <div>{statsPreview?.flashcardsAnswered ?? 0}</div>
+                    </div>
+                    <div className="p-3 rounded-lg border border-slate-200 bg-white">
+                      <div className="font-bold text-slate-800">Last Session</div>
+                      <div>{statsPreview?.lastSessionAt ? new Date(statsPreview.lastSessionAt).toLocaleString() : '—'}</div>
+                    </div>
+                  </div>
+                </div>
 
                 <div className="pt-2">
                   <button 

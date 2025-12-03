@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Sidebar from './components/Sidebar';
 import MuscleView from './components/MuscleView';
 import StudyDashboard from './components/StudyDashboard';
@@ -132,6 +132,26 @@ const App: React.FC = () => {
   
   // Splash Screen State
   const [showSplash, setShowSplash] = useState(true);
+  // Settings flags
+  const [autoResume, setAutoResume] = useState<boolean>(false);
+  const [hideSplashAlways, setHideSplashAlways] = useState<boolean>(false);
+
+  // Stats & Insights
+  type AppStats = {
+    totalSessions: number;
+    lastSessionAt: number;
+    musclesViewed: number;
+    flashcardsAnswered: number;
+    ratings: { AGAIN: number; HARD: number; GOOD: number; EASY: number };
+  };
+  const [stats, setStats] = useState<AppStats>({
+    totalSessions: 0,
+    lastSessionAt: Date.now(),
+    musclesViewed: 0,
+    flashcardsAnswered: 0,
+    ratings: { AGAIN: 0, HARD: 0, GOOD: 0, EASY: 0 }
+  });
+  const lastMuscleIdRef = useRef<string | null>(null);
 
   // Exam Date Logic
   const [daysUntilExam, setDaysUntilExam] = useState(0);
@@ -199,13 +219,25 @@ const App: React.FC = () => {
 
   // Initialize state from URL params and LocalStorage on mount
   useEffect(() => {
-    // Splash should only show once per tab session
+    // Load settings
     try {
-      const seen = sessionStorage.getItem('splash_seen');
-      if (seen === '1') {
+      const _auto = localStorage.getItem('settings_auto_resume');
+      const _hideSplash = localStorage.getItem('settings_hide_splash');
+      setAutoResume(_auto === '1');
+      setHideSplashAlways(_hideSplash === '1');
+    } catch {}
+
+    // Splash should only show once per tab session or never if user disabled
+    try {
+      if (hideSplashAlways) {
         setShowSplash(false);
       } else {
+        const seen = sessionStorage.getItem('splash_seen');
+        if (seen === '1') {
+          setShowSplash(false);
+        } else {
         sessionStorage.setItem('splash_seen', '1');
+        }
       }
     } catch {}
 
@@ -266,16 +298,33 @@ const App: React.FC = () => {
       parseUrlParams(window.location.search);
     }
 
-    // 6. If we have existing progress/theme/name and this is a fresh tab, offer resume prompt
+    // 6. If we have existing progress/theme/name and this is a fresh tab, offer resume prompt (or auto-resume if enabled)
     try {
       const hasProgress = !!localStorage.getItem('srs_progress');
       const hasName = !!localStorage.getItem('student_name');
       const hasTheme = !!localStorage.getItem('app_theme');
       const promptShown = sessionStorage.getItem('resume_prompt_shown') === '1';
       if (!promptShown && (hasProgress || hasName || hasTheme)) {
-        setShowResumePrompt(true);
-        sessionStorage.setItem('resume_prompt_shown', '1');
+        if (autoResume) {
+          setShowWelcome(false);
+          sessionStorage.setItem('resume_prompt_shown', '1');
+        } else {
+          setShowResumePrompt(true);
+          sessionStorage.setItem('resume_prompt_shown', '1');
+        }
       }
+    } catch {}
+
+    // 7. Stats: load, bump session count
+    try {
+      const raw = localStorage.getItem('app_stats');
+      let loaded: AppStats | null = null;
+      if (raw) loaded = JSON.parse(raw);
+      const next: AppStats = loaded ? { ...loaded } : { totalSessions: 0, lastSessionAt: 0, musclesViewed: 0, flashcardsAnswered: 0, ratings: { AGAIN: 0, HARD: 0, GOOD: 0, EASY: 0 } };
+      next.totalSessions += 1;
+      next.lastSessionAt = Date.now();
+      setStats(next);
+      localStorage.setItem('app_stats', JSON.stringify(next));
     } catch {}
   }, []);
 
@@ -310,6 +359,32 @@ const App: React.FC = () => {
       console.error('Failed to save student name to localStorage', e);
     }
   }, [studentName]);
+
+  // Track muscles viewed
+  useEffect(() => {
+    const id = selectedMuscle?.id;
+    if (!id) return;
+    if (lastMuscleIdRef.current === id) return;
+    lastMuscleIdRef.current = id;
+    try {
+      const raw = localStorage.getItem('app_stats');
+      const s: AppStats = raw ? JSON.parse(raw) : { totalSessions: 1, lastSessionAt: Date.now(), musclesViewed: 0, flashcardsAnswered: 0, ratings: { AGAIN: 0, HARD: 0, GOOD: 0, EASY: 0 } };
+      s.musclesViewed += 1;
+      setStats(s);
+      localStorage.setItem('app_stats', JSON.stringify(s));
+    } catch {}
+  }, [selectedMuscle]);
+
+  const recordFlashcardRating = (rating: 'AGAIN'|'HARD'|'GOOD'|'EASY') => {
+    try {
+      const raw = localStorage.getItem('app_stats');
+      const s: AppStats = raw ? JSON.parse(raw) : { totalSessions: 1, lastSessionAt: Date.now(), musclesViewed: 0, flashcardsAnswered: 0, ratings: { AGAIN: 0, HARD: 0, GOOD: 0, EASY: 0 } };
+      s.flashcardsAnswered += 1;
+      s.ratings[rating] = (s.ratings[rating] || 0) + 1;
+      setStats(s);
+      localStorage.setItem('app_stats', JSON.stringify(s));
+    } catch {}
+  };
 
   const handleSetApiKey = (key: string) => {
     setApiKey(key);
@@ -477,6 +552,7 @@ const App: React.FC = () => {
                  const random = MUSCLE_DATA[Math.floor(Math.random() * MUSCLE_DATA.length)];
                  setSelectedMuscle(random);
               }}
+              onRate={(r) => recordFlashcardRating(r)}
               apiKey={apiKey}
               mode="BROWSE"
               currentTheme={theme}
