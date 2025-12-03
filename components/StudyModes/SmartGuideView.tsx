@@ -44,6 +44,7 @@ const SmartGuideView: React.FC<SmartGuideViewProps> = ({ progressMap, onUpdatePr
   const reviewCount = (Object.values(progressMap) as MuscleProgress[]).filter(p => p.status === 'REVIEW').length;
 
   const startSession = (type: 'DUE' | 'NEW') => {
+    console.log(`Starting session: ${type}`);
     let queue: string[] = [];
     const now = Date.now();
     

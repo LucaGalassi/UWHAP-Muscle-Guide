@@ -104,23 +104,34 @@ function ArmRig({ motion, playing, angleOut, skeleton }: { motion: MotionName; p
   // Map bones if skeleton is provided
   const bones = useMemo(() => {
     if (!skeleton?.nodes) return {};
+    
+    // DEBUG: Log all available bone names
+    console.log("Available GLTF Nodes:", Object.keys(skeleton.nodes));
+
     const find = (patterns: string[]) => {
       const keys = Object.keys(skeleton.nodes);
       const lower = keys.map(k => ({ k, l: k.toLowerCase() }));
       for (const p of patterns) {
         const pl = p.toLowerCase();
-        const hit = lower.find(({ l }) => l.includes(pl));
-        if (hit) return (skeleton.nodes as any)[hit.k];
+        // Exact match first
+        let hit = lower.find(({ l }) => l === pl);
+        // Then contains
+        if (!hit) hit = lower.find(({ l }) => l.includes(pl));
+        
+        if (hit) {
+            console.log(`Mapped '${p}' -> '${hit.k}'`);
+            return (skeleton.nodes as any)[hit.k];
+        }
       }
       return null;
     };
     return {
-      shoulder: find(['shoulder_r', 'r_shoulder', 'shoulder', 'upperarm_r', 'humerus_r', 'rightarm', 'mixamorigrightarm', 'right_arm', 'arm_r']),
+      shoulder: find(['shoulder_r', 'r_shoulder', 'shoulder', 'upperarm_r', 'humerus_r', 'rightarm', 'mixamorigrightarm', 'right_arm', 'arm_r', 'clavicle_r']),
       elbow: find(['elbow_r', 'r_elbow', 'lowerarm_r', 'ulna_r', 'radius_r', 'forearm_r', 'rightforearm', 'mixamorigrightforearm', 'right_forearm', 'forearm_r']),
-      forearm: find(['forearm_r', 'radius_r', 'ulna_r', 'r_forearm', 'rightforearm', 'mixamorigrightforearm', 'right_forearm']),
+      forearm: find(['forearm_r', 'radius_r', 'ulna_r', 'r_forearm', 'rightforearm', 'mixamorigrightforearm', 'right_forearm', 'wrist_r']),
       hip: find(['hip_r', 'r_hip', 'thigh_r', 'femur_r', 'pelvis', 'rightupleg', 'mixamorigrightupleg', 'right_leg', 'leg_r']),
       knee: find(['knee_r', 'r_knee', 'shin_r', 'tibia_r', 'calf_r', 'rightleg', 'mixamorigrightleg', 'right_shin', 'shin_r']),
-      ankle: find(['ankle_r', 'r_ankle', 'foot_r', 'rightfoot', 'mixamorigrightfoot', 'right_foot', 'foot_r']),
+      ankle: find(['ankle_r', 'r_ankle', 'foot_r', 'rightfoot', 'mixamorigrightfoot', 'right_foot', 'foot_r', 'toe_r']),
     };
   }, [skeleton]);
 
@@ -242,8 +253,6 @@ function ArmRig({ motion, playing, angleOut, skeleton }: { motion: MotionName; p
   );
 }
 
-
-
 type ModelEntry = { label: string; url: string };
 
 export const AdvancedAnimationViewer: React.FC<AdvancedAnimationViewerProps> = ({ muscleName, currentTheme, defaultMotion='Elbow Flexion', onClose, referenceText, actionString }) => {
@@ -254,6 +263,7 @@ export const AdvancedAnimationViewer: React.FC<AdvancedAnimationViewerProps> = (
   const [cameraPreset, setCameraPreset] = useState<'Front'|'Side'|'Top'>('Side');
   const [models, setModels] = useState<ModelEntry[]>([]);
   const [selectedModelUrl, setSelectedModelUrl] = useState<string | null>(null);
+  const [forceBoxRig, setForceBoxRig] = useState(false);
 
   const cameraPosition = useMemo(() => {
     switch (cameraPreset) {
@@ -364,15 +374,15 @@ export const AdvancedAnimationViewer: React.FC<AdvancedAnimationViewerProps> = (
             <div className={`rounded-2xl border ${theme.border} ${theme.inputBg} p-2 flex-1 min-h-0`}>
               <Canvas camera={{ position: cameraPosition as any, fov: 45 }} dpr={[1, 2]} frameloop="always">
                 <ambientLight intensity={0.7} />
-                <directionalLight position={[5,5,5]} intensity={0.8} />
                 <gridHelper args={[10, 20]} />
-                {selectedModelUrl ? (
+                {selectedModelUrl && !forceBoxRig ? (
                   <Suspense fallback={null}>
                     <GLTFArmRig url={selectedModelUrl} />
                   </Suspense>
                 ) : (
                   <ArmRig motion={motion} playing={playing} angleOut={setAngle} />
                 )}
+                <OrbitControls enablePan={true} enableZoom={true} enableRotate={true} />
                 <OrbitControls enablePan={true} enableZoom={true} enableRotate={true} />
               </Canvas>
             </div>
@@ -394,6 +404,14 @@ export const AdvancedAnimationViewer: React.FC<AdvancedAnimationViewerProps> = (
                 <p className="text-xs text-yellow-800 font-medium">
                   ⚠️ Note: 3D animations are approximations. Verify with textbook resources.
                 </p>
+              </div>
+
+              <div className="mb-4">
+                 <label className="flex items-center gap-2 text-sm font-bold text-slate-600 cursor-pointer">
+                    <input type="checkbox" checked={forceBoxRig} onChange={(e) => setForceBoxRig(e.target.checked)} className="rounded text-brand-600 focus:ring-brand-500" />
+                    Force Box Rig (Debug)
+                 </label>
+                 <p className="text-[10px] text-slate-400 mt-1">Use this if the 3D model is not animating correctly.</p>
               </div>
 
               {referenceText ? (

@@ -85,7 +85,7 @@ const FlashcardView: React.FC<FlashcardViewProps> = ({ muscle, onRate, onNext, a
       {/* Card Container - Widened */}
       <div 
         className="flashcard-flip-container relative w-full h-[75vh] md:h-[80vh] cursor-pointer group mb-4"
-        onClick={() => setIsFlipped(!isFlipped)}
+        onClick={() => { console.log('Card clicked'); setIsFlipped(!isFlipped); }}
         style={{ perspective: '1000px' }}
       >
         <div 

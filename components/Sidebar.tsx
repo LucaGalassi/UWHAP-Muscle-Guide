@@ -2,6 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { MUSCLE_DATA, THEME_CONFIG } from '../constants';
 import { MuscleItem, StudyMode, MuscleProgress, AppTheme } from '../types';
 import { Search, ChevronRight, BookOpen, CheckCircle2, Share2, Circle, X, Copy, Check, GraduationCap, LayoutList, Settings, Key, Trash2, Trophy, Clock, Sun, Moon, DraftingCompass, Leaf, Palette, Save, AlertTriangle, Timer } from 'lucide-react';
+import pkg from '../package.json';
 
 interface SidebarProps {
   onSelectMuscle: (muscle: MuscleItem) => void;
@@ -133,7 +134,7 @@ const Sidebar: React.FC<SidebarProps> = ({
               </div>
               <div>
                 <h1 className={`text-lg font-black tracking-tight leading-none ${theme.sidebarText}`}>
-                  Muscle<br/>Guide
+                  Muscle<br/>Guide <span className="text-[10px] font-normal opacity-50 ml-1">v{pkg.version}</span>
                 </h1>
                 {studentName && (
                   <p className={`text-[10px] font-bold uppercase tracking-wider mt-1 ${theme.sidebarSubText}`}>
