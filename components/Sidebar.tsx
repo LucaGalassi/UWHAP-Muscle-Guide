@@ -284,12 +284,12 @@ const Sidebar: React.FC<SidebarProps> = ({
             <div className="space-y-3">
               <div className={`p-4 rounded-xl flex items-center gap-4 border ${
                 currentTheme === 'midnight' || currentTheme === 'blueprint' 
-                ? 'bg-red-900/20 border-red-800/50' 
+                ? 'bg-red-900/20 border-red-700/30' 
                 : 'bg-red-50 border-red-100'
               }`}>
                 <div className={`p-2 rounded-lg shadow-sm ${
                   currentTheme === 'midnight' || currentTheme === 'blueprint'
-                  ? 'bg-red-900/30 text-red-400'
+                  ? 'bg-red-800/30 text-red-300'
                   : 'bg-white text-red-600'
                 }`}>
                   <Clock className="w-5 h-5" />
@@ -298,7 +298,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                   <h4 className={`text-sm font-bold ${theme.sidebarText}`}>{dueCount} Muscles</h4>
                   <p className={`text-xs font-medium ${
                     currentTheme === 'midnight' || currentTheme === 'blueprint'
-                    ? 'text-red-400'
+                    ? 'text-red-300'
                     : 'text-red-600'
                   }`}>Due for spaced repetition</p>
                 </div>
@@ -306,12 +306,12 @@ const Sidebar: React.FC<SidebarProps> = ({
               
               <div className={`p-4 rounded-xl flex items-center gap-4 border ${
                 currentTheme === 'midnight' || currentTheme === 'blueprint' 
-                ? 'bg-blue-900/20 border-blue-800/50' 
+                ? 'bg-blue-900/20 border-blue-700/30' 
                 : 'bg-blue-50 border-blue-100'
               }`}>
                 <div className={`p-2 rounded-lg shadow-sm ${
                   currentTheme === 'midnight' || currentTheme === 'blueprint'
-                  ? 'bg-blue-900/30 text-blue-400'
+                  ? 'bg-blue-800/30 text-blue-300'
                   : 'bg-white text-blue-600'
                 }`}>
                   <Trophy className="w-5 h-5" />
@@ -320,7 +320,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                   <h4 className={`text-sm font-bold ${theme.sidebarText}`}>{learnedIds.size} Mastered</h4>
                   <p className={`text-xs font-medium ${
                     currentTheme === 'midnight' || currentTheme === 'blueprint'
-                    ? 'text-blue-400'
+                    ? 'text-blue-300'
                     : 'text-blue-600'
                   }`}>Keep hitting the books!</p>
                 </div>
@@ -367,8 +367,10 @@ const Sidebar: React.FC<SidebarProps> = ({
                         >
                           {isLearned ? (
                             <CheckCircle2 className={`w-4 h-4 ${
-                              currentTheme === 'midnight' || currentTheme === 'blueprint'
+                              currentTheme === 'midnight'
                               ? 'text-green-400 fill-green-900/30'
+                              : currentTheme === 'blueprint'
+                              ? 'text-green-300 fill-green-900/20'
                               : 'text-green-500 fill-green-50'
                             }`} />
                           ) : (

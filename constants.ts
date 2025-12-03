@@ -66,23 +66,23 @@ export const THEME_CONFIG: Record<AppTheme, ThemeConfig> = {
   blueprint: {
     label: 'Blueprint',
     appBg: 'bg-[#0f172a]', // Darker slate/blue
-    cardBg: 'bg-[#1e293b]/90 backdrop-blur-md border border-blue-700/50',
-    text: 'text-blue-50',
-    subText: 'text-blue-200',
-    border: 'border-blue-700',
+    cardBg: 'bg-[#1e293b]/95 backdrop-blur-md border border-blue-600/30',
+    text: 'text-slate-50',
+    subText: 'text-slate-300',
+    border: 'border-blue-600/30',
     accent: 'bg-blue-500',
-    badge: 'bg-blue-900/50 text-blue-200 border-blue-700 shadow-lg',
-    infoBox: 'bg-blue-900/30 border-blue-700 text-blue-50',
+    badge: 'bg-blue-800/40 text-blue-100 border-blue-600/30 shadow-lg',
+    infoBox: 'bg-blue-900/20 border-blue-600/30 text-slate-50',
     iconLoc: 'bg-blue-500/20 text-blue-200',
     iconFunc: 'bg-blue-500/20 text-blue-200',
 
     // Sidebar
     sidebarBg: 'bg-[#0f172a]/95 backdrop-blur-xl',
-    sidebarBorder: 'border-blue-700',
-    sidebarText: 'text-blue-50',
-    sidebarSubText: 'text-blue-300',
-    sidebarHover: 'hover:bg-blue-900/50',
-    sidebarActive: 'bg-blue-900/50 text-blue-100 border border-blue-600',
+    sidebarBorder: 'border-blue-600/30',
+    sidebarText: 'text-slate-50',
+    sidebarSubText: 'text-slate-400',
+    sidebarHover: 'hover:bg-blue-900/30',
+    sidebarActive: 'bg-blue-900/40 text-slate-50 border border-blue-500/50',
     inputBg: 'bg-[#1e293b]',
 
     // Blobs

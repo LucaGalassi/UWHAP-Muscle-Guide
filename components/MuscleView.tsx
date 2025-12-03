@@ -137,8 +137,8 @@ const MuscleView: React.FC<MuscleViewProps> = ({ muscle, onSelectMuscle, isLearn
               <div className="flex items-center gap-2 mb-3">
                 <span className={`text-[11px] font-bold px-2 py-0.5 rounded tracking-wider uppercase ${
                   muscle.group === 'A' 
-                  ? 'bg-orange-100 text-orange-700' 
-                  : 'bg-blue-100 text-blue-700'
+                  ? (currentTheme === 'blueprint' || currentTheme === 'midnight' ? 'bg-orange-800/30 text-orange-200 border border-orange-700/30' : 'bg-orange-100 text-orange-700')
+                  : (currentTheme === 'blueprint' || currentTheme === 'midnight' ? 'bg-blue-800/30 text-blue-200 border border-blue-700/30' : 'bg-blue-100 text-blue-700')
                 }`}>
                   Group {muscle.group}
                 </span>
@@ -156,8 +156,8 @@ const MuscleView: React.FC<MuscleViewProps> = ({ muscle, onSelectMuscle, isLearn
                   onClick={toggleLearned}
                   className={`flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider transition-all ${
                     isLearned 
-                    ? 'bg-green-100 text-green-700 hover:bg-green-200' 
-                    : 'bg-slate-100 text-slate-500 hover:bg-slate-200'
+                    ? (currentTheme === 'blueprint' || currentTheme === 'midnight' ? 'bg-green-800/30 text-green-200 border border-green-700/30 hover:bg-green-800/40' : 'bg-green-100 text-green-700 hover:bg-green-200')
+                    : (currentTheme === 'blueprint' || currentTheme === 'midnight' ? 'bg-slate-800/30 text-slate-300 border border-slate-700/30 hover:bg-slate-800/40' : 'bg-slate-100 text-slate-500 hover:bg-slate-200')
                   }`}
                 >
                   {isLearned ? <CheckCircle2 className="w-4 h-4" /> : <Circle className="w-4 h-4" />}
@@ -286,8 +286,10 @@ const MuscleView: React.FC<MuscleViewProps> = ({ muscle, onSelectMuscle, isLearn
                 {content.demonstration}
               </div>
               <p className={`mt-6 text-xs font-medium flex items-center gap-1.5 p-2 rounded-lg inline-block ${
-                currentTheme === 'midnight' || currentTheme === 'blueprint' 
+                currentTheme === 'midnight' 
                 ? 'bg-orange-900/30 text-orange-200' 
+                : currentTheme === 'blueprint'
+                ? 'bg-orange-800/20 text-orange-200 border border-orange-700/30'
                 : 'bg-orange-50 text-orange-600'
               }`}>
                 <Info className="w-3.5 h-3.5" />
