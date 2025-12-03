@@ -67,9 +67,9 @@ export const THEME_CONFIG: Record<AppTheme, ThemeConfig> = {
     label: 'Blueprint',
     appBg: 'bg-[#0d1a2f]', // brighter base
     cardBg: 'bg-[#18345e] shadow-md', // solid card for legibility
-    text: 'text-[#e1ebff]',
-    subText: 'text-[#b7cff5]',
-    border: 'border-blue-400/70', // more visible border
+    text: 'text-[#f3f7ff]',
+    subText: 'text-[#cfe2ff]',
+    border: 'border-blue-300/80', // more visible border
     accent: 'bg-gradient-to-r from-sky-500 to-blue-500',
     badge: 'bg-blue-800/60 text-blue-100 border-blue-400/70 shadow',
     infoBox: 'bg-[#102748] border-blue-400/50 text-slate-100',
