@@ -20,7 +20,7 @@ export const fetchMuscleDetails = async (muscle: MuscleItem, apiKey?: string): P
       const availableMuscles = MUSCLE_DATA.map(m => `${m.name} (id: ${m.id})`).join(', ');
 
       const response = await ai.models.generateContent({
-        model: 'gemini-2.5-flash',
+        model: 'gemini-1.5-flash',
         contents: `You are an expert anatomy tutor. Provide structured educational content for the muscle: "${muscle.name}".
         
         Context:

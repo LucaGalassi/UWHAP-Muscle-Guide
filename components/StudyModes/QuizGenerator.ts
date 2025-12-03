@@ -49,24 +49,24 @@ export const generateQuizQuestion = (muscleId?: string): QuizQuestion => {
     case 'ORIGIN':
       question = `Where is the origin of the ${targetMuscle.name}?`;
       correctAnswer = content.origin;
-      distractorText = distractorIds.map(id => MUSCLE_DETAILS[id]?.origin || "Unknown");
+      distractorText = distractorIds.map(id => MUSCLE_DETAILS[id]?.origin).filter(t => t && !t.includes('Unknown')) as string[];
       break;
     case 'INSERTION':
       question = `Where does the ${targetMuscle.name} insert?`;
       correctAnswer = content.insertion;
-      distractorText = distractorIds.map(id => MUSCLE_DETAILS[id]?.insertion || "Unknown");
+      distractorText = distractorIds.map(id => MUSCLE_DETAILS[id]?.insertion).filter(t => t && !t.includes('Unknown')) as string[];
       break;
     case 'ACTION':
       question = `What is the primary action of the ${targetMuscle.name}?`;
       correctAnswer = content.action;
-      distractorText = distractorIds.map(id => MUSCLE_DETAILS[id]?.action || "Unknown");
+      distractorText = distractorIds.map(id => MUSCLE_DETAILS[id]?.action).filter(t => t && !t.includes('Unknown')) as string[];
       break;
     case 'IDENTIFY':
       // Pick first line of action for clarity
       const actionClue = content.action.split('\n')[0];
       question = `Which muscle performs this action: "${actionClue}"?`;
       correctAnswer = targetMuscle.name;
-      distractorText = distractorIds.map(id => MUSCLE_DATA.find(m => m.id === id)?.name || "Unknown");
+      distractorText = distractorIds.map(id => MUSCLE_DATA.find(m => m.id === id)?.name).filter(Boolean) as string[];
       break;
   }
 
@@ -88,21 +88,24 @@ export const generateQuizQuestion = (muscleId?: string): QuizQuestion => {
       let newOption = '';
       switch (type) {
         case 'ORIGIN':
-          newOption = MUSCLE_DETAILS[randomMuscle.id]?.origin || 'Unknown location';
+          newOption = MUSCLE_DETAILS[randomMuscle.id]?.origin || '';
           break;
         case 'INSERTION':
-          newOption = MUSCLE_DETAILS[randomMuscle.id]?.insertion || 'Unknown location';
+          newOption = MUSCLE_DETAILS[randomMuscle.id]?.insertion || '';
           break;
         case 'ACTION':
-          newOption = MUSCLE_DETAILS[randomMuscle.id]?.action || 'Unknown action';
+          newOption = MUSCLE_DETAILS[randomMuscle.id]?.action || '';
           break;
         case 'IDENTIFY':
           newOption = randomMuscle.name;
           break;
       }
       
-      if (newOption && !uniqueOptions.includes(newOption)) {
+      if (newOption && !uniqueOptions.includes(newOption) && !newOption.includes('Unknown')) {
         uniqueOptions.push(newOption);
+      } else {
+        // Retry if we got an invalid option or duplicate
+        i--;
       }
     }
   }

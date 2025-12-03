@@ -38,9 +38,10 @@ jobs:
         working-directory: app
         run: npm run build
 
-      - name: Upload Pages artifact (for workflow_run)
-        uses: actions/upload-pages-artifact@v3
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
         with:
+          name: github-pages
           path: app/dist
 
       - name: Deploy to gh-pages (same repo)

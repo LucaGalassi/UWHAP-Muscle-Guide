@@ -46,6 +46,8 @@ jobs:
         with:
           name: github-pages
           path: ./artifact
+          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload artifact (from workflow_run download)
         if: github.event_name == 'workflow_run'
