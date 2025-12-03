@@ -393,7 +393,7 @@ const InfoCard: React.FC<InfoCardProps> = ({ title, icon, content, className, on
   }, [isAction, content]);
   
   // Check if we have specific motions (not just generic 'action')
-  const hasSpecificMotions = extractedMotions.filter(m => m !== 'action').length > 0;
+  const hasSpecificMotions = extractedMotions.some(m => m !== 'action');
   
   const openGifSearch = (motion: string) => {
     const query = `${muscleName} ${motion} animation gif`;

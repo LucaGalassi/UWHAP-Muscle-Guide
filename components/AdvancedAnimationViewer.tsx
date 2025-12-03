@@ -16,7 +16,7 @@ import {
 } from 'lucide-react';
 import { AppTheme } from '../types';
 import { THEME_CONFIG } from '../constants';
-import { extractMotionKeywords } from '../utils/motionParser';
+import { extractMotionKeywords, ACTION_SPLIT_PATTERN } from '../utils/motionParser';
 import {
   MotionDefinition,
   MOTIONS,
@@ -98,7 +98,7 @@ const AdvancedAnimationViewer: React.FC<AdvancedAnimationViewerProps> = ({
   const actionList = useMemo(() => {
     if (!actionString) return [];
     return actionString
-      .split(/[\n;]|(?=\d+\.)/) // Split on newlines, semicolons, or before numbered items
+      .split(ACTION_SPLIT_PATTERN)
       .map((s) => s.replace(/^\d+\.\s*/, '').trim())
       .filter((s) => s.length > 3 && !s.match(/^\d+$/));
   }, [actionString]);

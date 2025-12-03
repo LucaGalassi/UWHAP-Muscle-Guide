@@ -30,7 +30,8 @@ export const MOTION_KEYWORDS = [
 
 /**
  * Regex pattern for splitting action text by newlines, semicolons, or numbered items
- * Matches: \n, ;, or position before "1.", "2.", etc.
+ * Matches: \n, ;, or position before "1.", "2.", "10.", etc.
+ * Note: Uses positive lookahead (?=\d+\.) to split before any digit sequence followed by a period
  */
 export const ACTION_SPLIT_PATTERN = /[\n;]|(?=\d+\.)/;
 
