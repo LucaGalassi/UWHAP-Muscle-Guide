@@ -18,10 +18,12 @@ import {
   PlayCircle,
   Sparkles,
   X,
-  Move
+  Move,
+  Zap
 } from 'lucide-react';
 import { GROUP_A_REQUIREMENTS, GROUP_B_REQUIREMENTS } from '../constants';
 import AdvancedAnimationViewer from './AdvancedAnimationViewer';
+import { getMotionsForMuscle, getPrimaryMotionsForMuscle } from '../services/animationService';
 
 const STANDARD_MOTIONS = [
   "Flexion", "Extension", 
@@ -188,13 +190,19 @@ const MuscleView: React.FC<MuscleViewProps> = ({ muscle, onSelectMuscle, isLearn
                 <MapPin className="w-5 h-5" />
               </button>
               <button 
-                onClick={() => setShowActionPopup(true)}
+                onClick={() => setShowMotionPopup(true)}
                 className={`p-2.5 rounded-xl border transition-all ${theme.inputBg} ${theme.border} ${theme.text} hover:scale-105 active:scale-95`}
-                title="Show Action Animation"
+                title="Search Motion GIFs"
               >
-                <PlayCircle className="w-5 h-5" />
+                <Search className="w-5 h-5" />
               </button>
-              {/* Advanced viewer opens via action selection popup only */}
+              <button 
+                onClick={() => setShowAdvancedAnim(true)}
+                className={`p-2.5 rounded-xl border transition-all bg-gradient-to-r from-brand-500 to-blue-600 text-white border-brand-500 hover:scale-105 active:scale-95 shadow-lg`}
+                title="Open 3D Animation Viewer"
+              >
+                <Zap className="w-5 h-5" />
+              </button>
             </div>
           </div>
         </div>
@@ -502,12 +510,12 @@ const MuscleView: React.FC<MuscleViewProps> = ({ muscle, onSelectMuscle, isLearn
       {showAdvancedAnim && (
         <AdvancedAnimationViewer 
           muscleName={muscle.name}
+          muscleId={muscle.id}
           currentTheme={currentTheme}
-          defaultMotion={selectedMotion || "Elbow Flexion"}
-          referenceText={selectedActionRef || undefined}
-          actionString={selectedActionRef || content?.action}
+          actionString={content?.action}
           demonstrationText={content?.demonstration}
           onClose={() => setShowAdvancedAnim(false)}
+          browserMode={false}
         />
       )}
     </div>

@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { MUSCLE_DATA, THEME_CONFIG } from '../constants';
 import { MuscleItem, StudyMode, MuscleProgress, AppTheme } from '../types';
-import { Search, ChevronRight, BookOpen, CheckCircle2, Share2, Circle, X, Copy, Check, GraduationCap, LayoutList, Settings, Key, Trash2, Trophy, Clock, Sun, Moon, DraftingCompass, Leaf, Palette, Save, AlertTriangle, Timer } from 'lucide-react';
+import { Search, ChevronRight, BookOpen, CheckCircle2, Share2, Circle, X, Copy, Check, GraduationCap, LayoutList, Settings, Key, Trash2, Trophy, Clock, Sun, Moon, DraftingCompass, Leaf, Palette, Save, AlertTriangle, Timer, Play } from 'lucide-react';
 import pkg from '../package.json';
 
 interface SidebarProps {
@@ -24,6 +24,7 @@ interface SidebarProps {
   daysUntilExam: number;
   studentName: string;
   onSetStudentName: (name: string) => void;
+  onOpenAnimationBrowser?: () => void; // NEW
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ 
@@ -45,7 +46,8 @@ const Sidebar: React.FC<SidebarProps> = ({
   onSetTheme,
   daysUntilExam,
   studentName,
-  onSetStudentName
+  onSetStudentName,
+  onOpenAnimationBrowser
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterGroup, setFilterGroup] = useState<'ALL' | 'A' | 'B'>('ALL');
@@ -143,15 +145,26 @@ const Sidebar: React.FC<SidebarProps> = ({
                 )}
               </div>
             </div>
-            <button 
-              onClick={() => {
-                setTempKey(apiKey);
-                setShowSettingsModal(true);
-              }}
-              className={`p-2 rounded-full transition-all ${theme.sidebarSubText} hover:bg-black/5 hover:${theme.sidebarText}`}
-            >
-              <Settings className="w-5 h-5" />
-            </button>
+            <div className="flex items-center gap-2">
+              {onOpenAnimationBrowser && (
+                <button 
+                  onClick={onOpenAnimationBrowser}
+                  className={`p-2 rounded-full transition-all bg-gradient-to-r from-brand-500 to-blue-600 text-white hover:scale-110 hover:shadow-lg shadow-brand-500/30`}
+                  title="Open Animation Browser"
+                >
+                  <Play className="w-4 h-4" />
+                </button>
+              )}
+              <button 
+                onClick={() => {
+                  setTempKey(apiKey);
+                  setShowSettingsModal(true);
+                }}
+                className={`p-2 rounded-full transition-all ${theme.sidebarSubText} hover:bg-black/5 hover:${theme.sidebarText}`}
+              >
+                <Settings className="w-5 h-5" />
+              </button>
+            </div>
           </div>
 
           {/* Exam Countdown Widget */}

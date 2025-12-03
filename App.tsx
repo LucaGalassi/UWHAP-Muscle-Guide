@@ -8,6 +8,7 @@ import SmartGuideView from './components/StudyModes/SmartGuideView';
 import LightningRoundView from './components/StudyModes/LightningRoundView';
 import WelcomeModal from './components/WelcomeModal';
 import SplashScreen from './components/SplashScreen';
+import AnimationBrowser from './components/AnimationBrowser';
 import { MuscleItem, StudyMode, LearningTool, MuscleProgress, AppTheme } from './types';
 import { MUSCLE_DATA, THEME_CONFIG } from './constants';
 import { Menu, ArrowLeft, AlertTriangle, Timer } from 'lucide-react';
@@ -134,6 +135,9 @@ const App: React.FC = () => {
   // Settings flags
   const [autoResume, setAutoResume] = useState<boolean>(false);
   const [hideSplashAlways, setHideSplashAlways] = useState<boolean>(false);
+
+  // Animation Browser State
+  const [showAnimationBrowser, setShowAnimationBrowser] = useState(false);
 
   // Stats & Insights
   type AppStats = {
@@ -642,6 +646,7 @@ const App: React.FC = () => {
           daysUntilExam={daysUntilExam}
           studentName={studentName}
           onSetStudentName={setStudentName}
+          onOpenAnimationBrowser={() => setShowAnimationBrowser(true)}
         />
 
         {/* Main Content */}
@@ -651,6 +656,14 @@ const App: React.FC = () => {
           {/* Resume prompt now handled on SplashScreen */}
         </main>
       </div>
+
+      {/* Animation Browser */}
+      {showAnimationBrowser && (
+        <AnimationBrowser
+          currentTheme={theme}
+          onClose={() => setShowAnimationBrowser(false)}
+        />
+      )}
     </div>
   );
 };

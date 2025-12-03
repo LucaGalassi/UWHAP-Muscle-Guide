@@ -342,12 +342,12 @@ const FlashcardView: React.FC<FlashcardViewProps> = ({ muscle, onRate, onNext, a
     {showAdvancedAnim && (
       <AdvancedAnimationViewer
         muscleName={muscle.name}
+        muscleId={muscle.id}
         currentTheme={currentTheme}
-        defaultMotion={selectedMotion || 'Elbow Flexion'}
         onClose={() => setShowAdvancedAnim(false)}
-        referenceText={content?.action}
         actionString={content?.action}
         demonstrationText={content?.demonstration}
+        browserMode={false}
       />
     )}
     </>
