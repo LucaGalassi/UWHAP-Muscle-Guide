@@ -119,32 +119,30 @@ const FlashcardView: React.FC<FlashcardViewProps> = ({ muscle, onRate, onNext, a
               <div className="flex-1 flex flex-col items-center justify-center w-full">
                 <h2 className={`text-5xl md:text-7xl font-black mb-4 tracking-tight leading-tight transition-colors ${theme.text}`}>{muscle.name}</h2>
                 <span className={`text-base md:text-lg font-bold uppercase tracking-widest mb-10 transition-colors ${theme.subText}`}>Group {muscle.group}</span>
-                
-                {/* Detailed Guide Info Box */}
-                <div className={`rounded-2xl p-6 md:p-8 w-full max-w-2xl backdrop-blur-sm shadow-sm space-y-6 border transition-colors ${theme.infoBox}`}>
-                   <div className={`text-xs font-bold uppercase text-center mb-2 tracking-widest opacity-70 ${theme.text}`}>Required Knowledge</div>
-                   
-                   <div className="grid md:grid-cols-2 gap-6">
-                     <div className="flex items-center gap-4">
-                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 shadow-sm transition-colors ${theme.iconLoc}`}>
-                          <MapPin className="w-5 h-5" />
-                        </div>
-                        <div className="text-left">
-                          <span className={`block text-[10px] font-bold uppercase opacity-60 ${theme.text}`}>Location</span>
-                          <span className={`font-bold text-sm ${theme.text}`}>Origin & Insertion</span>
-                        </div>
-                     </div>
 
-                     <div className="flex items-center gap-4">
-                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 shadow-sm transition-colors ${theme.iconFunc}`}>
-                          <Play className="w-5 h-5" />
-                        </div>
-                        <div className="text-left">
-                          <span className={`block text-[10px] font-bold uppercase opacity-60 ${theme.text}`}>Function</span>
-                          <span className={`font-bold text-sm ${theme.text}`}>Primary Action</span>
-                        </div>
-                     </div>
-                   </div>
+                {/* Centered Required Knowledge Box */}
+                <div className={`rounded-2xl p-6 md:p-8 w-full max-w-2xl mx-auto backdrop-blur-sm shadow-sm space-y-6 border transition-colors ${theme.infoBox}`} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                  <div className={`text-xs font-bold uppercase text-center mb-2 tracking-widest opacity-70 ${theme.text}`}>Required Knowledge</div>
+                  <div className="grid md:grid-cols-2 gap-6 w-full justify-items-center">
+                    <div className="flex flex-col items-center gap-4">
+                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 shadow-sm transition-colors ${theme.iconLoc}`}> 
+                        <MapPin className="w-5 h-5" />
+                      </div>
+                      <div className="text-center">
+                        <span className={`block text-[10px] font-bold uppercase opacity-60 ${theme.text}`}>Location</span>
+                        <span className={`font-bold text-sm ${theme.text}`}>Origin & Insertion</span>
+                      </div>
+                    </div>
+                    <div className="flex flex-col items-center gap-4">
+                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 shadow-sm transition-colors ${theme.iconFunc}`}> 
+                        <Play className="w-5 h-5" />
+                      </div>
+                      <div className="text-center">
+                        <span className={`block text-[10px] font-bold uppercase opacity-60 ${theme.text}`}>Function</span>
+                        <span className={`font-bold text-sm ${theme.text}`}>Primary Action</span>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
 
