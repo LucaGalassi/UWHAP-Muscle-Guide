@@ -21,21 +21,27 @@ const WelcomeModal: React.FC<WelcomeModalProps> = ({ onDismiss, onResume, daysUn
   const [tutorialStep, setTutorialStep] = useState<number>(0); // 0 = Landing, 1+ = Tutorial
   const [resumeMode, setResumeMode] = useState<'CODE' | 'LINK'>('CODE');
 
+  const currentThemeConfig = THEME_CONFIG[currentTheme];
+  const overlayBg =
+    currentTheme === 'midnight' || currentTheme === 'blueprint'
+      ? 'bg-slate-950/80'
+      : currentTheme === 'nature'
+        ? 'bg-emerald-900/15'
+        : 'bg-slate-900/50';
+
   const isDarkTutorial = currentTheme === 'midnight' || currentTheme === 'blueprint';
-  const tutorialText = isDarkTutorial ? 'text-slate-50' : 'text-slate-800';
-  const tutorialMuted = isDarkTutorial ? 'text-slate-200/90' : 'text-slate-600';
-  const tutorialPanel = isDarkTutorial
-    ? 'bg-slate-900/70 border border-slate-700'
-    : 'bg-slate-100 border border-slate-200';
-  const tutorialGoal = isDarkTutorial
-    ? 'bg-indigo-950/60 border border-indigo-800 text-indigo-100'
-    : 'bg-brand-50 border border-brand-100 text-brand-700';
-  const tutorialWarning = isDarkTutorial
-    ? 'bg-slate-900/70 border border-amber-500/70 text-amber-100'
-    : 'bg-slate-100 border border-slate-200 text-slate-700';
-  const tutorialNumberVariants = isDarkTutorial
-    ? ['bg-blue-900/60 text-blue-100', 'bg-orange-900/60 text-orange-100', 'bg-purple-900/60 text-purple-100']
-    : ['bg-blue-100 text-blue-700', 'bg-orange-100 text-orange-700', 'bg-purple-100 text-purple-700'];
+  const tutorialText = currentThemeConfig.text;
+  const tutorialMuted = currentThemeConfig.subText;
+  const tutorialPanel = `${currentThemeConfig.cardBg} border ${currentThemeConfig.border}`;
+  const tutorialGoal = `${currentThemeConfig.badge} border ${currentThemeConfig.border}`;
+  const tutorialWarning = `${currentThemeConfig.cardBg} border ${currentThemeConfig.border} ${
+    isDarkTutorial ? 'bg-amber-900/40 text-amber-100' : 'bg-amber-50 text-amber-700'
+  }`;
+  const tutorialNumberVariants = [
+    currentThemeConfig.iconFunc,
+    currentThemeConfig.iconLoc,
+    `${currentThemeConfig.accent} text-white`
+  ];
 
   const themeShowcase: Record<AppTheme, { tagline: string; highlight: string; swatch: string; icon: React.ReactNode }> = {
     modern: {
@@ -165,7 +171,7 @@ const WelcomeModal: React.FC<WelcomeModalProps> = ({ onDismiss, onResume, daysUn
           <p className={tutorialText}>
             This will generate your unique <strong>Save Code</strong>. Copy that code and keep it safe.
           </p>
-          <div className={`p-3 rounded-lg relative overflow-hidden ${isDarkTutorial ? 'bg-slate-900 border border-slate-700' : 'bg-slate-100 border border-slate-300'}`}>
+          <div className={`p-3 rounded-lg relative overflow-hidden border ${currentThemeConfig.border} ${currentThemeConfig.cardBg}`}>
             <div className="absolute top-0 right-0 bg-red-600 text-white text-[10px] font-bold px-2 py-1 rounded-bl-lg">EXAMPLE ONLY</div>
             <code className={`text-xs font-mono break-all opacity-80 ${isDarkTutorial ? 'text-emerald-200' : 'text-emerald-700'}`}>
               eyJtdXNjbGVzIjp7InRlc3QiOiJ2YWx1ZSJ9fQ==...
@@ -204,10 +210,8 @@ const WelcomeModal: React.FC<WelcomeModalProps> = ({ onDismiss, onResume, daysUn
     const stepIndex = tutorialStep - 1;
     const step = TUTORIAL_STEPS[stepIndex];
     const isLast = stepIndex === TUTORIAL_STEPS.length - 1;
-    const currentThemeConfig = THEME_CONFIG[currentTheme];
-
     return (
-      <div className={`fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-md animate-in fade-in duration-300 transition-colors ${currentThemeConfig.appBg}`}>
+      <div className={`fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-md animate-in fade-in duration-300 transition-colors ${overlayBg}`}>
         <div className={`w-full max-w-lg rounded-3xl shadow-2xl overflow-hidden flex flex-col relative h-[80vh] md:h-auto md:min-h-[500px] transition-all duration-500 ${currentThemeConfig.cardBg} ${currentThemeConfig.border} border-2`}>
           
           {/* Progress Bar */}
@@ -265,10 +269,8 @@ const WelcomeModal: React.FC<WelcomeModalProps> = ({ onDismiss, onResume, daysUn
   }
 
   // RENDER LANDING VIEW (Resume vs New)
-  const currentThemeConfig = THEME_CONFIG[currentTheme];
-  
   return (
-    <div className={`fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-md animate-in fade-in duration-300 transition-colors ${currentThemeConfig.appBg}`}>
+    <div className={`fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-md animate-in fade-in duration-300 transition-colors ${overlayBg}`}>
       <div className={`w-full max-w-3xl max-h-[90vh] flex flex-col rounded-3xl shadow-2xl overflow-hidden transition-all duration-500 ${currentThemeConfig.cardBg} ${currentThemeConfig.border} border-2`}>
         
         {/* Hero Header */}
@@ -312,18 +314,26 @@ const WelcomeModal: React.FC<WelcomeModalProps> = ({ onDismiss, onResume, daysUn
                <div className="space-y-4 mb-8">
                   <div className="flex flex-col gap-3">
                     <div className="flex items-center justify-between">
-                      <label className="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-2">
+                      <label className={`text-xs font-bold uppercase tracking-wider flex items-center gap-2 ${currentThemeConfig.subText}`}>
                         <Save className="w-3 h-3" />
                         Resume Options
                       </label>
-                      <div className="bg-slate-100 p-1 rounded-lg flex text-[11px] font-bold uppercase tracking-wider">
-                        <button 
+                      <div className={`p-1 rounded-lg flex text-[11px] font-bold uppercase tracking-wider border ${currentThemeConfig.border} ${currentThemeConfig.cardBg}`}>
+                        <button
                           onClick={() => setResumeMode('CODE')}
-                          className={`px-3 py-1 rounded-md transition-all ${resumeMode === 'CODE' ? 'bg-white shadow text-brand-600' : 'text-slate-400'}`}
+                          className={`px-3 py-1 rounded-md transition-all border ${
+                            resumeMode === 'CODE'
+                              ? `${currentThemeConfig.cardBg} ${currentThemeConfig.text} shadow ${currentThemeConfig.border}`
+                              : `${currentThemeConfig.subText} border-transparent`
+                          }`}
                         >Code</button>
-                        <button 
+                        <button
                           onClick={() => setResumeMode('LINK')}
-                          className={`px-3 py-1 rounded-md transition-all ${resumeMode === 'LINK' ? 'bg-white shadow text-brand-600' : 'text-slate-400'}`}
+                          className={`px-3 py-1 rounded-md transition-all border ${
+                            resumeMode === 'LINK'
+                              ? `${currentThemeConfig.cardBg} ${currentThemeConfig.text} shadow ${currentThemeConfig.border}`
+                              : `${currentThemeConfig.subText} border-transparent`
+                          }`}
                         >Link</button>
                       </div>
                     </div>
@@ -351,9 +361,13 @@ const WelcomeModal: React.FC<WelcomeModalProps> = ({ onDismiss, onResume, daysUn
                       />
                     )}
                     {error && (
-                      <div className="mt-1 p-3 bg-red-50 border border-red-200 rounded-lg flex items-start gap-2">
+                      <div
+                        className={`mt-1 p-3 rounded-lg flex items-start gap-2 border ${
+                          isDarkTutorial ? 'bg-red-950/40 border-red-700 text-red-100' : 'bg-red-50 border-red-200 text-red-700'
+                        }`}
+                      >
                         <AlertTriangle className="w-4 h-4 text-red-500 shrink-0 mt-0.5" />
-                        <p className="text-xs text-red-700 font-medium">{error}</p>
+                        <p className="text-xs font-medium">{error}</p>
                       </div>
                     )}
                   </div>
@@ -363,8 +377,8 @@ const WelcomeModal: React.FC<WelcomeModalProps> = ({ onDismiss, onResume, daysUn
                     disabled={!resumeLink.trim()}
                     className={`w-full py-4 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 shadow-lg ${
                       resumeLink.trim()
-                      ? 'bg-gradient-to-r from-emerald-500 to-emerald-600 text-white hover:from-emerald-600 hover:to-emerald-700 shadow-emerald-200' 
-                      : 'bg-slate-100 text-slate-400 cursor-not-allowed shadow-none'
+                      ? 'bg-gradient-to-r from-emerald-500 to-emerald-600 text-white hover:from-emerald-600 hover:to-emerald-700 shadow-emerald-200'
+                      : `${currentThemeConfig.inputBg} ${currentThemeConfig.subText} cursor-not-allowed shadow-none border ${currentThemeConfig.border}`
                     }`}
                   >
                     <Download className="w-4 h-4" /> Restore My Progress

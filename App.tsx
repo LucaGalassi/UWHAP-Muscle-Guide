@@ -610,7 +610,9 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className={`flex flex-col h-screen overflow-hidden transition-colors duration-500 ${currentThemeConfig.appBg} relative`}>
+    <div
+      className={`flex flex-col h-screen overflow-hidden transition-colors duration-500 ${currentThemeConfig.appBg} ${currentThemeConfig.text} relative`}
+    >
       
       {showSplash && (
         <SplashScreen 

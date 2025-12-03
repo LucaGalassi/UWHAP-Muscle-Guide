@@ -97,15 +97,22 @@ export const BetaAnimationViewer: React.FC<BetaAnimationViewerProps> = ({ muscle
     return `translate(0 ${delta})`;
   }, [anim, t]);
 
+  const overlayBg =
+    currentTheme === 'midnight' || currentTheme === 'blueprint'
+      ? 'bg-slate-950/80'
+      : currentTheme === 'nature'
+        ? 'bg-emerald-950/15'
+        : 'bg-slate-900/50';
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-      <div className={`w-full max-w-2xl rounded-2xl border ${theme.border} ${theme.cardBg} shadow-2xl overflow-hidden`}> 
+    <div className={`fixed inset-0 z-50 flex items-center justify-center p-4 ${overlayBg} backdrop-blur-sm`}>
+      <div className={`w-full max-w-2xl rounded-2xl border ${theme.border} ${theme.cardBg} shadow-2xl overflow-hidden`}>
         <div className={`px-4 py-3 border-b ${theme.border} flex items-center justify-between`}>
           <div className="flex items-center gap-2">
             <PlayCircle className="w-5 h-5" />
             <h3 className={`font-bold ${theme.text}`}>Beta Animation Viewer</h3>
           </div>
-          <button onClick={onClose} className={`p-2 rounded-full hover:bg-slate-100 ${theme.subText}`}>
+          <button onClick={onClose} className={`p-2 rounded-full border ${theme.border} ${theme.inputBg} ${theme.subText} hover:opacity-80`}>
             <X className="w-5 h-5" />
           </button>
         </div>
