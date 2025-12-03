@@ -74,3 +74,97 @@
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
   background: #94a3b8;
 }
+
+/* Print Styles - Ensure readability across all themes */
+@media print {
+  /* Force white background and black text for all content */
+  * {
+    background: white !important;
+    color: black !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+
+  /* Ensure body and main containers are white */
+  body,
+  #root,
+  [class*="bg-"] {
+    background: white !important;
+    background-color: white !important;
+  }
+
+  /* Make all text black for readability */
+  [class*="text-"],
+  p, span, div, h1, h2, h3, h4, h5, h6, li, td, th, label, a {
+    color: black !important;
+  }
+
+  /* Simplify borders - use solid black borders */
+  [class*="border"] {
+    border-color: #333 !important;
+  }
+
+  /* Hide decorative elements that don't print well */
+  [class*="blob"],
+  [class*="gradient"],
+  .backdrop-blur-md,
+  .backdrop-blur-xl {
+    display: none !important;
+  }
+
+  /* Ensure buttons and interactive elements are visible but simplified */
+  button {
+    border: 1px solid #333 !important;
+    background: white !important;
+  }
+
+  /* Make cards and info boxes clearly defined */
+  [class*="rounded"],
+  [class*="card"] {
+    border: 1px solid #666 !important;
+    page-break-inside: avoid;
+  }
+
+  /* Optimize spacing for print */
+  .p-8, .px-8, .py-8 {
+    padding: 1rem !important;
+  }
+
+  .space-y-10 > * + * {
+    margin-top: 1rem !important;
+  }
+
+  /* Hide navigation and non-essential UI elements */
+  nav,
+  [role="navigation"],
+  aside,
+  [class*="sidebar"] {
+    display: none !important;
+  }
+
+  /* Ensure muscle view content is printable */
+  [class*="MuscleView"],
+  [class*="muscle-view"] {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  /* Improve readability of info cards */
+  [class*="InfoCard"] {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  /* Links should show their URLs */
+  a[href]:after {
+    content: " (" attr(href) ")";
+    font-size: 0.8em;
+    color: #666 !important;
+  }
+
+  /* Remove transitions and animations for print */
+  * {
+    transition: none !important;
+    animation: none !important;
+  }
+}
