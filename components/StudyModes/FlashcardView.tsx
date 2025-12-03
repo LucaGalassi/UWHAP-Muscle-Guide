@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { MuscleItem, MuscleContent, ConfidenceRating, AppTheme } from '../../types';
 import { fetchMuscleDetails } from '../../services/geminiService';
 import { THEME_CONFIG } from '../../constants';
-import { Sparkles, Activity, RotateCw, MapPin, Play, List, PlayCircle } from 'lucide-react';
+import { Activity, PlayCircle } from 'lucide-react';
 import AdvancedAnimationViewer from '../AdvancedAnimationViewer';
 
 interface FlashcardViewProps {
@@ -52,9 +52,6 @@ const FlashcardView: React.FC<FlashcardViewProps> = ({ muscle, onRate, onNext, a
     }
   };
 
-  const isFallback = content && content.origin.includes("Consult textbook");
-  const showAiPrompt = isFallback && !apiKey;
-
   const theme = THEME_CONFIG[currentTheme];
 
   if (loading || !content) {
@@ -68,213 +65,117 @@ const FlashcardView: React.FC<FlashcardViewProps> = ({ muscle, onRate, onNext, a
 
   return (
     <>
-    <div className="flex flex-col items-center justify-start h-full w-full max-w-[95vw] mx-auto p-2 md:p-4 relative overflow-y-auto">
-      
-      {showAiPrompt && (
-        <div className="absolute top-4 left-4 right-4 bg-purple-50 border border-purple-100 p-3 rounded-xl flex items-center gap-3 z-10 animate-in fade-in slide-in-from-top-2 shadow-sm max-w-md mx-auto">
-          <Sparkles className="w-4 h-4 text-purple-600 shrink-0" />
-          <p className="text-xs text-purple-800">
-            <strong>AI Features:</strong> Data missing. Add API key in Settings to auto-generate.
-          </p>
+    <div className="flex flex-col items-center justify-start h-full w-full max-w-5xl mx-auto p-4 md:p-6">
+      <div className="w-full flex items-center justify-between gap-3 mb-4">
+        <div>
+          <p className={`text-xs uppercase font-semibold tracking-widest ${theme.subText}`}>Flashcard</p>
+          <h2 className={`text-3xl font-bold ${theme.text}`}>{muscle.name}</h2>
+          <p className={`text-xs mt-1 ${theme.subText}`}>{mode === 'SRS' ? 'Spaced Repetition' : 'Browse Mode'}</p>
         </div>
-      )}
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => setShowAdvancedAnim(true)}
+            className={`flex items-center gap-2 px-3 py-2 rounded-lg border text-sm font-semibold transition-colors ${theme.border} ${theme.inputBg} ${theme.text} hover:opacity-90`}
+          >
+            <PlayCircle className="w-5 h-5" />
+            View Animation
+          </button>
+          <button
+            onClick={() => setIsFlipped((prev) => !prev)}
+            className={`px-3 py-2 rounded-lg border text-sm font-semibold transition-colors ${theme.border} ${theme.inputBg} ${theme.text} hover:opacity-90`}
+          >
+            {isFlipped ? 'Show Question' : 'Show Answer'}
+          </button>
+        </div>
+      </div>
 
-      {/* Card Container - Fixed height issues */}
-      <div 
-        className="flashcard-flip-container relative w-full h-[60vh] md:h-[65vh] cursor-pointer group mb-6 mt-4"
-        onClick={() => { console.log('Card clicked'); setIsFlipped(!isFlipped); }}
+      <div
+        className="relative w-full max-w-4xl h-[60vh] md:h-[55vh]"
+        onClick={() => setIsFlipped((prev) => !prev)}
         style={{ perspective: '1000px' }}
       >
-        <div 
-          className={`flashcard-inner shadow-2xl rounded-3xl ${isFlipped ? 'flashcard-flipped' : ''}`}
-          style={{ 
+        <div
+          className="absolute inset-0"
+          style={{
             transformStyle: 'preserve-3d',
-            transition: 'transform 0.6s',
+            transition: 'transform 0.5s ease',
             transform: isFlipped ? 'rotateY(180deg)' : 'rotateY(0deg)'
           }}
         >
-          
-          {/* Front (Question) */}
-          <div 
-            className={`flashcard-face rounded-3xl flex flex-col items-center justify-center p-6 md:p-10 text-center border overflow-hidden ring-1 ring-black/5 transition-colors duration-300 ${theme.cardBg} ${theme.border}`}
-            style={{ backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden', position: 'absolute', width: '100%', height: '100%', zIndex: 2 }}
+          <div
+            className={`absolute inset-0 rounded-2xl border shadow-xl flex flex-col items-center justify-center p-8 text-center space-y-6 ${theme.cardBg} ${theme.border}`}
+            style={{ backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden' }}
           >
-            {/* Decoration */}
-            <div className={`absolute top-0 left-0 w-full h-3 ${theme.accent}`}></div>
-            
-            {/* Blobs */}
-            {currentTheme !== 'blueprint' && (
-              <>
-                <div className="absolute top-0 right-0 p-32 bg-current rounded-full mix-blend-multiply filter blur-3xl opacity-[0.03] animate-blob text-slate-400"></div>
-                <div className="absolute bottom-0 left-0 p-32 bg-current rounded-full mix-blend-multiply filter blur-3xl opacity-[0.03] animate-blob animation-delay-2000 text-slate-400"></div>
-              </>
-            )}
-            
-            <div className="relative z-10 flex flex-col items-center w-full h-full justify-center">
-              <span className={`text-xs font-bold uppercase tracking-widest mb-8 px-5 py-2 rounded-full border backdrop-blur-sm transition-colors ${theme.badge}`}>
-                Active Recall
-              </span>
-              
-              <div className="flex-1 flex flex-col items-center justify-center w-full">
-                <h2 className={`text-5xl md:text-7xl font-black mb-4 tracking-tight leading-tight transition-colors ${theme.text}`}>{muscle.name}</h2>
-                <span className={`text-base md:text-lg font-bold uppercase tracking-widest mb-10 transition-colors ${theme.subText}`}>Group {muscle.group}</span>
-
-                {/* Centered Required Knowledge Box */}
-                <div className={`rounded-2xl p-6 md:p-8 w-full max-w-2xl mx-auto backdrop-blur-sm shadow-sm space-y-6 border transition-colors ${theme.infoBox}`} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                  <div className={`text-xs font-bold uppercase text-center mb-2 tracking-widest opacity-70 ${theme.text}`}>Required Knowledge</div>
-                  <div className="grid md:grid-cols-2 gap-6 w-full justify-items-center">
-                    <div className="flex flex-col items-center gap-4">
-                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 shadow-sm transition-colors ${theme.iconLoc}`}> 
-                        <MapPin className="w-5 h-5" />
-                      </div>
-                      <div className="text-center">
-                        <span className={`block text-[10px] font-bold uppercase opacity-60 ${theme.text}`}>Location</span>
-                        <span className={`font-bold text-sm ${theme.text}`}>Origin & Insertion</span>
-                      </div>
-                    </div>
-                    <div className="flex flex-col items-center gap-4">
-                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 shadow-sm transition-colors ${theme.iconFunc}`}> 
-                        <Play className="w-5 h-5" />
-                      </div>
-                      <div className="text-center">
-                        <span className={`block text-[10px] font-bold uppercase opacity-60 ${theme.text}`}>Function</span>
-                        <span className={`font-bold text-sm ${theme.text}`}>Primary Action</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className={`mt-8 flex items-center gap-2 text-xs font-bold uppercase tracking-widest animate-pulse ${currentTheme === 'midnight' || currentTheme === 'blueprint' ? 'opacity-80' : 'opacity-50'} ${theme.text}`}>
-                <RotateCw className="w-3.5 h-3.5" /> Tap card to flip
-              </div>
-            </div>
+            <p className={`text-sm font-semibold uppercase tracking-widest ${theme.subText}`}>Prompt</p>
+            <h3 className={`text-4xl font-black ${theme.text}`}>{muscle.name}</h3>
+            <p className={`max-w-xl text-base ${theme.subText}`}>
+              Think about the muscle's origin, insertion, and primary action before flipping.
+            </p>
+            <div className="text-xs font-semibold uppercase tracking-widest text-slate-400">Tap to flip</div>
           </div>
 
-          {/* Back (Answer) - Now uses Theme Config! */}
-          <div 
-            className={`flashcard-face flashcard-back rounded-3xl flex flex-col overflow-hidden border shadow-2xl transition-colors duration-300 ${theme.cardBg} ${theme.border}`}
-            style={{ 
-              backfaceVisibility: 'hidden', 
-              WebkitBackfaceVisibility: 'hidden', 
-              position: 'absolute', 
-              width: '100%', 
-              height: '100%', 
-              transform: 'rotateY(180deg)' 
+          <div
+            className={`absolute inset-0 rounded-2xl border shadow-xl p-8 flex flex-col gap-6 overflow-y-auto custom-scrollbar ${theme.cardBg} ${theme.border}`}
+            style={{
+              backfaceVisibility: 'hidden',
+              WebkitBackfaceVisibility: 'hidden',
+              transform: 'rotateY(180deg)'
             }}
           >
-            <div className="flex-1 overflow-y-auto custom-scrollbar p-8 md:p-12 space-y-8">
-               <div className={`flex items-center justify-between border-b pb-6 sticky top-0 z-10 pt-2 ${theme.cardBg} ${currentTheme === 'midnight' ? 'border-slate-800' : 'border-slate-100'}`}>
-                 <div>
-                   <h3 className={`text-3xl font-bold mb-1 ${theme.text}`}>{muscle.name}</h3>
-                   <span className={`text-sm font-mono px-2 py-0.5 rounded ${theme.infoBox} ${theme.subText}`}>Group {muscle.group}</span>
-                 </div>
-                 <div className="flex items-center gap-3">
-                   <button
-                     onClick={(e) => { e.stopPropagation(); setShowAdvancedAnim(true); }}
-                     className={`flex items-center gap-2 px-3 py-2 rounded-xl border ${theme.border} ${theme.inputBg} ${theme.text} hover:scale-105 active:scale-95 text-xs font-bold uppercase tracking-wider`}
-                     title="Show Action Animation"
-                   >
-                     <PlayCircle className="w-4 h-4" />
-                     Show Action Animation
-                   </button>
-                   <div className={`w-10 h-10 rounded-full flex items-center justify-center border ${theme.border}`}>
-                     <List className={`w-5 h-5 ${theme.subText}`} />
-                   </div>
-                 </div>
-               </div>
-               
-               <div className="grid grid-cols-1 gap-6 pb-4">
-                 <div className={`p-6 rounded-2xl border transition-colors ${theme.infoBox}`}>
-                    <span className="flex items-center gap-2 text-xs font-bold text-emerald-500 uppercase tracking-widest mb-3">
-                       <MapPin className="w-4 h-4" /> Origin
-                    </span>
-                    <p className={`text-lg font-medium leading-relaxed ${theme.text}`}>{content?.origin || "..."}</p>
-                 </div>
-                 <div className={`p-6 rounded-2xl border transition-colors ${theme.infoBox}`}>
-                    <span className="flex items-center gap-2 text-xs font-bold text-rose-500 uppercase tracking-widest mb-3">
-                       <MapPin className="w-4 h-4" /> Insertion
-                    </span>
-                    <p className={`text-lg font-medium leading-relaxed ${theme.text}`}>{content?.insertion || "..."}</p>
-                 </div>
-                 <div className={`p-6 rounded-2xl border transition-colors ${theme.infoBox}`}>
-                    <span className="flex items-center gap-2 text-xs font-bold text-blue-500 uppercase tracking-widest mb-3">
-                       <Play className="w-4 h-4" /> Action
-                    </span>
-                    <p className={`text-lg font-medium leading-relaxed ${theme.text}`}>{content?.action || "..."}</p>
-                 </div>
-               </div>
+            <div>
+              <p className={`text-xs font-semibold uppercase tracking-widest ${theme.subText}`}>Answer</p>
+              <h3 className={`text-3xl font-bold ${theme.text}`}>{muscle.name}</h3>
+              <p className={`text-sm mt-1 ${theme.subText}`}>Group {muscle.group}</p>
             </div>
-            <div className={`p-4 border-t text-center text-[10px] uppercase tracking-wider font-bold ${currentTheme === 'midnight' ? 'bg-slate-950 border-slate-800 text-slate-400' : currentTheme === 'blueprint' ? 'bg-[#0f172a] border-blue-800 text-blue-300' : 'bg-slate-50 border-slate-100 text-slate-400'}`}>
-               Tap card to flip back
+            <div className="space-y-4">
+              <div className={`p-4 rounded-xl border ${theme.infoBox}`}>
+                <p className="text-xs font-semibold uppercase tracking-widest text-emerald-500 mb-2">Origin</p>
+                <p className={`text-base leading-relaxed ${theme.text}`}>{content?.origin || '...'}</p>
+              </div>
+              <div className={`p-4 rounded-xl border ${theme.infoBox}`}>
+                <p className="text-xs font-semibold uppercase tracking-widest text-rose-500 mb-2">Insertion</p>
+                <p className={`text-base leading-relaxed ${theme.text}`}>{content?.insertion || '...'}</p>
+              </div>
+              <div className={`p-4 rounded-xl border ${theme.infoBox}`}>
+                <p className="text-xs font-semibold uppercase tracking-widest text-blue-500 mb-2">Action</p>
+                <p className={`text-base leading-relaxed ${theme.text}`}>{content?.action || '...'}</p>
+              </div>
             </div>
+            <div className={`text-xs font-semibold uppercase tracking-widest ${theme.subText}`}>Tap to flip back</div>
           </div>
         </div>
       </div>
 
       {/* SRS Controls - Fixed z-index and visibility */}
-      <div className={`w-full max-w-2xl transition-all duration-300 relative z-20 ${isFlipped ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 pointer-events-none'}`}>
-        <p className={`text-center text-xs font-bold uppercase tracking-widest mb-4 ${theme.subText}`}>How well did you know this?</p>
-        <div className="grid grid-cols-4 gap-2 md:gap-4">
-          <button 
-            onClick={(e) => { 
-              e.stopPropagation(); 
-              e.preventDefault();
-              handleRating('AGAIN'); 
-            }}
-            disabled={!isFlipped}
-            className={`group flex flex-col items-center justify-center py-3 md:py-4 rounded-xl transition-all shadow-lg hover:-translate-y-1 border-b-4 border-red-500 ${currentTheme === 'midnight' || currentTheme === 'blueprint' ? 'bg-slate-800 hover:bg-red-900/50' : 'bg-white hover:bg-red-50'} ${!isFlipped ? 'cursor-default' : 'cursor-pointer'}`}
-          >
-            <span className={`font-bold text-sm md:text-base ${currentTheme === 'midnight' || currentTheme === 'blueprint' ? 'text-red-400' : 'text-slate-700 group-hover:text-red-700'}`}>Again</span>
-            <span className={`text-[9px] md:text-[10px] uppercase font-bold mt-1 ${theme.subText}`}>Forgot</span>
-          </button>
-          
-          <button 
-            onClick={(e) => { 
-              e.stopPropagation(); 
-              e.preventDefault();
-              handleRating('HARD'); 
-            }}
-            disabled={!isFlipped}
-            className={`group flex flex-col items-center justify-center py-3 md:py-4 rounded-xl transition-all shadow-lg hover:-translate-y-1 border-b-4 border-orange-500 ${currentTheme === 'midnight' || currentTheme === 'blueprint' ? 'bg-slate-800 hover:bg-orange-900/50' : 'bg-white hover:bg-orange-50'} ${!isFlipped ? 'cursor-default' : 'cursor-pointer'}`}
-          >
-            <span className={`font-bold text-sm md:text-base ${currentTheme === 'midnight' || currentTheme === 'blueprint' ? 'text-orange-400' : 'text-slate-700 group-hover:text-orange-700'}`}>Hard</span>
-            <span className={`text-[9px] md:text-[10px] uppercase font-bold mt-1 ${theme.subText}`}>Struggled</span>
-          </button>
-          
-          <button 
-            onClick={(e) => { 
-              e.stopPropagation(); 
-              e.preventDefault();
-              handleRating('GOOD'); 
-            }}
-            disabled={!isFlipped}
-            className={`group flex flex-col items-center justify-center py-3 md:py-4 rounded-xl transition-all shadow-lg hover:-translate-y-1 border-b-4 border-blue-500 ${currentTheme === 'midnight' || currentTheme === 'blueprint' ? 'bg-slate-800 hover:bg-blue-900/50' : 'bg-white hover:bg-blue-50'} ${!isFlipped ? 'cursor-default' : 'cursor-pointer'}`}
-          >
-            <span className={`font-bold text-sm md:text-base ${currentTheme === 'midnight' || currentTheme === 'blueprint' ? 'text-blue-400' : 'text-slate-700 group-hover:text-blue-700'}`}>Good</span>
-            <span className={`text-[9px] md:text-[10px] uppercase font-bold mt-1 ${theme.subText}`}>Recalled</span>
-          </button>
-          
-          <button 
-            onClick={(e) => { 
-              e.stopPropagation(); 
-              e.preventDefault();
-              handleRating('EASY'); 
-            }}
-            disabled={!isFlipped}
-            className={`group flex flex-col items-center justify-center py-3 md:py-4 rounded-xl transition-all shadow-lg hover:-translate-y-1 border-b-4 border-emerald-500 ${currentTheme === 'midnight' || currentTheme === 'blueprint' ? 'bg-slate-800 hover:bg-emerald-900/50' : 'bg-white hover:bg-emerald-50'} ${!isFlipped ? 'cursor-default' : 'cursor-pointer'}`}
-          >
-            <span className={`font-bold text-sm md:text-base ${currentTheme === 'midnight' || currentTheme === 'blueprint' ? 'text-emerald-400' : 'text-slate-700 group-hover:text-emerald-700'}`}>Easy</span>
-            <span className={`text-[9px] md:text-[10px] uppercase font-bold mt-1 ${theme.subText}`}>Instant</span>
-          </button>
+      <div className={`w-full max-w-2xl transition-all duration-300 mt-8 ${isFlipped ? 'opacity-100' : 'opacity-60'}`}>
+        <p className={`text-center text-xs font-bold uppercase tracking-widest mb-3 ${theme.subText}`}>
+          Rate your recall
+        </p>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          {([
+            { label: 'Again', value: 'AGAIN', color: 'text-red-500' },
+            { label: 'Hard', value: 'HARD', color: 'text-orange-500' },
+            { label: 'Good', value: 'GOOD', color: 'text-blue-500' },
+            { label: 'Easy', value: 'EASY', color: 'text-emerald-500' }
+          ] as const).map((option) => (
+            <button
+              key={option.value}
+              onClick={(e) => {
+                e.stopPropagation();
+                e.preventDefault();
+                handleRating(option.value);
+              }}
+              disabled={!isFlipped}
+              className={`flex flex-col items-center justify-center gap-1 py-3 rounded-lg border shadow-sm text-sm font-semibold transition-colors ${theme.cardBg} ${theme.border} ${theme.text} ${!isFlipped ? 'opacity-70 cursor-not-allowed' : 'hover:opacity-90'}`}
+            >
+              <span className={option.color}>{option.label}</span>
+              <span className={`text-[10px] uppercase tracking-widest ${theme.subText}`}>
+                {option.value === 'AGAIN' ? 'Forgot' : option.value === 'HARD' ? 'Struggled' : option.value === 'GOOD' ? 'Recalled' : 'Instant'}
+              </span>
+            </button>
+          ))}
         </div>
       </div>
-      
-      {!isFlipped && (
-        <div className={`text-xs font-medium animate-pulse mt-4 text-center ${theme.subText}`}>
-          Take your time. Visualize the anatomy before flipping.
-        </div>
-      )}
     </div>
 
     {/* Advanced 3D Viewer (react-three-fiber) */}

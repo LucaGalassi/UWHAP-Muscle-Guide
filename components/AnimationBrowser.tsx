@@ -59,6 +59,7 @@ const AnimationBrowser: React.FC<AnimationBrowserProps> = ({ currentTheme, onClo
         currentTheme={currentTheme}
         onClose={() => setSelectedMotion(null)}
         browserMode={true}
+        initialMotionId={selectedMotion.id}
       />
     );
   }
@@ -72,7 +73,7 @@ const AnimationBrowser: React.FC<AnimationBrowserProps> = ({ currentTheme, onClo
             <div>
               <h2 className="text-2xl font-bold">Animation Library</h2>
               <p className="text-sm opacity-90">
-                Browse {allMotions.length} anatomical motions across all body regions
+                Browse {allMotions.length} anatomical motions across all body regions and launch a synced 3D + stick figure view
               </p>
             </div>
             <button
@@ -173,6 +174,14 @@ const AnimationBrowser: React.FC<AnimationBrowserProps> = ({ currentTheme, onClo
                           </span>
                           <span className={theme.subText}>
                             {motion.duration}s
+                          </span>
+                        </div>
+                        <div className="mt-2 flex flex-wrap gap-2 text-[11px] font-semibold">
+                          <span className={`px-2 py-1 rounded-full border ${theme.border} ${theme.subText}`}>
+                            {regionLabels[motion.region] || motion.region}
+                          </span>
+                          <span className={`px-2 py-1 rounded-full border ${theme.border} ${theme.subText}`}>
+                            {motion.joint.name}
                           </span>
                         </div>
                       </button>

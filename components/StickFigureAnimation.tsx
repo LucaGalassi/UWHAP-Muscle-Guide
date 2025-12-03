@@ -194,13 +194,35 @@ export const StickFigureAnimation: React.FC<StickFigureAnimationProps> = ({
   const ROMDisplay = ({ cx, cy, radius, startDeg, endDeg, currentDeg }: {
     cx: number; cy: number; radius: number; startDeg: number; endDeg: number; currentDeg: number;
   }) => {
-    // Normalize angles for SVG coordinate system
-    const svgStartDeg = startDeg;
-    const svgEndDeg = endDeg;
-    const svgCurrentDeg = currentDeg;
-    
+    // Normalize angles so the arc always follows the shortest path and avoids backwards dashes
+    const normalizeArc = (start: number, end: number) => {
+      const delta = ((end - start + 360) % 360);
+      const signedDelta = delta > 180 ? delta - 360 : delta;
+      return { start, end: start + signedDelta };
+    };
+
+    const { start: svgStartDeg, end: svgEndDeg } = normalizeArc(startDeg, endDeg);
+    const svgCurrentDeg = normalizeArc(svgStartDeg, currentDeg).end;
+
     return (
       <g>
+        {/* Neutral baseline */}
+        {(() => {
+          const origin = polarToCartesian(cx, cy, radius * 0.7, svgStartDeg);
+          return (
+            <line
+              x1={cx}
+              y1={cy}
+              x2={origin.x}
+              y2={origin.y}
+              stroke={colors.subText}
+              strokeWidth="3"
+              strokeDasharray="2 4"
+              opacity={0.6}
+            />
+          );
+        })()}
+
         {/* Full ROM arc (faded) */}
         <path
           d={describeArc(cx, cy, radius, svgStartDeg, svgEndDeg)}
@@ -210,7 +232,7 @@ export const StickFigureAnimation: React.FC<StickFigureAnimationProps> = ({
           strokeDasharray="4 4"
           opacity={0.3}
         />
-        
+
         {/* Current motion arc (solid) */}
         <path
           d={describeArc(cx, cy, radius, svgStartDeg, svgCurrentDeg)}
@@ -219,7 +241,7 @@ export const StickFigureAnimation: React.FC<StickFigureAnimationProps> = ({
           strokeWidth="4"
           strokeLinecap="round"
         />
-        
+
         {/* Start marker */}
         {(() => {
           const pos = polarToCartesian(cx, cy, radius, svgStartDeg);
@@ -227,12 +249,12 @@ export const StickFigureAnimation: React.FC<StickFigureAnimationProps> = ({
             <g>
               <circle cx={pos.x} cy={pos.y} r="5" fill={colors.phaseStart} />
               <text x={pos.x} y={pos.y - 10} textAnchor="middle" fill={colors.phaseStart} fontSize="9" fontWeight="bold">
-                START
+                START/NEUTRAL
               </text>
             </g>
           );
         })()}
-        
+
         {/* End marker */}
         {(() => {
           const pos = polarToCartesian(cx, cy, radius, svgEndDeg);
@@ -240,7 +262,7 @@ export const StickFigureAnimation: React.FC<StickFigureAnimationProps> = ({
             <g>
               <circle cx={pos.x} cy={pos.y} r="5" fill={colors.phaseEnd} />
               <text x={pos.x} y={pos.y - 10} textAnchor="middle" fill={colors.phaseEnd} fontSize="9" fontWeight="bold">
-                END
+                END RANGE
               </text>
             </g>
           );
@@ -1365,6 +1387,20 @@ export const StickFigureAnimation: React.FC<StickFigureAnimationProps> = ({
         <p className={`text-xs mt-1 ${theme.subText}`}>
           Range: {motion.joint.minDeg}° to {motion.joint.maxDeg}° | Duration: {motion.duration}s
         </p>
+        <div className={`mt-3 grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs`}>
+          <div className={`p-2 rounded-lg border ${theme.border} ${theme.cardBg}`}>
+            <p className="font-semibold">Start</p>
+            <p className={theme.subText}>{motion.joint.neutralDeg}° neutral</p>
+          </div>
+          <div className={`p-2 rounded-lg border ${theme.border} ${theme.cardBg}`}>
+            <p className="font-semibold">Target</p>
+            <p className={theme.subText}>{motion.targetDeg}° anatomical end</p>
+          </div>
+          <div className={`p-2 rounded-lg border ${theme.border} ${theme.cardBg}`}>
+            <p className="font-semibold">Direction</p>
+            <p className={theme.subText}>{getDirectionLabel()}</p>
+          </div>
+        </div>
       </div>
     </div>
   );

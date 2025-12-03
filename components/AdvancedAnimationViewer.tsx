@@ -16,11 +16,7 @@ import {
   getClinicalRelevanceForMotion,
   getCommonErrorsForMotion,
   getAntagonistMotion,
-  getVisibilityProfile,
-  getHighlightedNodesForMotion,
-  getAllLayerPresets,
-  LAYER_PRESETS,
-  LayerPreset
+  getHighlightedNodesForMotion
 } from '../services/animationService';
 import { StickFigureAnimation } from './StickFigureAnimation';
 import { MapPin, Zap, ExternalLink, Image, BookOpen, Activity } from 'lucide-react';
@@ -37,6 +33,7 @@ interface AdvancedAnimationViewerProps {
   insertionString?: string;
   // Mode
   browserMode?: boolean; // If true, show all animations; if false, show muscle-specific
+  initialMotionId?: string;
 }
 
 type ViewMode = '3D' | 'STICK' | 'BOTH';
@@ -63,7 +60,8 @@ const AdvancedAnimationViewer: React.FC<AdvancedAnimationViewerProps> = ({
   demonstrationText,
   originString,
   insertionString,
-  browserMode = false
+  browserMode = false,
+  initialMotionId
 }) => {
   const theme = THEME_CONFIG[currentTheme];
 
@@ -84,7 +82,6 @@ const AdvancedAnimationViewer: React.FC<AdvancedAnimationViewerProps> = ({
   const [showControls, setShowControls] = useState(true);
   const [currentAngle, setCurrentAngle] = useState(0);
   const [model3DFailed, setModel3DFailed] = useState(false);
-  const [selectedLayer, setSelectedLayer] = useState<string>('muscles'); // Default to muscles view
 
   // Auto-fallback to stick figure if 3D fails
   useEffect(() => {
@@ -92,6 +89,15 @@ const AdvancedAnimationViewer: React.FC<AdvancedAnimationViewerProps> = ({
       setViewMode('STICK');
     }
   }, [model3DFailed, viewMode]);
+
+  // Keep selected motion in sync with browser selection
+  useEffect(() => {
+    if (!initialMotionId) return;
+    const fromBrowser = availableMotions.find(m => m.id === initialMotionId);
+    if (fromBrowser) {
+      setSelectedMotion(fromBrowser);
+    }
+  }, [initialMotionId, availableMotions]);
 
   // Action list parsing - clean up numbered lists and extract meaningful actions
   const actionList = useMemo(() => {
@@ -273,33 +279,6 @@ const AdvancedAnimationViewer: React.FC<AdvancedAnimationViewerProps> = ({
                       Manual control active (drag to rotate/pan, scroll to zoom)
                     </p>
                   )}
-                </div>
-
-                {/* Anatomical Layer Toggle */}
-                <div>
-                  <label className={`text-xs font-bold uppercase tracking-wider ${theme.subText} mb-2 flex items-center gap-2`}>
-                    <Eye className="w-3 h-3" />
-                    Anatomical Layers
-                  </label>
-                  <div className="grid grid-cols-2 gap-2">
-                    {getAllLayerPresets().map(preset => (
-                      <button
-                        key={preset.id}
-                        onClick={() => setSelectedLayer(preset.id)}
-                        className={`px-2 py-2 rounded-lg text-[10px] font-semibold transition-all ${
-                          selectedLayer === preset.id
-                            ? 'bg-purple-500 text-white'
-                            : `${theme.inputBg} ${theme.text} hover:bg-opacity-80`
-                        }`}
-                        title={preset.description}
-                      >
-                        {preset.name}
-                      </button>
-                    ))}
-                  </div>
-                  <p className={`text-[9px] ${theme.subText} mt-2`}>
-                    {LAYER_PRESETS[selectedLayer]?.description || 'Select a layer to filter visible structures'}
-                  </p>
                 </div>
 
                 {/* Region Filter (Browser Mode) */}
