@@ -240,14 +240,18 @@ const MuscleView: React.FC<MuscleViewProps> = ({ muscle, onSelectMuscle, isLearn
           {/* Demonstration */}
           {muscle.group === 'A' && (
             <div className={`${theme.infoBox} rounded-2xl p-8 border ${theme.border}`}>
-              <h3 className="text-lg font-bold text-slate-900 mb-4 flex items-center gap-2">
+              <h3 className={`text-lg font-bold ${theme.text} mb-4 flex items-center gap-2`}>
                 <Activity className="w-5 h-5 text-slate-400" />
                 Demonstration
               </h3>
               <div className={`${theme.text} leading-relaxed text-base whitespace-pre-line`}>
                 {content.demonstration}
               </div>
-              <p className="mt-6 text-xs font-medium text-orange-600 flex items-center gap-1.5 bg-orange-50 p-2 rounded-lg inline-block">
+              <p className={`mt-6 text-xs font-medium flex items-center gap-1.5 p-2 rounded-lg inline-block ${
+                currentTheme === 'midnight' || currentTheme === 'blueprint' 
+                ? 'bg-orange-900/30 text-orange-200' 
+                : 'bg-orange-50 text-orange-600'
+              }`}>
                 <Info className="w-3.5 h-3.5" />
                 Must point to origin & insertion on an unpainted skeleton (not on your own body).
               </p>
@@ -350,7 +354,11 @@ const InfoCard: React.FC<InfoCardProps> = ({ title, icon, content, className, on
           <h3 className={`font-bold ${theme.text} text-sm uppercase tracking-wide`}>{title}</h3>
         </div>
       </div>
-      <div className={`text-sm ${currentTheme === 'midnight' ? 'text-slate-300' : 'text-slate-600'} leading-relaxed whitespace-pre-line flex-1 mb-4`}>
+      <div className={`text-sm ${
+        currentTheme === 'midnight' ? 'text-slate-300' : 
+        currentTheme === 'blueprint' ? 'text-blue-200' : 
+        'text-slate-600'
+      } leading-relaxed whitespace-pre-line flex-1 mb-4`}>
         {content}
       </div>
       <button 
