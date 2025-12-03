@@ -21,7 +21,7 @@ const LightningRoundView: React.FC<LightningRoundViewProps> = ({ onExit, current
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [feedback, setFeedback] = useState<'CORRECT' | 'WRONG' | null>(null);
   
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const theme = THEME_CONFIG[currentTheme];
 
   // Timer Logic

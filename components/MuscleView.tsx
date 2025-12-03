@@ -17,9 +17,23 @@ import {
   ArrowRight,
   PlayCircle,
   Sparkles,
-  X
+  X,
+  Move
 } from 'lucide-react';
 import { GROUP_A_REQUIREMENTS, GROUP_B_REQUIREMENTS } from '../constants';
+import BetaAnimationViewer from './BetaAnimationViewer';
+
+const STANDARD_MOTIONS = [
+  "Flexion", "Extension", 
+  "Abduction", "Adduction", 
+  "Medial Rotation", "Lateral Rotation",
+  "Elevation", "Depression",
+  "Protraction", "Retraction",
+  "Pronation", "Supination",
+  "Dorsiflexion", "Plantarflexion",
+  "Inversion", "Eversion",
+  "Circumduction", "Opposition"
+];
 
 interface MuscleViewProps {
   muscle: MuscleItem;
@@ -36,6 +50,8 @@ const MuscleView: React.FC<MuscleViewProps> = ({ muscle, onSelectMuscle, isLearn
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isBannerDismissed, setIsBannerDismissed] = useState(false);
+  const [showMotionPopup, setShowMotionPopup] = useState(false);
+  const [showBetaAnim, setShowBetaAnim] = useState(false);
   const theme = THEME_CONFIG[currentTheme];
 
   // Check if we have static data for this muscle
@@ -44,6 +60,8 @@ const MuscleView: React.FC<MuscleViewProps> = ({ muscle, onSelectMuscle, isLearn
   useEffect(() => {
     // Reset banner dismissal when muscle changes
     setIsBannerDismissed(false);
+    setShowMotionPopup(false);
+    setShowBetaAnim(false);
     
     let mounted = true;
     const loadData = async () => {
@@ -71,6 +89,11 @@ const MuscleView: React.FC<MuscleViewProps> = ({ muscle, onSelectMuscle, isLearn
     const left = (window.screen.width - width) / 2;
     const top = (window.screen.height - height) / 2;
     window.open(url, 'ImageSearch', `width=${width},height=${height},top=${top},left=${left},resizable=yes,scrollbars=yes,status=no,toolbar=no,menubar=no`);
+  };
+
+  const handleMotionSearch = (motion: string) => {
+    openSearchPopup(`${muscle.name} muscle ${motion} animation gif`);
+    setShowMotionPopup(false);
   };
 
   const handleRelatedClick = (relatedMuscle: MuscleItem) => {
@@ -147,22 +170,38 @@ const MuscleView: React.FC<MuscleViewProps> = ({ muscle, onSelectMuscle, isLearn
             {/* Header Icon Buttons */}
             <div className="flex gap-2">
               <button 
-                onClick={() => openSearchPopup(`${muscle.name} muscle anatomy`)}
-                className={`p-3 ${theme.inputBg} hover:bg-slate-100 rounded-xl ${theme.subText} hover:text-brand-600 transition-colors border ${theme.border}`}
-                title="Show Muscle Image"
+                onClick={() => openSearchPopup(`${muscle.name} muscle medical illustration anatomy`)}
+                className={`p-2.5 rounded-xl border transition-all ${theme.inputBg} ${theme.border} ${theme.text} hover:scale-105 active:scale-95`}
+                title="Search Images"
               >
                 <ImageIcon className="w-5 h-5" />
               </button>
-              
               <button 
-                onClick={() => openSearchPopup(`${muscle.name} muscle origin insertion diagram`)}
-                className={`p-3 ${theme.inputBg} hover:bg-slate-100 rounded-xl ${theme.subText} hover:text-brand-600 transition-colors border ${theme.border}`}
-                title="Show Origin & Insertion Diagram"
+                onClick={() => openSearchPopup(`${muscle.name} muscle origin insertion anatomy diagram`)}
+                className={`p-2.5 rounded-xl border transition-all ${theme.inputBg} ${theme.border} ${theme.text} hover:scale-105 active:scale-95`}
+                title="Search Origin/Insertion"
               >
                 <MapPin className="w-5 h-5" />
               </button>
+              <button 
+                onClick={() => setShowMotionPopup(true)}
+                className={`p-2.5 rounded-xl border transition-all ${theme.inputBg} ${theme.border} ${theme.text} hover:scale-105 active:scale-95`}
+                title="Search Motion"
+              >
+                <PlayCircle className="w-5 h-5" />
+              </button>
+              <button
+                onClick={() => setShowBetaAnim(true)}
+                className={`p-2.5 rounded-xl border transition-all ${theme.inputBg} ${theme.border} ${theme.text} hover:scale-105 active:scale-95`}
+                title="Beta Animation Viewer"
+              >
+                <Sparkles className="w-5 h-5" />
+              </button>
             </div>
           </div>
+        </div>
+      </div>
+          
 
           {/* Requirements Box */}
           <div className={`mt-8 pt-6 border-t ${theme.border}`}>
@@ -179,8 +218,7 @@ const MuscleView: React.FC<MuscleViewProps> = ({ muscle, onSelectMuscle, isLearn
               ))}
             </ul>
           </div>
-        </div>
-      </div>
+        
 
       {/* Main Content Grid */}
       {content && (
@@ -329,6 +367,52 @@ const MuscleView: React.FC<MuscleViewProps> = ({ muscle, onSelectMuscle, isLearn
             </div>
           </div>
         </div>
+      )}
+
+      {/* Motion Search Popup */}
+      {showMotionPopup && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className={`w-full max-w-md rounded-2xl shadow-2xl overflow-hidden ${theme.cardBg} border ${theme.border} animate-in zoom-in-95 duration-200`}>
+            <div className={`p-4 border-b ${theme.border} flex items-center justify-between`}>
+              <h3 className={`font-bold ${theme.text}`}>Select a Motion</h3>
+              <button 
+                onClick={() => setShowMotionPopup(false)}
+                className={`p-2 rounded-full hover:bg-slate-100 ${theme.subText} transition-colors`}
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <div className="p-4 max-h-[60vh] overflow-y-auto custom-scrollbar">
+              <div className="grid grid-cols-1 gap-2">
+                {STANDARD_MOTIONS.map((motion) => (
+                  <button
+                    key={motion}
+                    onClick={() => handleMotionSearch(motion)}
+                    className={`flex items-center justify-between p-3 rounded-xl border ${theme.border} hover:border-brand-500 hover:bg-brand-50 transition-all group text-left`}
+                  >
+                    <span className={`font-medium ${theme.text} group-hover:text-brand-700`}>{motion}</span>
+                    <ArrowRight className="w-4 h-4 text-slate-300 group-hover:text-brand-500 transition-colors" />
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div className={`p-4 border-t ${theme.border} ${theme.inputBg}`}>
+              <p className={`text-xs text-center ${theme.subText}`}>
+                Searching for: <span className="font-mono">{muscle.name} muscle [motion] animation gif</span>
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Beta Animation Viewer (non-Google, in-app) */}
+      {showBetaAnim && (
+        <BetaAnimationViewer 
+          muscleName={muscle.name}
+          currentTheme={currentTheme}
+          defaultMotion={"Flexion"}
+          onClose={() => setShowBetaAnim(false)}
+        />
       )}
     </div>
   );
