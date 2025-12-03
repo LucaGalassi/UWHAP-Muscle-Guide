@@ -395,6 +395,7 @@ const App: React.FC = () => {
           onSelectTool={setActiveTool} 
           learnedCount={Object.values(progressMap).filter(p => p.status === 'MASTERED').length} 
           totalCount={MUSCLE_DATA.length} 
+          currentTheme={theme}
         />
       );
     }
@@ -435,6 +436,7 @@ const App: React.FC = () => {
               progressMap={progressMap}
               onUpdateProgress={updateMuscleProgress}
               apiKey={apiKey}
+              currentTheme={theme}
             />
           )}
         </div>

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { MuscleItem, MuscleProgress, ConfidenceRating } from '../../types';
-import { MUSCLE_DATA } from '../../constants';
+import { MuscleItem, MuscleProgress, ConfidenceRating, AppTheme } from '../../types';
+import { MUSCLE_DATA, THEME_CONFIG } from '../../constants';
 import MuscleView from '../MuscleView';
 import FlashcardView from './FlashcardView';
 import QuizView from './QuizView';
@@ -11,16 +11,19 @@ interface SmartGuideViewProps {
   progressMap: Record<string, MuscleProgress>;
   onUpdateProgress: (progress: MuscleProgress) => void;
   apiKey: string;
+  currentTheme: AppTheme;
 }
 
 type GuidePhase = 'DASHBOARD' | 'LEARN' | 'QUIZ' | 'REVIEW_CARD';
 type LearnFilter = 'ALL' | 'A' | 'B';
 
-const SmartGuideView: React.FC<SmartGuideViewProps> = ({ progressMap, onUpdateProgress, apiKey }) => {
+const SmartGuideView: React.FC<SmartGuideViewProps> = ({ progressMap, onUpdateProgress, apiKey, currentTheme }) => {
   const [sessionQueue, setSessionQueue] = useState<string[]>([]);
   const [currentMuscleId, setCurrentMuscleId] = useState<string | null>(null);
   const [phase, setPhase] = useState<GuidePhase>('DASHBOARD');
   const [relatedMusclePopup, setRelatedMusclePopup] = useState<MuscleItem | null>(null);
+  
+  const theme = THEME_CONFIG[currentTheme];
   
   // Customization State
   const [learnBatchSize, setLearnBatchSize] = useState(5);
@@ -111,10 +114,10 @@ const SmartGuideView: React.FC<SmartGuideViewProps> = ({ progressMap, onUpdatePr
       <div className="p-4 md:p-8 max-w-5xl mx-auto h-full flex flex-col overflow-y-auto custom-scrollbar">
         <div className="mb-8">
           <div className="flex items-center gap-3 mb-2">
-            <h1 className="text-3xl font-extrabold text-slate-900">Smart Study Guide</h1>
+            <h1 className={`text-3xl font-extrabold ${theme.text}`}>Smart Study Guide</h1>
             <span className="bg-brand-100 text-brand-700 text-xs font-bold px-2 py-1 rounded-md border border-brand-200">Dec 8 Exam Prep</span>
           </div>
-          <p className="text-slate-500">Your intelligent dashboard. Prioritizes what you need to know, when you need to know it.</p>
+          <p className={`${theme.subText}`}>Your intelligent dashboard. Prioritizes what you need to know, when you need to know it.</p>
         </div>
 
         {/* Detailed Tracking Bars - Enhanced */}

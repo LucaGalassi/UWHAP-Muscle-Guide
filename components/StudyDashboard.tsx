@@ -1,19 +1,23 @@
 import React from 'react';
-import { LearningTool } from '../types';
+import { LearningTool, AppTheme } from '../types';
 import { Brain, Layers, GraduationCap, ArrowRight, Zap } from 'lucide-react';
+import { THEME_CONFIG } from '../constants';
 
 interface StudyDashboardProps {
   onSelectTool: (tool: LearningTool) => void;
   learnedCount: number;
   totalCount: number;
+  currentTheme: AppTheme;
 }
 
-const StudyDashboard: React.FC<StudyDashboardProps> = ({ onSelectTool, learnedCount, totalCount }) => {
+const StudyDashboard: React.FC<StudyDashboardProps> = ({ onSelectTool, learnedCount, totalCount, currentTheme }) => {
+  const theme = THEME_CONFIG[currentTheme];
+
   return (
     <div className="p-8 max-w-5xl mx-auto">
       <div className="mb-10 text-center">
-        <h1 className="text-3xl font-extrabold text-slate-900 mb-3">Learning Center</h1>
-        <p className="text-slate-500">Choose a mode to accelerate your anatomy mastery.</p>
+        <h1 className={`text-3xl font-extrabold ${theme.text} mb-3`}>Learning Center</h1>
+        <p className={`${theme.subText}`}>Choose a mode to accelerate your anatomy mastery.</p>
       </div>
 
       <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
