@@ -115,7 +115,11 @@ const AdvancedAnimationViewer: React.FC<AdvancedAnimationViewerProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+    <div className={`fixed inset-0 z-50 flex items-center justify-center p-4 ${
+      currentTheme === 'midnight' || currentTheme === 'blueprint' 
+        ? 'bg-black/80' 
+        : 'bg-black/60'
+    } backdrop-blur-sm`}>
       <div 
         className={`w-full max-w-[95vw] h-[92vh] rounded-2xl border ${theme.border} ${theme.cardBg} shadow-2xl overflow-hidden flex flex-col`}
       >
@@ -142,7 +146,7 @@ const AdvancedAnimationViewer: React.FC<AdvancedAnimationViewerProps> = ({
             </button>
             <button 
               onClick={onClose} 
-              className={`p-2 rounded-lg hover:bg-slate-100 ${theme.subText} transition-colors`}
+              className={`p-2 rounded-lg ${theme.inputBg} ${theme.subText} hover:bg-opacity-80 transition-colors`}
             >
               <X className="w-5 h-5" />
             </button>
@@ -374,12 +378,17 @@ const AdvancedAnimationViewer: React.FC<AdvancedAnimationViewerProps> = ({
                     onOrbitStart={handleOrbitStart}
                     onLoadError={() => setModel3DFailed(true)}
                     theme={theme}
+                    currentTheme={currentTheme}
                   />
                 </div>
               )}
 
               {viewMode === 'STICK' && (
-                <div className="w-full h-full flex items-center justify-center relative bg-gradient-to-br from-slate-50 to-slate-100">
+                <div className={`w-full h-full flex items-center justify-center relative ${
+                  currentTheme === 'midnight' || currentTheme === 'blueprint'
+                    ? 'bg-gradient-to-br from-slate-900 to-slate-800'
+                    : 'bg-gradient-to-br from-slate-50 to-slate-100'
+                }`}>
                   <StickFigureAnimation
                     motion={selectedMotion}
                     playing={playing}
@@ -400,9 +409,14 @@ const AdvancedAnimationViewer: React.FC<AdvancedAnimationViewerProps> = ({
                       onOrbitStart={handleOrbitStart}
                       onLoadError={() => setModel3DFailed(true)}
                       theme={theme}
+                      currentTheme={currentTheme}
                     />
                   </div>
-                  <div className="relative bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center">
+                  <div className={`relative flex items-center justify-center ${
+                    currentTheme === 'midnight' || currentTheme === 'blueprint'
+                      ? 'bg-gradient-to-br from-slate-900 to-slate-800'
+                      : 'bg-gradient-to-br from-slate-50 to-slate-100'
+                  }`}>
                     <StickFigureAnimation
                       motion={selectedMotion}
                       playing={playing}
@@ -444,6 +458,7 @@ interface Animation3DViewProps {
   onOrbitStart: () => void;
   onLoadError: () => void;
   theme: any;
+  currentTheme: AppTheme;
 }
 
 const Animation3DView: React.FC<Animation3DViewProps> = ({
@@ -454,7 +469,8 @@ const Animation3DView: React.FC<Animation3DViewProps> = ({
   onAngleUpdate,
   onOrbitStart,
   onLoadError,
-  theme
+  theme,
+  currentTheme
 }) => {
   const [modelUrl, setModelUrl] = useState<string | null>(null);
 
@@ -500,10 +516,21 @@ const Animation3DView: React.FC<Animation3DViewProps> = ({
       });
   }, [motion, onLoadError]);
 
+  // Theme-aware background colors for canvas
+  const getCanvasBackground = () => {
+    const themeColors: Record<AppTheme, string> = {
+      modern: 'linear-gradient(to bottom, #f8fafc, #e2e8f0)', // slate-50 to slate-200
+      midnight: 'linear-gradient(to bottom, #0f172a, #1e293b)', // slate-950 to slate-800
+      blueprint: 'linear-gradient(to bottom, #0f172a, #1e3a5f)', // dark blue gradient
+      nature: 'linear-gradient(to bottom, #fafaf9, #e7e5e4)', // stone-50 to stone-200
+    };
+    return themeColors[currentTheme] || themeColors.modern;
+  };
+
   return (
     <Canvas
       camera={{ position: [2.5, 1.5, 2.5], fov: 50 }}
-      style={{ background: 'linear-gradient(to bottom, #f8fafc, #e2e8f0)' }}
+      style={{ background: getCanvasBackground() }}
     >
       <ambientLight intensity={0.6} />
       <directionalLight position={[5, 5, 5]} intensity={0.8} castShadow />
