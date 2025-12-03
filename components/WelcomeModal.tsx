@@ -235,10 +235,10 @@ const WelcomeModal: React.FC<WelcomeModalProps> = ({ onDismiss, onResume, daysUn
   // RENDER LANDING VIEW (Resume vs New)
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 backdrop-blur-md animate-in fade-in duration-300">
-      <div className="w-full max-w-3xl bg-white rounded-3xl shadow-2xl overflow-hidden border border-slate-200">
+      <div className="w-full max-w-3xl max-h-[90vh] flex flex-col bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden">
         
         {/* Hero Header */}
-        <div className="bg-gradient-to-br from-brand-600 via-brand-500 to-blue-600 p-8 md:p-12 text-white relative overflow-hidden">
+        <div className="bg-gradient-to-br from-brand-600 via-brand-500 to-blue-600 p-6 md:p-8 text-white relative overflow-hidden shrink-0">
           <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -mr-20 -mt-20"></div>
           <div className="absolute bottom-0 left-0 w-48 h-48 bg-blue-400/20 rounded-full blur-3xl -ml-16 -mb-16"></div>
           <div className="absolute top-6 right-6 z-10 text-right">
@@ -250,28 +250,28 @@ const WelcomeModal: React.FC<WelcomeModalProps> = ({ onDismiss, onResume, daysUn
           
           <div className="relative z-10">
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-14 h-14 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center border border-white/30 shadow-lg">
-                <GraduationCap className="w-8 h-8" />
+              <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center border border-white/30 shadow-lg">
+                <GraduationCap className="w-6 h-6" />
               </div>
               <div>
-                <h1 className="text-3xl md:text-4xl font-black tracking-tight">Welcome to A&P Muscle Guide</h1>
+                <h1 className="text-2xl md:text-3xl font-black tracking-tight">Welcome to A&P Muscle Guide</h1>
                 <p className="text-blue-100 text-sm font-medium mt-1">UW Health RN Apprenticeship Edition</p>
               </div>
             </div>
             
             {/* Exam Countdown Badge */}
-            <div className="inline-flex items-center gap-3 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-5 py-3 mt-4">
-              <Timer className="w-5 h-5 text-red-300" />
+            <div className="inline-flex items-center gap-3 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-4 py-2 mt-2">
+              <Timer className="w-4 h-4 text-red-300" />
               <div>
-                <div className="text-xs font-bold text-blue-100 uppercase tracking-wider">Final Exam: Monday, Dec 8</div>
-                <div className="text-2xl font-black text-white">{daysUntilExam} Days Remaining</div>
+                <div className="text-[10px] font-bold text-blue-100 uppercase tracking-wider">Final Exam: Monday, Dec 8</div>
+                <div className="text-xl font-black text-white">{daysUntilExam} Days Remaining</div>
               </div>
             </div>
           </div>
         </div>
 
         {/* Content Area */}
-        <div className="p-8 md:p-10 bg-gradient-to-b from-white to-slate-50">
+        <div className="p-6 md:p-8 bg-gradient-to-b from-white to-slate-50 overflow-y-auto">
            <div className="mb-8">
              <h2 className="text-2xl font-bold text-slate-900 mb-3 flex items-center gap-2">
                <CheckCircle className="w-6 h-6 text-emerald-500" />
