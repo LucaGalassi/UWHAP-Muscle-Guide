@@ -312,14 +312,30 @@ const FlashcardView: React.FC<FlashcardViewProps> = ({ muscle, onRate, onNext, a
                   return null;
                 };
                 const motions = Array.from(new Set(lines.map(detectMotion).filter(Boolean) as string[]));
-                return motions.length ? motions.map(motion => (
-                  <button key={motion} onClick={() => { setSelectedMotion(motion); setShowActionPopup(false); setShowAdvancedAnim(true); }}
-                    className={`flex items-center justify-between p-3 rounded-xl border ${theme.border} hover:border-brand-500 hover:bg-brand-50 transition-all group text-left`}>
-                    <span className={`font-medium ${theme.text} group-hover:text-brand-700`}>{motion}</span>
-                    <ArrowRight className="w-4 h-4 text-slate-300 group-hover:text-brand-500 transition-colors" />
-                  </button>
-                )) : (
-                  <p className={`${theme.subText} text-sm`}>No recognized actions found on this card.</p>
+                if (motions.length) {
+                  return motions.map(motion => (
+                    <button key={motion} onClick={() => { setSelectedMotion(motion); setShowActionPopup(false); setShowAdvancedAnim(true); }}
+                      className={`flex items-center justify-between p-3 rounded-xl border ${theme.border} hover:border-brand-500 hover:bg-brand-50 transition-all group text-left`}>
+                      <span className={`font-medium ${theme.text} group-hover:text-brand-700`}>{motion}</span>
+                      <ArrowRight className="w-4 h-4 text-slate-300 group-hover:text-brand-500 transition-colors" />
+                    </button>
+                  ));
+                }
+                return (
+                  <div className="space-y-2">
+                    <button
+                      onClick={() => { window.open(`https://www.google.com/search?tbm=isch&q=${encodeURIComponent(`${muscle.name} ${actionText} animation gif`)}`,'_blank'); setShowActionPopup(false); }}
+                      className={`w-full p-3 rounded-xl border ${theme.border} hover:border-brand-500 hover:bg-brand-50 text-left`}
+                    >
+                      <span className={`font-medium ${theme.text}`}>Search GIF: {muscle.name} {actionText}</span>
+                    </button>
+                    <button
+                      onClick={() => { setSelectedMotion('Elbow Flexion'); setShowActionPopup(false); setShowAdvancedAnim(true); }}
+                      className={`w-full p-3 rounded-xl border ${theme.border} hover:border-brand-500 hover:bg-brand-50 text-left`}
+                    >
+                      <span className={`font-medium ${theme.text}`}>Open Advanced 3D Viewer</span>
+                    </button>
+                  </div>
                 );
               })()}
             </div>
