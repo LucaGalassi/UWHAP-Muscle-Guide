@@ -310,6 +310,8 @@ const App: React.FC = () => {
     if (Object.keys(progressMap).length > 0) {
       try {
         localStorage.setItem('srs_progress', JSON.stringify(progressMap));
+        // Track last save timestamp
+        localStorage.setItem('last_save_timestamp', Date.now().toString());
       } catch (e) {
         console.error('Failed to save progress to localStorage', e);
         // Could show user notification here in production
@@ -321,6 +323,7 @@ const App: React.FC = () => {
   useEffect(() => {
     try {
       localStorage.setItem('app_theme', theme);
+      localStorage.setItem('last_save_timestamp', Date.now().toString());
     } catch (e) {
       console.error('Failed to save theme to localStorage', e);
     }
@@ -331,6 +334,7 @@ const App: React.FC = () => {
     try {
       if (studentName) {
         localStorage.setItem('student_name', studentName);
+        localStorage.setItem('last_save_timestamp', Date.now().toString());
       }
     } catch (e) {
       console.error('Failed to save student name to localStorage', e);

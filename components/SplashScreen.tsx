@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Activity } from 'lucide-react';
+import { Activity, Clock, AlertTriangle } from 'lucide-react';
 
 interface SplashScreenProps {
   onFinish: () => void;
@@ -11,12 +11,37 @@ interface SplashScreenProps {
   onImport?: (input: string) => void;
 }
 
+// Format timestamp to relative time string
+const formatRelativeTime = (timestamp: number): string => {
+  const now = Date.now();
+  const diff = now - timestamp;
+  
+  const seconds = Math.floor(diff / 1000);
+  const minutes = Math.floor(seconds / 60);
+  const hours = Math.floor(minutes / 60);
+  const days = Math.floor(hours / 24);
+  
+  if (days > 0) return days === 1 ? '1 day ago' : `${days} days ago`;
+  if (hours > 0) return hours === 1 ? '1 hour ago' : `${hours} hours ago`;
+  if (minutes > 0) return minutes === 1 ? '1 minute ago' : `${minutes} minutes ago`;
+  return 'Just now';
+};
+
 const SplashScreen: React.FC<SplashScreenProps> = ({ onFinish, studentName, hasSavedSession=false, autoResume=false, onResume, onReset, onImport }) => {
   const [isExiting, setIsExiting] = useState(false);
   const [showPrompt, setShowPrompt] = useState(false);
   const [importValue, setImportValue] = useState('');
+  const [lastSaveTime, setLastSaveTime] = useState<number | null>(null);
 
   useEffect(() => {
+    // Load last save timestamp
+    try {
+      const savedTimestamp = localStorage.getItem('last_save_timestamp');
+      if (savedTimestamp) {
+        setLastSaveTime(parseInt(savedTimestamp, 10));
+      }
+    } catch {}
+    
     if (hasSavedSession) {
       if (autoResume) {
         // brief pause for visual continuity
@@ -73,7 +98,25 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onFinish, studentName, hasS
             <div className="text-center">
               <h2 className="text-lg font-black text-slate-900">Resume previous session?</h2>
               <p className="text-xs text-slate-600 mt-1">We found saved progress and preferences in this browser.</p>
+              
+              {/* Last Save Indicator */}
+              {lastSaveTime && (
+                <div className="mt-2 flex items-center justify-center gap-2 text-xs font-medium text-emerald-600 bg-emerald-50 rounded-lg py-1.5 px-3">
+                  <Clock className="w-3.5 h-3.5" />
+                  <span>Last saved: {formatRelativeTime(lastSaveTime)}</span>
+                </div>
+              )}
             </div>
+            
+            {/* Browser Storage Warning */}
+            <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 flex gap-2">
+              <AlertTriangle className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" />
+              <div className="text-xs text-amber-800">
+                <span className="font-bold">Your data is stored locally in this browser.</span>{' '}
+                Clearing browser data will erase your progress. For backup, go to Settings → Copy Save Code after resuming.
+              </div>
+            </div>
+            
             <div className="grid grid-cols-2 gap-2">
               <button
                 onClick={() => { setIsExiting(true); setTimeout(() => { onResume?.(); onFinish(); }, 300); }}
