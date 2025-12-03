@@ -163,8 +163,15 @@
   }
 
   /* Remove transitions and animations for print */
-  * {
+  .transition-all,
+  .transition-colors,
+  .transition-transform,
+  [class*="transition-"] {
     transition: none !important;
+  }
+  
+  .animate-pulse,
+  [class*="animate-"] {
     animation: none !important;
   }
 }
