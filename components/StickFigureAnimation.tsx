@@ -20,6 +20,7 @@ export const StickFigureAnimation: React.FC<StickFigureAnimationProps> = ({
   currentTheme
 }) => {
   const [progress, setProgress] = useState(0); // 0 to 1
+  const [trail, setTrail] = useState<{x: number, y: number}[]>([]); // Motion trail
   const animFrameRef = useRef<number>();
   const lastTimeRef = useRef<number>(0);
   const theme = THEME_CONFIG[currentTheme];
@@ -49,9 +50,31 @@ export const StickFigureAnimation: React.FC<StickFigureAnimationProps> = ({
   }, [playing, motion.duration]);
 
   // Calculate current angle based on progress
-  const currentAngle = motion.joint.neutralDeg + 
-    (motion.targetDeg - motion.joint.neutralDeg) * 
-    Math.sin(progress * Math.PI); // Smooth sine wave
+  // For one-directional motions (e.g., "abduction only"), use sawtooth wave (0→1→0 jump)
+  // For bidirectional motions (e.g., "flexion/extension"), use smooth sine wave
+  const isOneDirectional = motion.name.toLowerCase().includes('only') || 
+                           (motion.targetDeg > motion.joint.neutralDeg && motion.joint.minDeg === motion.joint.neutralDeg) ||
+                           (motion.targetDeg < motion.joint.neutralDeg && motion.joint.maxDeg === motion.joint.neutralDeg);
+  
+  const currentAngle = (() => {
+    if (isOneDirectional) {
+      // Sawtooth: go from neutral to target, then reset
+      // 0→0.9: smooth motion, 0.9→1: instant reset
+      if (progress < 0.9) {
+        return motion.joint.neutralDeg + (motion.targetDeg - motion.joint.neutralDeg) * (progress / 0.9);
+      } else {
+        return motion.joint.neutralDeg; // Reset position
+      }
+    } else {
+      // Smooth bidirectional sine wave
+      return motion.joint.neutralDeg + 
+        (motion.targetDeg - motion.joint.neutralDeg) * 
+        Math.sin(progress * Math.PI);
+    }
+  })();
+  
+  // For one-directional: show if we're in "resetting" phase
+  const isResetting = isOneDirectional && progress >= 0.9;
 
   // Determine figure type and render appropriate SVG
   const renderFigure = () => {
@@ -118,33 +141,56 @@ export const StickFigureAnimation: React.FC<StickFigureAnimationProps> = ({
       
       return (
         <>
-          {/* Torso */}
-          <line x1={centerX} y1={centerY} x2={centerX} y2={centerY + 100} className="stroke-current" strokeWidth="8" />
-          <circle cx={centerX} cy={centerY - 20} r="20" className="stroke-current fill-none" strokeWidth="3" />
+          {/* Torso - thicker and more visible */}
+          <line x1={centerX} y1={centerY} x2={centerX} y2={centerY + 100} className="stroke-current opacity-40" strokeWidth="12" />
+          <circle cx={centerX} cy={centerY - 20} r="20" className="stroke-current fill-none opacity-60" strokeWidth="4" />
           
-          {/* Shoulder */}
-          <circle cx={centerX} cy={centerY} r="6" className="fill-current" />
+          {/* Shoulder joint - larger */}
+          <circle cx={centerX} cy={centerY} r="8" className="fill-blue-500" />
           
-          {/* Upper Arm */}
-          <line x1={centerX} y1={centerY} x2={elbowX} y2={elbowY} className="stroke-current" strokeWidth="6" strokeLinecap="round" />
+          {/* Upper Arm - brighter and thicker */}
+          <line x1={centerX} y1={centerY} x2={elbowX} y2={elbowY} className="stroke-blue-600" strokeWidth="10" strokeLinecap="round" />
           
-          {/* Elbow */}
-          <circle cx={elbowX} cy={elbowY} r="5" className="fill-current" />
+          {/* Elbow joint - larger */}
+          <circle cx={elbowX} cy={elbowY} r="7" className="fill-blue-500" />
           
-          {/* Forearm */}
-          <line x1={elbowX} y1={elbowY} x2={handX} y2={handY} className="stroke-current" strokeWidth="5" strokeLinecap="round" />
+          {/* Forearm - brighter and thicker */}
+          <line x1={elbowX} y1={elbowY} x2={handX} y2={handY} className="stroke-blue-500" strokeWidth="9" strokeLinecap="round" />
           
-          {/* Hand */}
-          <circle cx={handX} cy={handY} r="6" className="fill-current" />
+          {/* Hand - larger */}
+          <circle cx={handX} cy={handY} r="9" className="fill-blue-400" />
           
-          {/* Arc indicator */}
+          {/* Arc indicator - bigger and brighter */}
           <path
-            d={describeArc(centerX, centerY, upperArmLength * 0.4, -90 + motion.joint.neutralDeg, -90 + angle)}
+            d={describeArc(centerX, centerY, upperArmLength * 0.5, -90 + motion.joint.neutralDeg, -90 + angle)}
             fill="none"
-            className="stroke-blue-500"
-            strokeWidth="2"
-            strokeDasharray="4 2"
+            className="stroke-orange-500"
+            strokeWidth="4"
+            strokeDasharray="6 3"
           />
+          
+          {/* Reset indicator for one-directional motions */}
+          {isResetting && isOneDirectional && (
+            <>
+              <path
+                d={describeArc(centerX, centerY, upperArmLength * 0.6, -90 + angle, -90 + motion.joint.neutralDeg)}
+                fill="none"
+                className="stroke-red-500"
+                strokeWidth="3"
+                strokeDasharray="3 6"
+                opacity="0.6"
+              />
+              <text x={centerX + 40} y={centerY - 60} className="fill-red-600 font-bold text-sm">↻ RESET</text>
+            </>
+          )}
+          
+          {/* Angle text label */}
+          <text x={centerX + 50} y={centerY - 50} className="fill-orange-600 font-bold text-lg">{Math.round(angle)}°</text>
+          
+          {/* Direction label */}
+          <text x={centerX - 80} y={centerY + 150} className="fill-current font-semibold text-sm">
+            {angle > 90 ? 'FLEXION ↑' : 'EXTENSION ↓'}
+          </text>
         </>
       );
     }
@@ -159,27 +205,52 @@ export const StickFigureAnimation: React.FC<StickFigureAnimationProps> = ({
       
       return (
         <>
-          {/* Torso */}
-          <line x1={centerX} y1={centerY} x2={centerX} y2={centerY + 100} className="stroke-current" strokeWidth="8" />
-          <circle cx={centerX} cy={centerY - 20} r="20" className="stroke-current fill-none" strokeWidth="3" />
+          {/* Torso - thicker */}
+          <line x1={centerX} y1={centerY} x2={centerX} y2={centerY + 100} className="stroke-current opacity-40" strokeWidth="12" />
+          <circle cx={centerX} cy={centerY - 20} r="20" className="stroke-current fill-none opacity-60" strokeWidth="4" />
           
-          {/* Shoulder */}
-          <circle cx={centerX} cy={centerY} r="6" className="fill-current" />
+          {/* Shoulder joint - larger */}
+          <circle cx={centerX} cy={centerY} r="8" className="fill-blue-500" />
           
-          {/* Arm */}
-          <line x1={centerX} y1={centerY} x2={elbowX} y2={elbowY} className="stroke-current" strokeWidth="6" strokeLinecap="round" />
-          <circle cx={elbowX} cy={elbowY} r="5" className="fill-current" />
-          <line x1={elbowX} y1={elbowY} x2={handX} y2={handY} className="stroke-current" strokeWidth="5" strokeLinecap="round" />
-          <circle cx={handX} cy={handY} r="6" className="fill-current" />
+          {/* Arm - brighter and thicker */}
+          <line x1={centerX} y1={centerY} x2={elbowX} y2={elbowY} className="stroke-blue-600" strokeWidth="10" strokeLinecap="round" />
+          <circle cx={elbowX} cy={elbowY} r="7" className="fill-blue-500" />
+          <line x1={elbowX} y1={elbowY} x2={handX} y2={handY} className="stroke-blue-500" strokeWidth="9" strokeLinecap="round" />
+          <circle cx={handX} cy={handY} r="9" className="fill-blue-400" />
           
-          {/* Arc */}
+          {/* Arc - bigger and brighter */}
           <path
-            d={describeArc(centerX, centerY, upperArmLength * 0.4, 0, angle)}
+            d={describeArc(centerX, centerY, upperArmLength * 0.5, 0, angle)}
             fill="none"
-            className="stroke-blue-500"
-            strokeWidth="2"
-            strokeDasharray="4 2"
+            className="stroke-orange-500"
+            strokeWidth="4"
+            strokeDasharray="6 3"
           />
+          
+          {/* Reset indicator for one-directional motions */}
+          {isResetting && isOneDirectional && (
+            <>
+              {/* Dashed return arc */}
+              <path
+                d={describeArc(centerX, centerY, upperArmLength * 0.6, angle, 0)}
+                fill="none"
+                className="stroke-red-500"
+                strokeWidth="3"
+                strokeDasharray="3 6"
+                opacity="0.6"
+              />
+              {/* Reset text */}
+              <text x={centerX + 30} y={centerY - 30} className="fill-red-600 font-bold text-sm">↻ RESET</text>
+            </>
+          )}
+          
+          {/* Angle text */}
+          <text x={centerX + 50} y={centerY + 20} className="fill-orange-600 font-bold text-lg">{Math.round(angle)}°</text>
+          
+          {/* Direction label */}
+          <text x={centerX - 80} y={centerY + 150} className="fill-current font-semibold text-sm">
+            {angle > motion.joint.neutralDeg ? 'ABDUCTION →' : '← ADDUCTION'}
+          </text>
         </>
       );
     }
@@ -209,35 +280,35 @@ export const StickFigureAnimation: React.FC<StickFigureAnimationProps> = ({
     
     return (
       <>
-        {/* Torso hint */}
+        {/* Torso hint - thicker */}
         <rect x={shoulderX - 40} y={shoulderY - 20} width="30" height="80" className="fill-current opacity-20" rx="4" />
         
-        {/* Shoulder */}
-        <circle cx={shoulderX} cy={shoulderY} r="6" className="fill-current" />
+        {/* Shoulder joint - larger */}
+        <circle cx={shoulderX} cy={shoulderY} r="8" className="fill-blue-500" />
         
-        {/* Upper Arm */}
-        <line x1={shoulderX} y1={shoulderY} x2={elbowX} y2={elbowY} className="stroke-current" strokeWidth="6" strokeLinecap="round" />
+        {/* Upper Arm - thicker and brighter */}
+        <line x1={shoulderX} y1={shoulderY} x2={elbowX} y2={elbowY} className="stroke-blue-600" strokeWidth="10" strokeLinecap="round" />
         
-        {/* Elbow Joint */}
-        <circle cx={elbowX} cy={elbowY} r="7" className="fill-current" />
+        {/* Elbow Joint - larger and brighter */}
+        <circle cx={elbowX} cy={elbowY} r="9" className="fill-orange-500" />
         
-        {/* Forearm */}
-        <line x1={elbowX} y1={elbowY} x2={handX} y2={handY} className="stroke-current" strokeWidth="5" strokeLinecap="round" />
+        {/* Forearm - thicker and brighter */}
+        <line x1={elbowX} y1={elbowY} x2={handX} y2={handY} className="stroke-green-600" strokeWidth="10" strokeLinecap="round" />
         
-        {/* Hand */}
-        <circle cx={handX} cy={handY} r="6" className="fill-current" />
+        {/* Hand - larger */}
+        <circle cx={handX} cy={handY} r="9" className="fill-green-400" />
         
-        {/* Angle Arc */}
+        {/* Angle Arc - bigger and brighter */}
         <path
-          d={describeArc(elbowX, elbowY, 30, 180, 180 - angle)}
+          d={describeArc(elbowX, elbowY, 40, 180, 180 - angle)}
           fill="none"
-          className="stroke-blue-500"
-          strokeWidth="2"
-          strokeDasharray="4 2"
+          className="stroke-orange-500"
+          strokeWidth="4"
+          strokeDasharray="6 3"
         />
         
-        {/* Angle Text */}
-        <text x={elbowX + 40} y={elbowY - 10} className="fill-current text-xs font-mono">
+        {/* Angle Text - larger */}
+        <text x={elbowX + 50} y={elbowY - 15} className="fill-orange-600 font-bold text-lg">
           {Math.round(angle)}°
         </text>
       </>

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { MuscleItem, MuscleContent, ConfidenceRating, AppTheme } from '../../types';
 import { fetchMuscleDetails } from '../../services/geminiService';
 import { THEME_CONFIG } from '../../constants';
-import { Sparkles, Activity, RotateCw, MapPin, Play, List, PlayCircle, X, ArrowRight } from 'lucide-react';
+import { Sparkles, Activity, RotateCw, MapPin, Play, List, PlayCircle } from 'lucide-react';
 import AdvancedAnimationViewer from '../AdvancedAnimationViewer';
 
 interface FlashcardViewProps {
@@ -18,16 +18,12 @@ const FlashcardView: React.FC<FlashcardViewProps> = ({ muscle, onRate, onNext, a
   const [isFlipped, setIsFlipped] = useState(false);
   const [content, setContent] = useState<MuscleContent | null>(null);
   const [loading, setLoading] = useState(false);
-  const [showActionPopup, setShowActionPopup] = useState(false);
   const [showAdvancedAnim, setShowAdvancedAnim] = useState(false);
-  const [selectedMotion, setSelectedMotion] = useState<string | null>(null);
   
   useEffect(() => {
     setIsFlipped(false); // Reset flip on new muscle
     setContent(null); // Clear old content immediately
-    setShowActionPopup(false);
     setShowAdvancedAnim(false);
-    setSelectedMotion(null);
     let mounted = true;
     const load = async () => {
       setLoading(true);
@@ -174,7 +170,7 @@ const FlashcardView: React.FC<FlashcardViewProps> = ({ muscle, onRate, onNext, a
                  </div>
                  <div className="flex items-center gap-3">
                    <button
-                     onClick={(e) => { e.stopPropagation(); setShowActionPopup(true); }}
+                     onClick={(e) => { e.stopPropagation(); setShowAdvancedAnim(true); }}
                      className={`flex items-center gap-2 px-3 py-2 rounded-xl border ${theme.border} ${theme.inputBg} ${theme.text} hover:scale-105 active:scale-95 text-xs font-bold uppercase tracking-wider`}
                      title="Show Action Animation"
                    >
@@ -207,7 +203,7 @@ const FlashcardView: React.FC<FlashcardViewProps> = ({ muscle, onRate, onNext, a
                     <p className={`text-lg font-medium leading-relaxed ${theme.text}`}>{content?.action || "..."}</p>
                     <div className="mt-4">
                       <button
-                        onClick={(e) => { e.stopPropagation(); setShowActionPopup(true); }}
+                        onClick={(e) => { e.stopPropagation(); setShowAdvancedAnim(true); }}
                         className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 text-xs font-bold uppercase tracking-wider shadow-sm"
                       >
                         <PlayCircle className="w-4 h-4" /> Show Action Animation
@@ -267,76 +263,6 @@ const FlashcardView: React.FC<FlashcardViewProps> = ({ muscle, onRate, onNext, a
         </div>
       )}
     </div>
-
-    {/* Action Animation Popup (filtered to card actions) */}
-    {showActionPopup && (
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
-        <div className={`w-full max-w-md rounded-2xl shadow-2xl overflow-hidden ${theme.cardBg} border ${theme.border} animate-in zoom-in-95 duration-200`} onClick={(e)=>e.stopPropagation()}>
-          <div className={`p-4 border-b ${theme.border} flex items-center justify-between`}>
-            <h3 className={`font-bold ${theme.text}`}>Select Action to Animate</h3>
-            <button onClick={() => setShowActionPopup(false)} className={`p-2 rounded-full hover:bg-slate-100 ${theme.subText}`}>
-              <X className="w-5 h-5" />
-            </button>
-          </div>
-          <div className="p-4 max-h-[60vh] overflow-y-auto custom-scrollbar">
-            <div className="grid grid-cols-1 gap-2">
-              {(() => {
-                const actionText = content?.action || '';
-                const lines = actionText.split('\n').map(l => l.replace(/^\d+\.\s*/, '').trim());
-                const detectMotion = (line: string): string | null => {
-                  const l = line.toLowerCase();
-                  const joint = (
-                    l.includes('shoulder') || l.includes('glenohumeral') ? 'Shoulder' :
-                    l.includes('elbow') ? 'Elbow' :
-                    l.includes('forearm') ? 'Forearm' :
-                    l.includes('hip') ? 'Hip' : null
-                  );
-                  if (l.includes('abduction')) return 'Shoulder Abduction';
-                  if (l.includes('adduction')) return 'Shoulder Adduction';
-                  if (l.includes('medial rotation') || l.includes('internal rotation')) return 'Shoulder Medial Rotation';
-                  if (l.includes('lateral rotation') || l.includes('external rotation')) return 'Shoulder Lateral Rotation';
-                  if (l.includes('supination') || l.includes('supinates')) return 'Forearm Supination';
-                  if (l.includes('pronation') || l.includes('pronates')) return 'Forearm Pronation';
-                  if (l.includes('dorsiflex')) return 'Dorsiflexion';
-                  if (l.includes('plantarflex')) return 'Plantarflexion';
-                  if (l.includes('flexion') || l.includes('flexes')) {
-                    if (joint === 'Elbow') return 'Elbow Flexion';
-                    if (joint === 'Shoulder') return 'Shoulder Flexion';
-                    if (joint === 'Hip') return 'Hip Flexion';
-                  }
-                  if (l.includes('extension') || l.includes('extends')) {
-                    if (joint === 'Elbow') return 'Elbow Extension';
-                    if (joint === 'Shoulder') return 'Shoulder Extension';
-                    if (joint === 'Hip') return 'Hip Extension';
-                  }
-                  return null;
-                };
-                const motions = Array.from(new Set(lines.map(detectMotion).filter(Boolean) as string[]));
-                if (motions.length) {
-                  return motions.map(motion => (
-                    <button key={motion} onClick={() => { setSelectedMotion(motion); setShowActionPopup(false); setShowAdvancedAnim(true); }}
-                      className={`flex items-center justify-between p-3 rounded-xl border ${theme.border} hover:border-brand-500 hover:bg-brand-50 transition-all group text-left`}>
-                      <span className={`font-medium ${theme.text} group-hover:text-brand-700`}>{motion}</span>
-                      <ArrowRight className="w-4 h-4 text-slate-300 group-hover:text-brand-500 transition-colors" />
-                    </button>
-                  ));
-                }
-                return (
-                  <div className="space-y-2">
-                    <button
-                      onClick={() => { setSelectedMotion('Elbow Flexion'); setShowActionPopup(false); setShowAdvancedAnim(true); }}
-                      className={`w-full p-3 rounded-xl border ${theme.border} hover:border-brand-500 hover:bg-brand-50 text-left`}
-                    >
-                      <span className={`font-medium ${theme.text}`}>Open 3D Viewer & Search</span>
-                    </button>
-                  </div>
-                );
-              })()}
-            </div>
-          </div>
-        </div>
-      </div>
-    )}
 
     {/* Advanced 3D Viewer (react-three-fiber) */}
     {showAdvancedAnim && (

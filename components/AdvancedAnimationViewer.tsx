@@ -256,6 +256,28 @@ const AdvancedAnimationViewer: React.FC<AdvancedAnimationViewerProps> = ({
                   </div>
                 )}
 
+                {/* Context from Muscle Card - MOVED UP FOR PROMINENCE */}
+                {!browserMode && (actionString || demonstrationText) && (
+                  <div className={`p-4 rounded-lg border ${theme.border} ${theme.cardBg}`}>
+                    <div className="flex items-center gap-2 mb-3">
+                      <Info className="w-5 h-5 text-blue-500" />
+                      <h4 className={`text-sm font-bold ${theme.text}`}>Muscle Context</h4>
+                    </div>
+                    {actionString && (
+                      <div className="mb-3">
+                        <p className={`text-[11px] font-semibold uppercase ${theme.subText} mb-1`}>Actions</p>
+                        <p className={`text-sm ${theme.text} leading-relaxed`}>{actionString}</p>
+                      </div>
+                    )}
+                    {demonstrationText && (
+                      <div>
+                        <p className={`text-[11px] font-semibold uppercase ${theme.subText} mb-1`}>Demonstration</p>
+                        <p className={`text-sm ${theme.text} leading-relaxed`}>{demonstrationText}</p>
+                      </div>
+                    )}
+                  </div>
+                )}
+
                 {/* Motion Selector */}
                 <div>
                   <label className={`text-xs font-bold uppercase tracking-wider ${theme.subText} mb-2 block`}>
@@ -280,28 +302,6 @@ const AdvancedAnimationViewer: React.FC<AdvancedAnimationViewerProps> = ({
                     ))}
                   </div>
                 </div>
-
-                {/* Context from Muscle Card */}
-                {!browserMode && (actionString || demonstrationText) && (
-                  <div className={`p-3 rounded-lg border ${theme.border} ${theme.cardBg}`}>
-                    <div className="flex items-center gap-2 mb-2">
-                      <Info className="w-4 h-4 text-blue-500" />
-                      <h4 className={`text-xs font-bold ${theme.text}`}>Muscle Context</h4>
-                    </div>
-                    {actionString && (
-                      <div className="mb-2">
-                        <p className={`text-[10px] font-semibold uppercase ${theme.subText}`}>Actions</p>
-                        <p className={`text-xs ${theme.text} leading-relaxed`}>{actionString}</p>
-                      </div>
-                    )}
-                    {demonstrationText && (
-                      <div>
-                        <p className={`text-[10px] font-semibold uppercase ${theme.subText}`}>Demonstration</p>
-                        <p className={`text-xs ${theme.text} leading-relaxed`}>{demonstrationText}</p>
-                      </div>
-                    )}
-                  </div>
-                )}
 
                 {/* GIF Search Buttons */}
                 <div>
@@ -468,9 +468,27 @@ const Animation3DView: React.FC<Animation3DViewProps> = ({
       .then((json) => {
         if (Array.isArray(json.models)) {
           const modelType = getModelTypeForMotion(motion);
-          const model = json.models.find((m: any) => 
-            m.label.toLowerCase().includes(modelType)
-          ) || json.models[0];
+          
+          // Match model labels to model type with case-insensitive comparison
+          let model;
+          if (modelType === 'upper') {
+            model = json.models.find((m: any) => 
+              m.label.toLowerCase().includes('upper')
+            );
+          } else if (modelType === 'lower') {
+            model = json.models.find((m: any) => 
+              m.label.toLowerCase().includes('lower')
+            );
+          } else if (modelType === 'overview') {
+            model = json.models.find((m: any) => 
+              m.label.toLowerCase().includes('overview')
+            );
+          }
+          
+          // Fallback to first model if no match
+          if (!model) {
+            model = json.models[0];
+          }
           
           if (model) {
             setModelUrl(toUrl(model.url));
@@ -579,6 +597,7 @@ const AnimationRig: React.FC<AnimationRigProps> = ({
 }) => {
   const groupRef = useRef<THREE.Group>(null);
   const originalQuats = useRef<Map<THREE.Object3D, THREE.Quaternion>>(new Map());
+  const [visibleObjects, setVisibleObjects] = useState<Set<THREE.Object3D>>(new Set());
 
   // Find bones/meshes matching joint
   const targetBones = useMemo(() => {
@@ -587,6 +606,18 @@ const AnimationRig: React.FC<AnimationRigProps> = ({
     
     scene.traverse((node) => {
       const name = node.name.toLowerCase();
+      
+      // Skip nodes that are too deep in hierarchy (likely small details)
+      let depth = 0;
+      let parent = node.parent;
+      while (parent && depth < 10) {
+        depth++;
+        parent = parent.parent;
+      }
+      if (depth > 6) return; // Skip deeply nested objects
+      
+      // Skip objects without geometry (helpers, empties, etc)
+      if (!(node as any).geometry && node.type !== 'Bone') return;
       
       // Match based on joint type
       if (jointId.includes('shoulder') && (
@@ -616,6 +647,40 @@ const AnimationRig: React.FC<AnimationRigProps> = ({
     return bones;
   }, [scene, motion.joint.id]);
 
+  // Track which objects have moved significantly
+  const trackedPositions = useRef<Map<THREE.Object3D, THREE.Vector3>>(new Map());
+  
+  useEffect(() => {
+    // After a few frames, hide objects that haven't moved
+    const timer = setTimeout(() => {
+      const movedObjects = new Set<THREE.Object3D>();
+      
+      targetBones.forEach(bone => {
+        const lastPos = trackedPositions.current.get(bone);
+        if (lastPos) {
+          const currentPos = new THREE.Vector3();
+          bone.getWorldPosition(currentPos);
+          const distance = lastPos.distanceTo(currentPos);
+          
+          // If object moved more than 0.1 units, consider it active
+          if (distance > 0.1) {
+            movedObjects.add(bone);
+            // Also show parent objects
+            let parent = bone.parent;
+            while (parent && parent !== scene) {
+              movedObjects.add(parent);
+              parent = parent.parent;
+            }
+          }
+        }
+      });
+      
+      setVisibleObjects(movedObjects);
+    }, 2000); // Wait 2 seconds to track movement
+    
+    return () => clearTimeout(timer);
+  }, [targetBones, scene]);
+
   useFrame((state) => {
     const t = state.clock.getElapsedTime();
     const range = (motion.joint.maxDeg - motion.joint.minDeg) / 2;
@@ -632,12 +697,27 @@ const AnimationRig: React.FC<AnimationRigProps> = ({
     targetBones.forEach(bone => {
       if (!originalQuats.current.has(bone)) {
         originalQuats.current.set(bone, bone.quaternion.clone());
+        // Store initial position for movement tracking
+        const pos = new THREE.Vector3();
+        bone.getWorldPosition(pos);
+        trackedPositions.current.set(bone, pos);
       }
       
       const baseQuat = originalQuats.current.get(bone)!;
       const rotQuat = new THREE.Quaternion().setFromAxisAngle(axis, rad);
       bone.quaternion.copy(baseQuat).multiply(rotQuat);
     });
+    
+    // Hide objects that haven't moved (after visibility tracking is complete)
+    if (visibleObjects.size > 0) {
+      scene.traverse((node) => {
+        if ((node as any).isMesh) {
+          // Show only objects in the visible set OR objects not in target bones
+          const shouldShow = !targetBones.includes(node) || visibleObjects.has(node);
+          (node as any).visible = shouldShow;
+        }
+      });
+    }
   });
 
   return (
