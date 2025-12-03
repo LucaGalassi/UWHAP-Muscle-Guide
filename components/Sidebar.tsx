@@ -85,6 +85,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   }, [showSettingsModal, examDate]);
 
   const theme = THEME_CONFIG[currentTheme];
+  const isDarkTheme = currentTheme === 'midnight' || currentTheme === 'blueprint';
 
   const filteredMuscles = useMemo(() => {
     return MUSCLE_DATA.filter((muscle) => {
@@ -559,59 +560,59 @@ const Sidebar: React.FC<SidebarProps> = ({
       {/* Settings Modal */}
       {showSettingsModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm animate-in fade-in duration-200">
-           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden">
-             <div className="p-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/50 sticky top-0 z-10">
+           <div className={`rounded-2xl shadow-2xl w-full max-w-md overflow-hidden border ${theme.border} ${theme.cardBg} ${theme.text}`}>
+             <div className={`p-4 border-b ${theme.border} flex items-center justify-between sticky top-0 z-10 ${isDarkTheme ? 'bg-slate-900/70' : currentTheme === 'nature' ? 'bg-[#f5f5f4]/80' : 'bg-slate-50/80'}`}>
                <div className="flex items-center gap-2">
-                 <Settings className="w-4 h-4 text-slate-600" />
-                 <h3 className="font-bold text-slate-900">App Settings</h3>
+                 <Settings className={`w-4 h-4 ${isDarkTheme ? 'text-slate-200' : 'text-slate-600'}`} />
+                 <h3 className="font-bold">App Settings</h3>
                </div>
-               <button 
+               <button
                 onClick={() => setShowSettingsModal(false)}
-                className="p-1 hover:bg-slate-200 rounded-full transition-colors"
+                className={`p-1 rounded-full transition-colors ${isDarkTheme ? 'hover:bg-slate-800' : 'hover:bg-slate-200'}`}
                >
-                 <X className="w-5 h-5 text-slate-400 hover:text-slate-600" />
+                 <X className={`w-5 h-5 ${isDarkTheme ? 'text-slate-400 hover:text-slate-200' : 'text-slate-400 hover:text-slate-600'}`} />
                </button>
              </div>
-             <div className="p-6 space-y-6 max-h-[75vh] overflow-y-auto">
-                
+             <div className={`p-6 space-y-6 max-h-[75vh] overflow-y-auto ${theme.text}`}>
+
                 {/* Theme Selector */}
                 <div className="space-y-3">
                   <div className="flex items-start gap-3">
-                     <div className="p-2 bg-purple-50 text-purple-600 rounded-lg">
+                     <div className={`p-2 rounded-lg ${isDarkTheme ? 'bg-indigo-900/40 text-indigo-200' : 'bg-purple-50 text-purple-600'}`}>
                        <Palette className="w-5 h-5" />
                      </div>
                      <div>
-                       <h4 className="text-sm font-bold text-slate-900">Visual Theme</h4>
-                       <p className="text-xs text-slate-500 mt-1">
+                       <h4 className="text-sm font-bold">Visual Theme</h4>
+                       <p className={`text-xs mt-1 ${theme.subText}`}>
                          Customize your study environment.
                        </p>
                      </div>
                   </div>
                   <div className="grid grid-cols-4 gap-2">
-                    <button 
+                    <button
                       onClick={() => onSetTheme('modern')}
-                      className={`p-3 rounded-xl border flex flex-col items-center gap-2 transition-all ${currentTheme === 'modern' ? 'bg-slate-50 border-brand-500 text-brand-600 shadow-sm' : 'bg-white border-slate-200 text-slate-400 hover:bg-slate-50'}`}
+                      className={`p-3 rounded-xl border flex flex-col items-center gap-2 transition-all ${currentTheme === 'modern' ? 'bg-slate-50 border-brand-500 text-brand-600 shadow-sm' : isDarkTheme ? 'bg-slate-900 border-slate-700 text-slate-200 hover:bg-slate-800' : 'bg-white border-slate-200 text-slate-400 hover:bg-slate-50'}`}
                     >
                       <Sun className="w-5 h-5" />
                       <span className="text-[10px] font-bold">Modern</span>
                     </button>
-                    <button 
+                    <button
                       onClick={() => onSetTheme('midnight')}
-                      className={`p-3 rounded-xl border flex flex-col items-center gap-2 transition-all ${currentTheme === 'midnight' ? 'bg-slate-800 border-indigo-500 text-white shadow-sm' : 'bg-white border-slate-200 text-slate-400 hover:bg-slate-50'}`}
+                      className={`p-3 rounded-xl border flex flex-col items-center gap-2 transition-all ${currentTheme === 'midnight' ? 'bg-slate-800 border-indigo-500 text-white shadow-sm' : isDarkTheme ? 'bg-slate-900 border-slate-700 text-slate-200 hover:bg-slate-800' : 'bg-white border-slate-200 text-slate-400 hover:bg-slate-50'}`}
                     >
                       <Moon className="w-5 h-5" />
                       <span className="text-[10px] font-bold">Midnight</span>
                     </button>
-                    <button 
+                    <button
                       onClick={() => onSetTheme('blueprint')}
-                      className={`p-3 rounded-xl border flex flex-col items-center gap-2 transition-all ${currentTheme === 'blueprint' ? 'bg-blue-50 border-blue-500 text-blue-600 shadow-sm' : 'bg-white border-slate-200 text-slate-400 hover:bg-slate-50'}`}
+                      className={`p-3 rounded-xl border flex flex-col items-center gap-2 transition-all ${currentTheme === 'blueprint' ? 'bg-[#0f2038] border-blue-400 text-slate-100 shadow-sm' : isDarkTheme ? 'bg-slate-900 border-slate-700 text-slate-200 hover:bg-slate-800' : 'bg-white border-slate-200 text-slate-400 hover:bg-slate-50'}`}
                     >
                       <DraftingCompass className="w-5 h-5" />
                       <span className="text-[10px] font-bold">Print</span>
                     </button>
-                    <button 
+                    <button
                       onClick={() => onSetTheme('nature')}
-                      className={`p-3 rounded-xl border flex flex-col items-center gap-2 transition-all ${currentTheme === 'nature' ? 'bg-stone-50 border-emerald-500 text-emerald-600 shadow-sm' : 'bg-white border-slate-200 text-slate-400 hover:bg-slate-50'}`}
+                      className={`p-3 rounded-xl border flex flex-col items-center gap-2 transition-all ${currentTheme === 'nature' ? 'bg-stone-50 border-emerald-500 text-emerald-600 shadow-sm' : isDarkTheme ? 'bg-slate-900 border-slate-700 text-slate-200 hover:bg-slate-800' : 'bg-white border-slate-200 text-slate-400 hover:bg-slate-50'}`}
                     >
                       <Leaf className="w-5 h-5" />
                       <span className="text-[10px] font-bold">Nature</span>
@@ -619,29 +620,29 @@ const Sidebar: React.FC<SidebarProps> = ({
                   </div>
                 </div>
 
-                <div className="border-t border-slate-100 pt-6 space-y-4">
+                <div className={`border-t pt-6 space-y-4 ${theme.border}`}>
                   {/* Exam Date Settings */}
                   <div className="space-y-3">
                     <div className="flex items-start gap-3">
-                      <div className="p-2 bg-red-50 text-red-600 rounded-lg">
+                      <div className={`p-2 rounded-lg ${isDarkTheme ? 'bg-red-900/40 text-red-200' : 'bg-red-50 text-red-600'}`}>
                         <Timer className="w-5 h-5" />
                       </div>
                       <div>
-                        <h4 className="text-sm font-bold text-slate-900">Exam Date & Study Planning</h4>
-                        <p className="text-xs text-slate-500 mt-1">
+                        <h4 className="text-sm font-bold">Exam Date & Study Planning</h4>
+                        <p className={`text-xs mt-1 ${theme.subText}`}>
                           Set your exam date to optimize study intervals and receive smart reminders.
                         </p>
                       </div>
                     </div>
                     <div className="space-y-2">
-                      <label className="text-xs font-bold text-slate-600 uppercase tracking-wider">Exam Date & Time</label>
-                      <input 
+                      <label className={`text-xs font-bold uppercase tracking-wider ${theme.subText}`}>Exam Date & Time</label>
+                      <input
                         type="datetime-local"
                         value={tempExamDate}
                         onChange={(e) => setTempExamDate(e.target.value)}
-                        className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-brand-500/20 outline-none"
+                        className={`w-full px-3 py-2 rounded-lg text-sm focus:ring-2 focus:ring-brand-500/20 outline-none border ${theme.border} ${isDarkTheme ? 'bg-slate-900' : currentTheme === 'nature' ? 'bg-[#f5f5f4]' : 'bg-slate-50'}`}
                       />
-                      <p className="text-xs text-slate-500 italic">
+                      <p className={`text-xs italic ${theme.subText}`}>
                         The SRS algorithm will adjust review intervals to ensure you review all material before your exam.
                       </p>
                     </div>
@@ -650,77 +651,97 @@ const Sidebar: React.FC<SidebarProps> = ({
                   {/* Session & Resume Settings */}
                   <div className="space-y-3">
                     <div className="flex items-start gap-3">
-                      <div className="p-2 bg-green-50 text-green-600 rounded-lg">
+                      <div className={`p-2 rounded-lg ${isDarkTheme ? 'bg-green-900/40 text-green-200' : 'bg-green-50 text-green-600'}`}>
                         <Save className="w-5 h-5" />
                       </div>
                       <div>
-                        <h4 className="text-sm font-bold text-slate-900">Session</h4>
-                        <p className="text-xs text-slate-500 mt-1">Control intros and auto-resume behavior.</p>
+                        <h4 className="text-sm font-bold">Session</h4>
+                        <p className={`text-xs mt-1 ${theme.subText}`}>Control intros and auto-resume behavior.</p>
                       </div>
                     </div>
-                    <label className="flex items-center gap-3 text-sm">
-                      <input type="checkbox" className="rounded" checked={skipWelcome} onChange={(e)=>setSkipWelcome(e.target.checked)} />
-                      <span className="text-slate-700">Skip Welcome modal</span>
-                    </label>
-                    <label className="flex items-center gap-3 text-sm">
-                      <input type="checkbox" className="rounded" checked={autoResume} onChange={(e)=>setAutoResume(e.target.checked)} />
-                      <span className="text-slate-700">Auto-resume in new tabs (no prompt)</span>
-                    </label>
-                    <label className="flex items-center gap-3 text-sm">
-                      <input type="checkbox" className="rounded" checked={hideSplash} onChange={(e)=>setHideSplash(e.target.checked)} />
-                      <span className="text-slate-700">Hide splash animation</span>
-                    </label>
+                    <div className={`${theme.text} space-y-2`}>
+                      <label className={`flex items-center gap-2 text-sm ${theme.subText}`}>
+                        <input
+                          type="checkbox"
+                          checked={autoResume}
+                          onChange={(e) => setAutoResume(e.target.checked)}
+                          className={`rounded ${isDarkTheme ? 'border-slate-600 text-brand-300 focus:ring-brand-500/40' : 'border-slate-300 text-brand-500 focus:ring-brand-500/40'}`}
+                        />
+                        Auto-resume learning sessions
+                      </label>
+                      <label className={`flex items-center gap-2 text-sm ${theme.subText}`}>
+                        <input
+                          type="checkbox"
+                          checked={skipWelcome}
+                          onChange={(e) => setSkipWelcome(e.target.checked)}
+                          className={`rounded ${isDarkTheme ? 'border-slate-600 text-brand-300 focus:ring-brand-500/40' : 'border-slate-300 text-brand-500 focus:ring-brand-500/40'}`}
+                        />
+                        Skip welcome screen
+                      </label>
+                      <label className={`flex items-center gap-2 text-sm ${theme.subText}`}>
+                        <input
+                          type="checkbox"
+                          checked={hideSplash}
+                          onChange={(e) => setHideSplash(e.target.checked)}
+                          className={`rounded ${isDarkTheme ? 'border-slate-600 text-brand-300 focus:ring-brand-500/40' : 'border-slate-300 text-brand-500 focus:ring-brand-500/40'}`}
+                        />
+                        Hide splash animation
+                      </label>
+                    </div>
                   </div>
 
-                  <div className="flex items-start gap-3">
-                    <div className="p-2 bg-blue-50 text-blue-600 rounded-lg">
-                      <Key className="w-5 h-5" />
+                  {/* API Key Entry */}
+                  <div className="space-y-3">
+                    <div className="flex items-start gap-3">
+                      <div className={`p-2 rounded-lg ${isDarkTheme ? 'bg-amber-900/40 text-amber-200' : 'bg-amber-50 text-amber-600'}`}>
+                        <Key className="w-5 h-5" />
+                      </div>
+                      <div>
+                        <h4 className="text-sm font-bold">AI Features (Optional)</h4>
+                        <p className={`text-xs mt-1 leading-relaxed ${theme.subText}`}>
+                          Add a Gemini API key for extra content. Core lab manual data is free.
+                        </p>
+                      </div>
                     </div>
-                    <div>
-                      <h4 className="text-sm font-bold text-slate-900">AI Features (Optional)</h4>
-                      <p className="text-xs text-slate-500 mt-1 leading-relaxed">
-                        Add a Gemini API key for extra content. Core lab manual data is free.
-                      </p>
+
+                    <input
+                      type="password"
+                      placeholder="Enter Gemini API Key..."
+                      value={tempKey}
+                      onChange={(e) => setTempKey(e.target.value)}
+                      className={`w-full px-3 py-2 rounded-lg text-sm focus:ring-2 focus:ring-brand-500/20 outline-none border ${theme.border} ${isDarkTheme ? 'bg-slate-900' : currentTheme === 'nature' ? 'bg-[#f5f5f4]' : 'bg-slate-50'}`}
+                    />
+
+                    <div className="flex justify-between items-center">
+                      <button
+                        onClick={handleRemoveKey}
+                        className={`text-xs font-semibold flex items-center gap-1 ${isDarkTheme ? 'text-red-200 hover:text-red-100' : 'text-red-500 hover:underline'}`}
+                      >
+                        <Trash2 className="w-3 h-3" /> Remove Key
+                      </button>
                     </div>
-                  </div>
-                  
-                  <input 
-                    type="password"
-                    placeholder="Enter Gemini API Key..."
-                    value={tempKey}
-                    onChange={(e) => setTempKey(e.target.value)}
-                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-brand-500/20 outline-none"
-                  />
-                  
-                  <div className="flex justify-between items-center">
-                    <button 
-                      onClick={handleRemoveKey}
-                      className="text-xs text-red-500 font-semibold hover:underline flex items-center gap-1"
-                    >
-                      <Trash2 className="w-3 h-3" /> Remove Key
-                    </button>
                   </div>
                 </div>
 
                 {onResetProgress && (
-                   <div className="pt-6 border-t border-slate-100">
+                   <div className={`pt-6 border-t ${theme.border}`}>
                      <div className="flex items-start gap-3 mb-4">
-                       <div className="p-2 bg-red-50 text-red-600 rounded-lg">
+                       <div className={`p-2 rounded-lg ${isDarkTheme ? 'bg-red-900/40 text-red-200' : 'bg-red-50 text-red-600'}`}>
                          <AlertTriangle className="w-5 h-5" />
                        </div>
                        <div>
-                         <h4 className="text-sm font-bold text-slate-900">Danger Zone</h4>
-                         <p className="text-xs text-slate-500 mt-1">
+                         <h4 className="text-sm font-bold">Danger Zone</h4>
+                         <p className={`text-xs mt-1 ${theme.subText}`}>
                            Resetting progress clears all learned statuses and spaced repetition history.
                          </p>
                        </div>
                      </div>
-                     <button 
+                     <button
                        onClick={() => {
                          onResetProgress();
                          setShowSettingsModal(false);
                        }}
-                       className="w-full py-2 bg-white border border-red-200 text-red-600 font-bold text-xs rounded-lg hover:bg-red-50 transition-colors"
+                       className={`w-full py-2 font-bold text-xs rounded-lg transition-colors ${isDarkTheme ? 'bg-red-900 text-red-100 border border-red-700 hover:bg-red-800' : 'bg-white border border-red-200 text-red-600 hover:bg-red-50'}`}
                      >
                        Reset All Progress
                      </button>
@@ -728,38 +749,38 @@ const Sidebar: React.FC<SidebarProps> = ({
                 )}
 
                 {/* Stats & Insights Preview */}
-                <div className="pt-6 border-t border-slate-100">
+                <div className={`pt-6 border-t ${theme.border}`}>
                   <div className="flex items-start gap-3 mb-2">
-                    <div className="p-2 bg-amber-50 text-amber-600 rounded-lg">
+                    <div className={`p-2 rounded-lg ${isDarkTheme ? 'bg-amber-900/40 text-amber-200' : 'bg-amber-50 text-amber-600'}`}>
                       <Trophy className="w-5 h-5" />
                     </div>
                     <div>
-                      <h4 className="text-sm font-bold text-slate-900">Stats & Insights</h4>
-                      <p className="text-xs text-slate-500 mt-1">Saved locally and used to show progress over time.</p>
+                      <h4 className="text-sm font-bold">Stats & Insights</h4>
+                      <p className={`text-xs mt-1 ${theme.subText}`}>Saved locally and used to show progress over time.</p>
                     </div>
                   </div>
-                  <div className="grid grid-cols-2 gap-2 text-xs text-slate-600">
-                    <div className="p-3 rounded-lg border border-slate-200 bg-white">
-                      <div className="font-bold text-slate-800">Sessions</div>
+                  <div className={`grid grid-cols-2 gap-2 text-xs ${theme.subText}`}>
+                    <div className={`p-3 rounded-lg border ${theme.border} ${theme.cardBg}`}>
+                      <div className={`font-bold ${theme.text}`}>Sessions</div>
                       <div>{statsPreview?.totalSessions ?? 0}</div>
                     </div>
-                    <div className="p-3 rounded-lg border border-slate-200 bg-white">
-                      <div className="font-bold text-slate-800">Muscles Viewed</div>
+                    <div className={`p-3 rounded-lg border ${theme.border} ${theme.cardBg}`}>
+                      <div className={`font-bold ${theme.text}`}>Muscles Viewed</div>
                       <div>{statsPreview?.musclesViewed ?? 0}</div>
                     </div>
-                    <div className="p-3 rounded-lg border border-slate-200 bg-white">
-                      <div className="font-bold text-slate-800">Flashcards</div>
+                    <div className={`p-3 rounded-lg border ${theme.border} ${theme.cardBg}`}>
+                      <div className={`font-bold ${theme.text}`}>Flashcards</div>
                       <div>{statsPreview?.flashcardsAnswered ?? 0}</div>
                     </div>
-                    <div className="p-3 rounded-lg border border-slate-200 bg-white">
-                      <div className="font-bold text-slate-800">Last Session</div>
+                    <div className={`p-3 rounded-lg border ${theme.border} ${theme.cardBg}`}>
+                      <div className={`font-bold ${theme.text}`}>Last Session</div>
                       <div>{statsPreview?.lastSessionAt ? new Date(statsPreview.lastSessionAt).toLocaleString() : '—'}</div>
                     </div>
                   </div>
                 </div>
 
-                <div className="pt-2 sticky bottom-0 bg-white">
-                  <button 
+                <div className={`pt-2 sticky bottom-0 ${isDarkTheme ? 'bg-slate-900/80' : 'bg-white/90'} backdrop-blur`}>
+                  <button
                     onClick={handleSaveKey}
                     className="w-full px-4 py-2 bg-brand-600 text-white text-sm font-bold rounded-lg hover:bg-brand-700"
                   >

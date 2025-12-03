@@ -133,13 +133,16 @@ const AdvancedAnimationViewer: React.FC<AdvancedAnimationViewerProps> = ({
     return found;
   }, [actionList]);
 
+  const overlayBg =
+    currentTheme === 'midnight' || currentTheme === 'blueprint'
+      ? 'bg-slate-950/85'
+      : currentTheme === 'nature'
+        ? 'bg-emerald-950/10'
+        : 'bg-slate-900/60';
+
   return (
     <div
-      className={`fixed inset-0 z-50 flex items-center justify-center p-4 ${
-        currentTheme === 'midnight' || currentTheme === 'blueprint'
-          ? 'bg-black/80'
-          : 'bg-black/60'
-      } backdrop-blur-sm`}
+      className={`fixed inset-0 z-50 flex items-center justify-center p-4 ${overlayBg} backdrop-blur-sm`}
     >
       <div
         className={`w-full max-w-6xl h-[90vh] rounded-2xl border ${theme.border} ${theme.cardBg} shadow-2xl overflow-hidden flex flex-col`}
