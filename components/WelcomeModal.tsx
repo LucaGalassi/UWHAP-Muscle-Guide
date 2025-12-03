@@ -23,10 +23,10 @@ const WelcomeModal: React.FC<WelcomeModalProps> = ({ onDismiss, onResume, daysUn
   const focusGroup = daysUntilExam > 0 ? 'Group A' : 'Group B';
   const focusRequirements = focusGroup === 'Group A' ? GROUP_A_REQUIREMENTS : GROUP_B_REQUIREMENTS;
   const focusTimelineText = focusGroup === 'Group A'
-    ? `${daysUntilExam} day${daysUntilExam === 1 ? '' : 's'} until skills check`
+    ? `${daysUntilExam} day${daysUntilExam === 1 ? '' : 's'} until lab exam!`
     : 'Post-exam review window';
   const focusDescriptor = focusGroup === 'Group A'
-    ? 'Muscles you demonstrate during the upcoming skills check.'
+    ? 'Muscles you demonstrate during the upcoming lab exam.'
     : 'Secondary list we revisit once the Group A checkoff is done.';
 
   const themeShowcase: Record<AppTheme, { tagline: string; highlight: string; swatch: string; icon: React.ReactNode }> = {
@@ -388,7 +388,7 @@ const WelcomeModal: React.FC<WelcomeModalProps> = ({ onDismiss, onResume, daysUn
                  ))}
                </ul>
                <p className="text-[11px] text-amber-700 font-semibold mt-4">
-                 The badge flips automatically once we move past the December 8 skills check, and you can still open any Group via the sidebar at any time.
+                 The repetition system will not be as accurate we move past the December 8 lab exam, and you can still open any Group via the sidebar at any time.
                </p>
              </div>
            </div>
