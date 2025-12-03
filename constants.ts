@@ -65,25 +65,25 @@ export const THEME_CONFIG: Record<AppTheme, ThemeConfig> = {
   },
   blueprint: {
     label: 'Blueprint',
-    appBg: 'bg-[#0f172a]', // Darker slate/blue
-    cardBg: 'bg-[#1e293b]/95 backdrop-blur-md border border-blue-600/30',
+    appBg: 'bg-[#0b1526]', // slightly lighter for contrast
+    cardBg: 'bg-[#13284b]/95 backdrop-blur-md', // brighter cards for readability
     text: 'text-slate-50',
-    subText: 'text-slate-300',
-    border: 'border-blue-600/30',
-    accent: 'bg-blue-500',
-    badge: 'bg-blue-800/40 text-blue-100 border-blue-600/30 shadow-lg',
-    infoBox: 'bg-blue-900/20 border-blue-600/30 text-slate-50',
-    iconLoc: 'bg-blue-500/20 text-blue-200',
-    iconFunc: 'bg-blue-500/20 text-blue-200',
+    subText: 'text-slate-200',
+    border: 'border-blue-500/50',
+    accent: 'bg-gradient-to-r from-sky-500 to-blue-600',
+    badge: 'bg-blue-800/50 text-blue-100 border-blue-500/40 shadow-lg',
+    infoBox: 'bg-[#0d1f3a]/90 border-blue-500/30 text-slate-100',
+    iconLoc: 'bg-blue-500/20 text-blue-100',
+    iconFunc: 'bg-blue-400/20 text-blue-100',
 
     // Sidebar
-    sidebarBg: 'bg-[#0f172a]/95 backdrop-blur-xl',
-    sidebarBorder: 'border-blue-600/30',
+    sidebarBg: 'bg-[#0f1c33]/95 backdrop-blur-xl',
+    sidebarBorder: 'border-blue-500/50',
     sidebarText: 'text-slate-50',
-    sidebarSubText: 'text-slate-400',
-    sidebarHover: 'hover:bg-blue-900/30',
-    sidebarActive: 'bg-blue-900/40 text-slate-50 border border-blue-500/50',
-    inputBg: 'bg-[#1e293b]',
+    sidebarSubText: 'text-slate-300',
+    sidebarHover: 'hover:bg-blue-900/40',
+    sidebarActive: 'bg-blue-900/60 text-slate-50 border border-blue-400/60',
+    inputBg: 'bg-[#0e1c34]',
 
     // Blobs
     blobColor1: 'bg-blue-600',
@@ -93,24 +93,24 @@ export const THEME_CONFIG: Record<AppTheme, ThemeConfig> = {
   nature: {
     label: 'Nature',
     appBg: 'bg-[#f5f5f4]', // stone-100
-    cardBg: 'bg-white/95 backdrop-blur-md', // brighter white
+    cardBg: 'bg-white shadow-md', // solid white for contrast
     text: 'text-[#1c1917]', // stone-900 - much darker
-    subText: 'text-[#57534e]', // stone-600 - darker
-    border: 'border-[#d6d3d1]', // stone-300 - more visible
+    subText: 'text-[#433f3a]', // deeper contrast for readability
+    border: 'border-[#cfcac3]', // slightly darker border
     accent: 'bg-gradient-to-r from-emerald-600 to-teal-700',
     badge: 'bg-white text-emerald-800 border-emerald-300 shadow-sm',
-    infoBox: 'bg-white/80 border-[#d6d3d1] text-[#292524]', // stone-800
-    iconLoc: 'bg-[#dcfce7] text-[#15803d]', // emerald-100, emerald-700
+    infoBox: 'bg-white/90 border-[#cfcac3] text-[#292524]', // stone-800
+    iconLoc: 'bg-[#dcfce7] text-[#166534]', // emerald-100, emerald-700
     iconFunc: 'bg-[#fef3c7] text-[#92400e]', // amber-100, amber-800
 
     // Sidebar
-    sidebarBg: 'bg-white/95 backdrop-blur-xl',
-    sidebarBorder: 'border-[#d6d3d1]',
+    sidebarBg: 'bg-white',
+    sidebarBorder: 'border-[#cfcac3]',
     sidebarText: 'text-[#1c1917]',
-    sidebarSubText: 'text-[#57534e]',
-    sidebarHover: 'hover:bg-[#e7e5e4]/80',
-    sidebarActive: 'bg-white shadow-sm border border-[#d6d3d1] text-[#15803d]',
-    inputBg: 'bg-[#f5f5f4]',
+    sidebarSubText: 'text-[#433f3a]',
+    sidebarHover: 'hover:bg-[#e7e5e4]/90',
+    sidebarActive: 'bg-white shadow-sm border border-[#cfcac3] text-[#166534]',
+    inputBg: 'bg-white',
 
     // Blobs
     blobColor1: 'bg-emerald-200',

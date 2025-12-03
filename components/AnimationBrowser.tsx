@@ -73,7 +73,7 @@ const AnimationBrowser: React.FC<AnimationBrowserProps> = ({ currentTheme, onClo
             <div>
               <h2 className="text-2xl font-bold">Animation Library</h2>
               <p className="text-sm opacity-90">
-                Browse {allMotions.length} anatomical motions across all body regions and launch a synced 3D + stick figure view
+                Browse {allMotions.length} anatomical motions across all body regions and open the resource-only study view
               </p>
             </div>
             <button
@@ -243,7 +243,7 @@ const AnimationBrowser: React.FC<AnimationBrowserProps> = ({ currentTheme, onClo
           </span>
           <span className="flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-green-500" />
-            Interactive 3D & Stick Figure Animations
+            Resource-focused study tools
           </span>
         </div>
       </div>
