@@ -127,6 +127,8 @@ const App: React.FC = () => {
 
   // Welcome Modal State
   const [showWelcome, setShowWelcome] = useState(true);
+  // Resume prompt (new tab) state
+  const [showResumePrompt, setShowResumePrompt] = useState(false);
   
   // Splash Screen State
   const [showSplash, setShowSplash] = useState(true);
@@ -197,6 +199,22 @@ const App: React.FC = () => {
 
   // Initialize state from URL params and LocalStorage on mount
   useEffect(() => {
+    // Splash should only show once per tab session
+    try {
+      const seen = sessionStorage.getItem('splash_seen');
+      if (seen === '1') {
+        setShowSplash(false);
+      } else {
+        sessionStorage.setItem('splash_seen', '1');
+      }
+    } catch {}
+
+    // Welcome dialog: honor prior dismissal
+    try {
+      const dismissed = localStorage.getItem('welcome_dismissed');
+      if (dismissed === '1') setShowWelcome(false);
+    } catch {}
+
     // 1. Load API Key
     try {
       const storedKey = localStorage.getItem('user_gemini_key');
@@ -247,6 +265,18 @@ const App: React.FC = () => {
     if (window.location.search) {
       parseUrlParams(window.location.search);
     }
+
+    // 6. If we have existing progress/theme/name and this is a fresh tab, offer resume prompt
+    try {
+      const hasProgress = !!localStorage.getItem('srs_progress');
+      const hasName = !!localStorage.getItem('student_name');
+      const hasTheme = !!localStorage.getItem('app_theme');
+      const promptShown = sessionStorage.getItem('resume_prompt_shown') === '1';
+      if (!promptShown && (hasProgress || hasName || hasTheme)) {
+        setShowResumePrompt(true);
+        sessionStorage.setItem('resume_prompt_shown', '1');
+      }
+    } catch {}
   }, []);
 
   // Save Progress whenever it changes
@@ -482,7 +512,7 @@ const App: React.FC = () => {
       {/* Welcome Modal */}
       {showWelcome && (
         <WelcomeModal 
-          onDismiss={() => setShowWelcome(false)}
+          onDismiss={() => { setShowWelcome(false); try { localStorage.setItem('welcome_dismissed', '1'); } catch {} }}
           onResume={handleResumeData}
           daysUntilExam={daysUntilExam}
           currentTheme={theme}
@@ -536,6 +566,35 @@ const App: React.FC = () => {
         {/* Main Content */}
         <main className="flex-1 relative w-full h-full flex flex-col">
           {renderMainContent()}
+
+          {/* Resume prior session prompt (new tab) */}
+          {showResumePrompt && (
+            <div className="fixed bottom-6 right-6 z-50 max-w-sm">
+              <div className={`rounded-2xl shadow-xl border ${currentThemeConfig.border} ${currentThemeConfig.cardBg} p-4`}> 
+                <div className="flex items-start gap-3">
+                  <div className="shrink-0 w-2 h-2 rounded-full bg-emerald-500 mt-2" />
+                  <div className="flex-1">
+                    <div className={`text-sm font-bold ${currentThemeConfig.text}`}>Found a previous session</div>
+                    <div className={`text-xs mt-1 ${currentThemeConfig.subText}`}>You have saved preferences and study progress in this browser. Load them now?</div>
+                    <div className="mt-3 flex gap-2">
+                      <button
+                        onClick={() => setShowResumePrompt(false)}
+                        className="px-3 py-1.5 text-xs rounded-lg border border-slate-200 hover:bg-slate-50"
+                      >Dismiss</button>
+                      <button
+                        onClick={() => { 
+                          // State is already loaded from localStorage at startup; this button simply hides prompt.
+                          setShowResumePrompt(false);
+                          setShowWelcome(false);
+                        }}
+                        className="px-3 py-1.5 text-xs rounded-lg bg-emerald-600 text-white hover:bg-emerald-700"
+                      >Load</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
         </main>
       </div>
     </div>
