@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { AppTheme } from '../types';
 import { THEME_CONFIG } from '../constants';
+import { extractMotionKeywords } from '../utils/motionParser';
 import {
   MotionDefinition,
   MOTIONS,
@@ -103,37 +104,9 @@ const AdvancedAnimationViewer: React.FC<AdvancedAnimationViewerProps> = ({
   }, [actionString]);
 
   const extractedMotions = useMemo(() => {
-    const motionKeywords = [
-      'medial rotation', 'lateral rotation', // Check compound motions first
-      'flexion',
-      'extension',
-      'abduction',
-      'adduction',
-      'rotation',
-      'pronation',
-      'supination',
-      'dorsiflexion',
-      'plantarflexion',
-      'elevation',
-      'depression',
-      'protraction',
-      'retraction',
-      'inversion',
-      'eversion',
-      'circumduction',
-      'opposition'
-    ];
-    const found: string[] = [];
-    actionList.forEach((action) => {
-      const lower = action.toLowerCase();
-      motionKeywords.forEach((keyword) => {
-        if (lower.includes(keyword) && !found.includes(keyword)) {
-          found.push(keyword);
-        }
-      });
-    });
-    return found.slice(0, 8); // Limit to 8 motions
-  }, [actionList]);
+    if (!actionString) return [];
+    return extractMotionKeywords(actionString, 8);
+  }, [actionString]);
 
   const overlayBg =
     currentTheme === 'midnight' || currentTheme === 'blueprint'

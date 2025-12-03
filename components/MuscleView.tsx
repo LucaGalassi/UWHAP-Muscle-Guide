@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { MuscleItem, MuscleContent, AppTheme } from '../types';
 import { fetchMuscleDetails } from '../services/geminiService';
 import { MUSCLE_DETAILS, MUSCLE_DATA, THEME_CONFIG } from '../constants';
+import { extractMotionKeywords } from '../utils/motionParser';
 import { 
   Play, 
   MapPin, 
@@ -388,39 +389,11 @@ const InfoCard: React.FC<InfoCardProps> = ({ title, icon, content, className, on
   // Parse actions to extract individual movements for GIF search
   const extractedMotions = React.useMemo(() => {
     if (!isAction || !content) return [];
-    
-    const motionKeywords = [
-      'medial rotation', 'lateral rotation', // Check compound motions first
-      'flexion', 'extension', 'abduction', 'adduction',
-      'rotation', 'pronation', 'supination', 'dorsiflexion', 'plantarflexion',
-      'elevation', 'depression', 'protraction', 'retraction',
-      'inversion', 'eversion', 'circumduction', 'opposition'
-    ];
-    
-    // Split by newlines, semicolons, or numbered items
-    const actionList = content
-      .split(/[\n;]|(?=\d+\.)/) // Split on newlines, semicolons, or before numbered items
-      .map((s) => s.replace(/^\d+\.\s*/, '').trim()) // Remove leading numbers
-      .filter((s) => s.length > 3 && !s.match(/^\d+$/)); // Filter short or number-only items
-    
-    const found: string[] = [];
-    actionList.forEach((action) => {
-      const lower = action.toLowerCase();
-      // Check for motion keywords (compound first, then simple)
-      motionKeywords.forEach((keyword) => {
-        if (lower.includes(keyword) && !found.includes(keyword)) {
-          found.push(keyword);
-        }
-      });
-    });
-    
-    // If no specific motions found but content exists, return a generic search
-    if (found.length === 0 && content.length > 0) {
-      return ['action']; // Will create a general search
-    }
-    
-    return found.slice(0, 6); // Limit to 6 motions to avoid clutter
+    return extractMotionKeywords(content, 6);
   }, [isAction, content]);
+  
+  // Check if we have specific motions (not just generic 'action')
+  const hasSpecificMotions = extractedMotions.filter(m => m !== 'action').length > 0;
   
   const openGifSearch = (motion: string) => {
     const query = `${muscleName} ${motion} animation gif`;
@@ -452,7 +425,7 @@ const InfoCard: React.FC<InfoCardProps> = ({ title, icon, content, className, on
             Quick GIF Search
           </p>
           <div className="flex flex-wrap gap-2">
-            {extractedMotions.length > 0 ? (
+            {hasSpecificMotions ? (
               <>
                 {/* Individual motion searches */}
                 {extractedMotions.filter(m => m !== 'action').map((motion, i) => (
@@ -466,15 +439,13 @@ const InfoCard: React.FC<InfoCardProps> = ({ title, icon, content, className, on
                   </button>
                 ))}
                 {/* General search button when specific motions exist */}
-                {extractedMotions.filter(m => m !== 'action').length > 0 && (
-                  <button
-                    onClick={() => openGifSearch('muscle action')}
-                    className={`px-2.5 py-1.5 rounded-lg border ${theme.border} ${theme.inputBg} text-[11px] font-medium hover:border-emerald-400 hover:bg-emerald-50 transition-colors flex items-center gap-1.5 ${theme.text}`}
-                  >
-                    <Search className="w-3 h-3 text-emerald-500" />
-                    All actions gif
-                  </button>
-                )}
+                <button
+                  onClick={() => openGifSearch('muscle action')}
+                  className={`px-2.5 py-1.5 rounded-lg border ${theme.border} ${theme.inputBg} text-[11px] font-medium hover:border-emerald-400 hover:bg-emerald-50 transition-colors flex items-center gap-1.5 ${theme.text}`}
+                >
+                  <Search className="w-3 h-3 text-emerald-500" />
+                  All actions gif
+                </button>
               </>
             ) : (
               /* Main search button when no specific motions found */
