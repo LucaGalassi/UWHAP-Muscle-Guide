@@ -465,7 +465,7 @@ const WelcomeModal: React.FC<WelcomeModalProps> = ({ onDismiss, onResume, daysUn
                      <div className="relative z-10">
                        <div className="flex items-center justify-between gap-3 mb-3">
                          <div className="flex items-center gap-3">
-                           <div className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-all ${isActive ? story.swatch : themeConf.iconFunc}`}>
+                           <div className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-all ${isActive ? `${story.swatch} text-white` : themeConf.iconFunc}`}>
                              {story.icon}
                            </div>
                            <div>

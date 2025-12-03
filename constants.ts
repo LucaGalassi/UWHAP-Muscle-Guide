@@ -65,19 +65,19 @@ export const THEME_CONFIG: Record<AppTheme, ThemeConfig> = {
   },
   blueprint: {
     label: 'Blueprint',
-    appBg: 'bg-[#0d1a2f]', // brighter base
-    cardBg: 'bg-[#18345e] shadow-md', // solid card for legibility
-    text: 'text-[#f3f7ff]',
-    subText: 'text-[#cfe2ff]',
-    border: 'border-blue-300/80', // more visible border
+    appBg: 'bg-[#0d1a2f]',
+    cardBg: 'bg-[#1a2f4d]',
+    text: 'text-slate-50',
+    subText: 'text-slate-200',
+    border: 'border-blue-400/60',
     accent: 'bg-gradient-to-r from-sky-500 to-blue-500',
     badge: 'bg-blue-800/60 text-blue-100 border-blue-400/70 shadow',
-    infoBox: 'bg-[#102748] border-blue-400/50 text-slate-100',
+    infoBox: 'bg-[#142c4c] border-blue-400/50 text-slate-100',
     iconLoc: 'bg-blue-500/30 text-blue-100',
     iconFunc: 'bg-blue-400/30 text-blue-100',
 
     // Sidebar
-    sidebarBg: 'bg-[#10223f]', // solid, darker sidebar
+    sidebarBg: 'bg-[#10223f]',
     sidebarBorder: 'border-blue-400/70',
     sidebarText: 'text-slate-50',
     sidebarSubText: 'text-slate-200',

@@ -231,16 +231,18 @@ const MuscleView: React.FC<MuscleViewProps> = ({ muscle, onSelectMuscle, isLearn
               icon={<MapPin className="w-4 h-4 text-emerald-600" />}
               content={content.origin}
               className="md:col-span-1"
-              onSearch={() => openSearchPopup(`${muscle.name} muscle origin anatomy`)}
+              onSearch={() => openSearchPopup(`${muscle.name} muscle origin anatomy diagram`)}
               currentTheme={currentTheme}
+              searchLabel="Search Origin Images"
             />
             <InfoCard 
               title="Insertion" 
               icon={<MapPin className="w-4 h-4 text-rose-600" />}
               content={content.insertion}
               className="md:col-span-1"
-              onSearch={() => openSearchPopup(`${muscle.name} muscle insertion anatomy`)}
+              onSearch={() => openSearchPopup(`${muscle.name} muscle insertion anatomy diagram`)}
               currentTheme={currentTheme}
+              searchLabel="Search Insertion Images"
             />
             <InfoCard 
               title="Action" 
@@ -250,6 +252,7 @@ const MuscleView: React.FC<MuscleViewProps> = ({ muscle, onSelectMuscle, isLearn
               isAction={true}
               currentTheme={currentTheme}
               muscleName={muscle.name}
+              searchLabel="View 3D Animation"
             />
           </div>
 
@@ -378,9 +381,10 @@ interface InfoCardProps {
   isAction?: boolean;
   currentTheme: AppTheme;
   muscleName?: string;
+  searchLabel?: string;
 }
 
-const InfoCard: React.FC<InfoCardProps> = ({ title, icon, content, className, onSearch, isAction, currentTheme, muscleName }) => {
+const InfoCard: React.FC<InfoCardProps> = ({ title, icon, content, className, onSearch, isAction, currentTheme, muscleName, searchLabel }) => {
   const theme = THEME_CONFIG[currentTheme];
   
   return (
@@ -399,12 +403,12 @@ const InfoCard: React.FC<InfoCardProps> = ({ title, icon, content, className, on
         onClick={onSearch}
         className={`w-full mt-auto py-2.5 px-3 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-2 active:scale-[0.98] ${
           isAction 
-          ? 'bg-blue-600 text-white hover:bg-blue-700 shadow-sm' 
+          ? 'bg-gradient-to-r from-brand-500 to-blue-600 text-white hover:from-brand-600 hover:to-blue-700 shadow-md' 
           : `${theme.inputBg} border ${theme.border} hover:border-brand-400 ${theme.text} hover:text-brand-600`
         }`}
       >
-        {isAction ? <PlayCircle className="w-4 h-4" /> : <Search className="w-3.5 h-3.5" />}
-        {isAction ? "Show Action Animation" : `Show ${title} Image`}
+        {isAction ? <Zap className="w-4 h-4" /> : <Search className="w-3.5 h-3.5" />}
+        {searchLabel || (isAction ? "View 3D Animation" : `Search ${title} Images`)}
       </button>
     </div>
   );

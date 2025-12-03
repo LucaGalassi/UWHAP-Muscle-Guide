@@ -437,42 +437,42 @@ const Sidebar: React.FC<SidebarProps> = ({
 
       {/* Share Modal */}
       {showShareModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md animate-in fade-in duration-200">
-           <div className="bg-white rounded-3xl shadow-2xl w-full max-w-2xl overflow-hidden transform transition-all scale-100 border border-slate-100">
-            <div className="p-4 border-b border-slate-100 flex items-center justify-between bg-gradient-to-r from-brand-50 to-blue-50">
+        <div className={`fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-md animate-in fade-in duration-200 ${isDarkTheme ? 'bg-slate-950/80' : 'bg-slate-900/60'}`}>
+           <div className={`rounded-3xl shadow-2xl w-full max-w-2xl overflow-hidden transform transition-all scale-100 border ${isDarkTheme ? 'bg-slate-900 border-slate-700' : 'bg-white border-slate-100'}`}>
+            <div className={`p-4 border-b flex items-center justify-between ${isDarkTheme ? 'bg-slate-900 border-slate-700' : 'bg-gradient-to-r from-brand-50 to-blue-50 border-slate-100'}`}>
               <div className="flex items-center gap-2">
                 <div className="bg-gradient-to-br from-brand-400 to-blue-600 p-1.5 rounded-lg shadow-sm">
                   <Share2 className="w-4 h-4 text-white" />
                 </div>
-                <h3 className="font-bold text-slate-900">Save Progress</h3>
+                <h3 className={`font-bold ${isDarkTheme ? 'text-slate-100' : 'text-slate-900'}`}>Save Progress</h3>
               </div>
               <button 
                 onClick={() => setShowShareModal(false)}
-                className="p-1 hover:bg-white/50 rounded-full transition-colors"
+                className={`p-1 rounded-full transition-colors ${isDarkTheme ? 'hover:bg-slate-800' : 'hover:bg-white/50'}`}
               >
-                <X className="w-5 h-5 text-slate-400 hover:text-slate-600" />
+                <X className={`w-5 h-5 ${isDarkTheme ? 'text-slate-300 hover:text-slate-100' : 'text-slate-400 hover:text-slate-600'}`} />
               </button>
             </div>
             
-            <div className="p-6 space-y-6">
-               <div className="bg-gradient-to-r from-amber-50 to-yellow-50 p-4 rounded-xl border-2 border-amber-200 flex items-start gap-3">
+            <div className={`p-6 space-y-6 ${isDarkTheme ? 'bg-slate-900' : 'bg-white'}`}>
+               <div className={`p-4 rounded-xl border-2 flex items-start gap-3 ${isDarkTheme ? 'bg-amber-900/20 border-amber-700/40' : 'bg-gradient-to-r from-amber-50 to-yellow-50 border-amber-200'}`}>
                   <AlertTriangle className="w-5 h-5 text-amber-600 mt-0.5 shrink-0" />
                   <div>
-                    <p className="text-xs text-amber-900 font-bold mb-1">No Account Required</p>
-                    <p className="text-xs text-amber-800 leading-relaxed">
+                    <p className={`text-xs font-bold mb-1 ${isDarkTheme ? 'text-amber-100' : 'text-amber-900'}`}>No Account Required</p>
+                    <p className={`text-xs leading-relaxed ${isDarkTheme ? 'text-amber-200' : 'text-amber-800'}`}>
                       We don't store your data. Use a Save Code to backup your progress, or a Share Link to send it to another device.
                     </p>
                   </div>
                </div>
 
                <div className="space-y-3">
-                 <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block">Personalize (optional)</label>
+                 <label className={`text-xs font-bold uppercase tracking-wider block ${isDarkTheme ? 'text-slate-300' : 'text-slate-500'}`}>Personalize (optional)</label>
                  <input 
                     type="text" 
                     placeholder="Add a label (e.g. Dr. Muscle)" 
                     value={studentName}
                     onChange={(e) => onSetStudentName(e.target.value)}
-                    className="w-full pl-3 pr-3 py-3 bg-white border-2 border-slate-100 rounded-xl text-sm font-semibold focus:outline-none focus:border-brand-500 focus:ring-4 focus:ring-brand-500/10 transition-all placeholder:font-normal"
+                    className={`w-full pl-3 pr-3 py-3 border-2 rounded-xl text-sm font-semibold focus:outline-none focus:border-brand-500 focus:ring-4 focus:ring-brand-500/10 transition-all placeholder:font-normal ${isDarkTheme ? 'bg-slate-800 border-slate-700 text-slate-100' : 'bg-white border-slate-100 text-slate-900'}`}
                  />
                </div>
 
@@ -510,15 +510,15 @@ const Sidebar: React.FC<SidebarProps> = ({
                  </div>
 
                  {/* Share Link */}
-                 <div className="p-4 bg-white rounded-2xl border border-slate-200 flex flex-col gap-3 shadow-sm">
+                 <div className={`p-4 rounded-2xl border flex flex-col gap-3 shadow-sm ${isDarkTheme ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-200'}`}>
                    <div>
-                     <p className="text-xs uppercase tracking-widest text-slate-400">Instant Resume</p>
-                     <h4 className="font-bold text-slate-900">Shareable Link</h4>
+                     <p className={`text-xs uppercase tracking-widest ${isDarkTheme ? 'text-slate-300' : 'text-slate-400'}`}>Instant Resume</p>
+                     <h4 className={`font-bold ${isDarkTheme ? 'text-slate-100' : 'text-slate-900'}`}>Shareable Link</h4>
                    </div>
                    <input 
                     readOnly 
                     value={getShareLink(studentName)} 
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-[11px] text-slate-600 font-mono focus:outline-none truncate cursor-text hover:bg-slate-100 transition-colors"
+                    className={`w-full border rounded-xl px-3 py-2 text-[11px] font-mono focus:outline-none truncate cursor-text transition-colors ${isDarkTheme ? 'bg-slate-900 border-slate-700 text-slate-300 hover:bg-slate-950' : 'bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100'}`}
                     onClick={(e) => e.currentTarget.select()}
                    />
                    <button 
@@ -526,32 +526,32 @@ const Sidebar: React.FC<SidebarProps> = ({
                       className={`w-full py-2 rounded-xl text-sm font-bold flex items-center justify-center gap-2 transition-all ${
                         copyFeedback
                         ? 'bg-brand-600 text-white'
-                        : 'bg-slate-900 text-white hover:bg-slate-800'
+                        : isDarkTheme ? 'bg-slate-700 text-white hover:bg-slate-600' : 'bg-slate-900 text-white hover:bg-slate-800'
                       }`}
                    >
                       {copyFeedback ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
                       {copyFeedback ? 'Link Copied!' : 'Copy Link'}
                    </button>
-                   <p className="text-[11px] text-slate-500">
+                   <p className={`text-[11px] ${isDarkTheme ? 'text-slate-400' : 'text-slate-500'}`}>
                       Great for texting or emailing yourself a quick resume link.
                    </p>
                  </div>
                </div>
 
-               <div className="bg-blue-50 p-3 rounded-lg border border-blue-100">
-                 <p className="text-xs text-blue-800 leading-relaxed">
+               <div className={`p-3 rounded-lg border ${isDarkTheme ? 'bg-blue-900/20 border-blue-700/40' : 'bg-blue-50 border-blue-100'}`}>
+                 <p className={`text-xs leading-relaxed ${isDarkTheme ? 'text-blue-200' : 'text-blue-800'}`}>
                    <strong>💡 Pro tip:</strong> Save both the code <em>and</em> the link for maximum safety.
                  </p>
                </div>
               
-              <div className="pt-4 border-t border-slate-100 space-y-3">
-                 <div className="flex items-center gap-2 text-xs text-slate-500">
+              <div className={`pt-4 border-t space-y-3 ${isDarkTheme ? 'border-slate-700' : 'border-slate-100'}`}>
+                 <div className={`flex items-center gap-2 text-xs ${isDarkTheme ? 'text-slate-300' : 'text-slate-500'}`}>
                    <CheckCircle2 className="w-4 h-4 text-emerald-500" />
-                   <span>Progress: <strong className="text-slate-700">{learnedIds.size}/{MUSCLE_DATA.length}</strong> muscles</span>
+                   <span>Progress: <strong className={isDarkTheme ? 'text-slate-100' : 'text-slate-700'}>{learnedIds.size}/{MUSCLE_DATA.length}</strong> muscles</span>
                  </div>
-                 <div className="flex items-center gap-2 text-xs text-slate-500">
+                 <div className={`flex items-center gap-2 text-xs ${isDarkTheme ? 'text-slate-300' : 'text-slate-500'}`}>
                    <Palette className="w-4 h-4 text-purple-500" />
-                   <span>Theme: <strong className="text-slate-700">{THEME_CONFIG[currentTheme].label}</strong></span>
+                   <span>Theme: <strong className={isDarkTheme ? 'text-slate-100' : 'text-slate-700'}>{THEME_CONFIG[currentTheme].label}</strong></span>
                  </div>
               </div>
             </div>
