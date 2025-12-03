@@ -93,57 +93,39 @@ function AxisHelper({ axis, length=0.6 }: { axis: THREE.Vector3; length?: number
 
 function CameraController({ position }: { position: number[] }) {
   const { camera } = useThree();
-  useEffect(() => {
-    camera.position.set(position[0], position[1], position[2]);
+  const vec = new THREE.Vector3(...position);
+  useFrame((state, delta) => {
+    camera.position.lerp(vec, 5 * delta);
     camera.lookAt(0, 0, 0);
-  }, [position, camera]);
+  });
   return null;
 }
 
-function StickFigureFallback() {
-    return (
-        <group>
-            {/* Head */}
-            <mesh position={[0, 1.7, 0]}>
-                <sphereGeometry args={[0.15, 32, 32]} />
-                <meshStandardMaterial color="#cbd5e1" />
-            </mesh>
-            {/* Torso */}
-            <mesh position={[0, 1.2, 0]}>
-                <boxGeometry args={[0.3, 0.8, 0.2]} />
-                <meshStandardMaterial color="#94a3b8" />
-            </mesh>
-            {/* Arms */}
-            <mesh position={[-0.25, 1.5, 0]} rotation={[0, 0, -0.2]}>
-                <cylinderGeometry args={[0.04, 0.04, 0.6]} />
-                <meshStandardMaterial color="#64748b" />
-            </mesh>
-            <mesh position={[0.25, 1.5, 0]} rotation={[0, 0, 0.2]}>
-                <cylinderGeometry args={[0.04, 0.04, 0.6]} />
-                <meshStandardMaterial color="#64748b" />
-            </mesh>
-            {/* Legs */}
-            <mesh position={[-0.1, 0.4, 0]}>
-                <cylinderGeometry args={[0.05, 0.05, 0.8]} />
-                <meshStandardMaterial color="#64748b" />
-            </mesh>
-            <mesh position={[0.1, 0.4, 0]}>
-                <cylinderGeometry args={[0.05, 0.05, 0.8]} />
-                <meshStandardMaterial color="#64748b" />
-            </mesh>
-            <gridHelper args={[4, 4]} />
-        </group>
-    )
+function Loader() {
+  return (
+    <Html center>
+      <div className="flex flex-col items-center gap-2">
+        <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin" />
+        <p className="text-xs font-bold text-blue-500">Loading Model...</p>
+      </div>
+    </Html>
+  );
 }
 
 function ArmRig({ motion, playing, angleOut, skeleton }: { motion: MotionName; playing: boolean; angleOut: (deg:number)=>void; skeleton?: any }) {
   const group = useRef<THREE.Group>(null);
+  const elbow = useRef<THREE.Group>(null);
+  const forearm = useRef<THREE.Group>(null);
+  const shoulder = useRef<THREE.Group>(null);
+  const hip = useRef<THREE.Group>(null);
+  const knee = useRef<THREE.Group>(null);
+  const ankle = useRef<THREE.Group>(null);
   const spec = motionToTargets(motion);
   const axisNorm = useMemo(() => spec.joint.axis.clone().normalize(), [spec.joint.axis]);
 
     // Map bones if skeleton is provided
-  const bones = useMemo(() => {
-    if (!skeleton?.nodes) return {};
+  const skeletonBones = useMemo(() => {
+    if (!skeleton?.nodes) return null;
     
     // DEBUG: Log all available bone names
     console.log("Available GLTF Nodes:", Object.keys(skeleton.nodes));
@@ -182,6 +164,8 @@ function ArmRig({ motion, playing, angleOut, skeleton }: { motion: MotionName; p
     };
   }, [skeleton]);
 
+  const hand = useRef<THREE.Group>(null);
+
   useFrame((state) => {
     // Auto-oscillate smoothly within joint range when playing
     const range = (spec.joint.maxDeg - spec.joint.minDeg) / 2;
@@ -196,6 +180,19 @@ function ArmRig({ motion, playing, angleOut, skeleton }: { motion: MotionName; p
       obj.quaternion.setFromAxisAngle(axisNorm, rad);
     };
 
+    // Determine which bones to use (Skeleton or Fallback Refs)
+    const currentBones = skeletonBones || {
+        shoulder: [shoulder.current].filter(Boolean),
+        elbow: [elbow.current].filter(Boolean),
+        forearm: [forearm.current].filter(Boolean),
+        hip: [hip.current].filter(Boolean),
+        knee: [knee.current].filter(Boolean),
+        ankle: [ankle.current].filter(Boolean),
+        hand: [hand.current].filter(Boolean),
+        torso: [],
+        head: []
+    };
+
     // Smart Group Rotation:
     // 1. Identify the primary bone (first in list).
     // 2. Rotate primary bone.
@@ -203,112 +200,86 @@ function ArmRig({ motion, playing, angleOut, skeleton }: { motion: MotionName; p
     const applyToGroup = (group: any[] | undefined) => {
         if (!group || group.length === 0) return;
         
-        const primary = group[0];
-        setQuat(primary);
-
-        for (let i = 1; i < group.length; i++) {
-            const node = group[i];
-            // Check if node is a descendant of primary
-            let isChild = false;
-            let p = node.parent;
-            while (p) {
-                if (p === primary) { isChild = true; break; }
-                p = p.parent;
-            }
-            
-            if (!isChild) {
-                setQuat(node);
-            }
-        }
+        // Simplified Logic: Rotate everything unless it's a child of another node IN THE SAME GROUP
+        // This handles partial hierarchies better than just checking the primary bone.
+        group.forEach(node => {
+             // Check if parent is also in this group
+             let parentInGroup = false;
+             let p = node.parent;
+             while(p) {
+                 if (group.includes(p)) { parentInGroup = true; break; }
+                 p = p.parent;
+             }
+             
+             if (!parentInGroup) {
+                 setQuat(node);
+             }
+        });
     };
 
-    if (spec.joint === JOINTS.ShoulderAbdAdd || spec.joint === JOINTS.ShoulderMedLatRot || spec.joint === JOINTS.ShoulderFlexExt) {
-      applyToGroup(bones.shoulder);
-      // Shoulder moves the arm, so we must also move the child groups if they aren't parented
-      // In a proper hierarchy, moving shoulder moves elbow. In a soup, we must move elbow manually.
-      // We can use the same logic: check if elbow primary is child of shoulder primary.
-      const shoulderPrimary = bones.shoulder?.[0];
-      const elbowPrimary = bones.elbow?.[0];
-      
-      let elbowIsChild = false;
-      if (shoulderPrimary && elbowPrimary) {
-          let p = elbowPrimary.parent;
-          while(p) { if(p === shoulderPrimary) { elbowIsChild = true; break; } p = p.parent; }
-      }
-
-      if (!elbowIsChild) {
-          applyToGroup(bones.elbow); 
-          applyToGroup(bones.forearm);
-          applyToGroup(bones.hand);
-      }
-    }
     if (spec.joint === JOINTS.ForearmProSup) {
-      applyToGroup(bones.forearm);
+      applyToGroup(currentBones.forearm);
       // Check hand child status
-      const forearmPrimary = bones.forearm?.[0];
-      const handPrimary = bones.hand?.[0];
+      const forearmPrimary = currentBones.forearm?.[0];
+      const handPrimary = currentBones.hand?.[0];
       let handIsChild = false;
       if (forearmPrimary && handPrimary) {
           let p = handPrimary.parent;
           while(p) { if(p === forearmPrimary) { handIsChild = true; break; } p = p.parent; }
       }
-      if (!handIsChild) applyToGroup(bones.hand);
+      if (!handIsChild) applyToGroup(currentBones.hand);
     }
-    if (spec.joint === JOINTS.ElbowFlexExt) {
-      applyToGroup(bones.elbow);
+    else if (spec.joint === JOINTS.ElbowFlexExt) {
+      applyToGroup(currentBones.elbow);
       // Check hand child status (Elbow moves forearm and hand)
-      const elbowPrimary = bones.elbow?.[0];
-      const handPrimary = bones.hand?.[0];
+      const elbowPrimary = currentBones.elbow?.[0];
+      const handPrimary = currentBones.hand?.[0];
       let handIsChild = false;
       if (elbowPrimary && handPrimary) {
           let p = handPrimary.parent;
           while(p) { if(p === elbowPrimary) { handIsChild = true; break; } p = p.parent; }
       }
       if (!handIsChild) {
-          applyToGroup(bones.forearm); // Forearm moves with elbow flexion
-          applyToGroup(bones.hand);
+          applyToGroup(currentBones.forearm); // Forearm moves with elbow flexion
+          applyToGroup(currentBones.hand);
       }
     }
-    if (spec.joint === JOINTS.HipFlexExt) {
-      applyToGroup(bones.hip);
+    else if (spec.joint === JOINTS.HipFlexExt) {
+      applyToGroup(currentBones.hip);
       // Hip moves the leg
-      const hipPrimary = bones.hip?.[0];
-      const kneePrimary = bones.knee?.[0];
+      const hipPrimary = currentBones.hip?.[0];
+      const kneePrimary = currentBones.knee?.[0];
       let kneeIsChild = false;
       if (hipPrimary && kneePrimary) {
           let p = kneePrimary.parent;
           while(p) { if(p === hipPrimary) { kneeIsChild = true; break; } p = p.parent; }
       }
       if (!kneeIsChild) {
-          applyToGroup(bones.knee);
-          applyToGroup(bones.ankle);
+          applyToGroup(currentBones.knee);
+          applyToGroup(currentBones.ankle);
       }
     }
-    if (spec.joint === JOINTS.KneeFlexExt) {
-      applyToGroup(bones.knee);
+    else if (spec.joint === JOINTS.KneeFlexExt) {
+      applyToGroup(currentBones.knee);
       // Knee moves the foot
-      const kneePrimary = bones.knee?.[0];
-      const anklePrimary = bones.ankle?.[0];
+      const kneePrimary = currentBones.knee?.[0];
+      const anklePrimary = currentBones.ankle?.[0];
       let ankleIsChild = false;
       if (kneePrimary && anklePrimary) {
           let p = anklePrimary.parent;
           while(p) { if(p === kneePrimary) { ankleIsChild = true; break; } p = p.parent; }
       }
-      if (!ankleIsChild) applyToGroup(bones.ankle);
+      if (!ankleIsChild) applyToGroup(currentBones.ankle);
     }
-    if (spec.joint === JOINTS.AnkleFlexExt) {
-      applyToGroup(bones.ankle);
+    else if (spec.joint === JOINTS.AnkleFlexExt) {
+      applyToGroup(currentBones.ankle);
     }
-    
-    // "Flying Around" / Breathing Effect for Torso/Head
-    if (playing) {
-       bones.torso?.forEach((node: any, i: number) => {
-           node.position.y += Math.sin(t * 0.5 + i) * 0.0002; // Subtle float
-           node.rotation.z += Math.sin(t * 0.3 + i) * 0.0005; // Subtle twist
-       });
-       bones.head?.forEach((node: any, i: number) => {
-           node.rotation.y = Math.sin(t * 0.2) * 0.02; // Slow look around
-       });
+    else {
+        // Default behavior for other joints (Shoulder, etc)
+        // Just rotate the primary group associated with the joint
+        if (spec.joint === JOINTS.ShoulderFlexExt || spec.joint === JOINTS.ShoulderAbdAdd || spec.joint === JOINTS.ShoulderMedLatRot) {
+             applyToGroup(currentBones.shoulder);
+        }
     }
   });
 
@@ -318,7 +289,76 @@ function ArmRig({ motion, playing, angleOut, skeleton }: { motion: MotionName; p
     );
   }
 
-  return <StickFigureFallback />;
+  return (
+    <group ref={group} position={[0,0,0]}>
+      {/* Head */}
+      <mesh position={[0, 1.7, 0]}>
+          <sphereGeometry args={[0.15, 32, 32]} />
+          <meshStandardMaterial color="#cbd5e1" />
+      </mesh>
+      {/* Torso */}
+      <mesh position={[0, 1.2, 0]}>
+          <boxGeometry args={[0.3, 0.8, 0.2]} />
+          <meshStandardMaterial color="#94a3b8" />
+      </mesh>
+      
+      {/* Right Arm Hierarchy */}
+      <group ref={shoulder} position={[-0.25, 1.5, 0]}>
+          <mesh position={[0, -0.3, 0]}> {/* Upper Arm */}
+             <cylinderGeometry args={[0.04, 0.04, 0.6]} />
+             <meshStandardMaterial color="#64748b" />
+          </mesh>
+          <group ref={elbow} position={[0, -0.6, 0]}>
+              <group ref={forearm}>
+                  <mesh position={[0, -0.3, 0]}> {/* Forearm */}
+                      <cylinderGeometry args={[0.035, 0.035, 0.6]} />
+                      <meshStandardMaterial color="#64748b" />
+                  </mesh>
+                  <group ref={hand} position={[0, -0.65, 0]}>
+                      <mesh position={[0, 0, 0]}> {/* Hand */}
+                          <boxGeometry args={[0.1, 0.15, 0.05]} />
+                          <meshStandardMaterial color="#cbd5e1" />
+                      </mesh>
+                  </group>
+              </group>
+          </group>
+      </group>
+
+      {/* Left Arm (Static) */}
+      <mesh position={[0.25, 1.5, 0]} rotation={[0, 0, 0.2]}>
+          <cylinderGeometry args={[0.04, 0.04, 0.6]} />
+          <meshStandardMaterial color="#94a3b8" />
+      </mesh>
+
+      {/* Right Leg Hierarchy */}
+      <group ref={hip} position={[-0.1, 0.8, 0]}>
+          <mesh position={[0, -0.4, 0]}> {/* Thigh */}
+              <cylinderGeometry args={[0.05, 0.05, 0.8]} />
+              <meshStandardMaterial color="#64748b" />
+          </mesh>
+          <group ref={knee} position={[0, -0.8, 0]}>
+              <mesh position={[0, -0.4, 0]}> {/* Shin */}
+                  <cylinderGeometry args={[0.04, 0.04, 0.8]} />
+                  <meshStandardMaterial color="#64748b" />
+              </mesh>
+              <group ref={ankle} position={[0, -0.8, 0]}>
+                  <mesh position={[0, -0.05, 0.1]}> {/* Foot */}
+                      <boxGeometry args={[0.1, 0.05, 0.2]} />
+                      <meshStandardMaterial color="#64748b" />
+                  </mesh>
+              </group>
+          </group>
+      </group>
+
+      {/* Left Leg (Static) */}
+      <mesh position={[0.1, 0.4, 0]}>
+          <cylinderGeometry args={[0.05, 0.05, 0.8]} />
+          <meshStandardMaterial color="#94a3b8" />
+      </mesh>
+
+      <gridHelper args={[4, 4]} />
+    </group>
+  );
 }
 
 type ModelEntry = { label: string; url: string };
@@ -368,6 +408,19 @@ export const AdvancedAnimationViewer: React.FC<AdvancedAnimationViewerProps> = (
     }
     setPlaying(true);
   }, [muscleName, defaultMotion]);
+
+  // Auto-select model based on motion
+  useEffect(() => {
+    if (!models.length) return;
+    const lower = motion.toLowerCase();
+    let target = 'Overview Skeleton';
+    if (lower.includes('elbow') || lower.includes('shoulder') || lower.includes('forearm')) target = 'Upper Limb';
+    else if (lower.includes('hip') || lower.includes('knee') || lower.includes('ankle')) target = 'Lower Limb';
+    
+    const found = models.find(m => m.label === target);
+    if (found) setSelectedModelUrl(found.url);
+    else if (models.length) setSelectedModelUrl(models[0].url);
+  }, [motion, models]);
 
   useEffect(() => {
     const base = (import.meta as any).env?.BASE_URL || '/';
@@ -422,10 +475,6 @@ export const AdvancedAnimationViewer: React.FC<AdvancedAnimationViewerProps> = (
               <p className={`text-sm ${theme.subText}`}>Motion: {motion} • Angle: {angle.toFixed(0)}°</p>
             </div>
             <div className="flex items-center gap-2">
-              <select value={selectedModelUrl ?? ''} onChange={(e)=> setSelectedModelUrl(e.target.value || null)} className={`px-4 py-3 rounded-lg border ${theme.border} text-base ${theme.text} ${theme.inputBg} min-w-[16rem]`}>
-                {models.map(m => <option key={m.url} value={m.url}>{m.label}</option>)}
-                {!models.length && <option value=''>Box Rig (No Model)</option>}
-              </select>
               <select value={motion} onChange={(e)=>setMotion(e.target.value as MotionName)} className={`px-4 py-3 rounded-lg border ${theme.border} text-base ${theme.text} ${theme.inputBg} min-w-[16rem]`}>
                 {MOTIONS.map(m => <option key={m} value={m}>{m}</option>)}
               </select>
@@ -448,7 +497,7 @@ export const AdvancedAnimationViewer: React.FC<AdvancedAnimationViewerProps> = (
                 <directionalLight position={[5,5,5]} intensity={0.8} />
                 <gridHelper args={[10, 20]} />
                 {selectedModelUrl && !forceBoxRig ? (
-                  <Suspense fallback={null}>
+                  <Suspense fallback={<Loader />}>
                     <Bounds fit clip observe margin={1.2}>
                       <GLTFArmRig url={selectedModelUrl} />
                     </Bounds>
@@ -498,7 +547,6 @@ export const AdvancedAnimationViewer: React.FC<AdvancedAnimationViewerProps> = (
                       <li><strong>Rotate View:</strong> Click and drag to rotate the camera.</li>
                       <li><strong>Zoom:</strong> Scroll to zoom in/out.</li>
                       <li><strong>Pan:</strong> Right-click and drag to move the camera.</li>
-                      <li><strong>Change Model:</strong> Use the dropdown to switch between Skeleton, Upper Limb, etc.</li>
                   </ul>
               </div>
 
