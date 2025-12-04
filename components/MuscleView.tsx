@@ -359,6 +359,7 @@ const MuscleView: React.FC<MuscleViewProps> = ({ muscle, onSelectMuscle, isLearn
         <AdvancedAnimationViewer 
           muscleName={muscle.name}
           muscleId={muscle.id}
+          muscleGroup={muscle.group}
           currentTheme={currentTheme}
           actionString={content?.action}
           demonstrationText={content?.demonstration}

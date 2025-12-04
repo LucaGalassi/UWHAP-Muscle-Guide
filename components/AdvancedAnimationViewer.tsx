@@ -12,9 +12,11 @@ import {
   PlayCircle,
   Brain,
   RotateCcw,
+  Target,
+  CheckCircle2,
 } from 'lucide-react';
-import { AppTheme } from '../types';
-import { THEME_CONFIG } from '../constants';
+import { AppTheme, MuscleGroup } from '../types';
+import { THEME_CONFIG, GROUP_A_REQUIREMENTS, GROUP_B_REQUIREMENTS } from '../constants';
 import {
   MotionDefinition,
   MOTIONS,
@@ -29,6 +31,7 @@ import {
 interface AdvancedAnimationViewerProps {
   muscleName: string;
   muscleId?: string;
+  muscleGroup?: MuscleGroup;
   currentTheme: AppTheme;
   onClose: () => void;
   actionString?: string;
@@ -37,11 +40,11 @@ interface AdvancedAnimationViewerProps {
   insertionString?: string;
   browserMode?: boolean;
   initialMotionId?: string;
-}
 
 const AdvancedAnimationViewer: React.FC<AdvancedAnimationViewerProps> = ({
   muscleName,
   muscleId,
+  muscleGroup,
   currentTheme,
   onClose,
   actionString,
@@ -283,22 +286,47 @@ const AdvancedAnimationViewer: React.FC<AdvancedAnimationViewerProps> = ({
             {activeTab === 'actions' && (
               <>
                 {/* Study Requirements (Priority) */}
-                {!browserMode && (actionString || demonstrationText) && (
+                {!browserMode && (actionString || demonstrationText || muscleGroup) && (
                   <section className={`p-5 rounded-xl border-2 ${theme.border} ${theme.cardBg} space-y-4`}>
                     <div className="flex items-center gap-2">
-                      <Info className="w-5 h-5 text-blue-500" />
-                      <p className={`text-base font-bold ${theme.text}`}>Study Requirements</p>
+                      <Target className="w-5 h-5 text-brand-500" />
+                      <p className={`text-base font-bold ${theme.text}`}>Study Requirements for {muscleName}</p>
+                      {muscleGroup && (
+                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded tracking-wider uppercase ${
+                          muscleGroup === 'A' 
+                          ? (currentTheme === 'midnight' ? 'bg-orange-800/30 text-orange-200 border border-orange-700/30' : 'bg-orange-100 text-orange-700')
+                          : (currentTheme === 'midnight' ? 'bg-blue-800/30 text-blue-200 border border-blue-700/30' : 'bg-blue-100 text-blue-700')
+                        }`}>
+                          Group {muscleGroup}
+                        </span>
+                      )}
                     </div>
+                    
+                    {/* Full Learning Requirements List */}
+                    {muscleGroup && (
+                      <div className={`p-4 rounded-lg border ${theme.border} ${theme.infoBox} overflow-hidden`}>
+                        <p className="text-xs font-bold text-brand-600 uppercase tracking-wider mb-3">Learning Objectives</p>
+                        <ul className="space-y-2">
+                          {(muscleGroup === 'A' ? GROUP_A_REQUIREMENTS : GROUP_B_REQUIREMENTS).map((req, i) => (
+                            <li key={i} className={`flex items-start gap-2 text-sm ${theme.text}`}>
+                              <CheckCircle2 className="w-4 h-4 text-brand-500 mt-0.5 flex-shrink-0" />
+                              <span>{req}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                    
                     {actionString && (
                       <div className={`p-4 rounded-lg border ${theme.border} ${theme.infoBox} overflow-hidden`}>
                         <p className="text-xs font-bold text-blue-600 uppercase tracking-wider mb-2">Required Actions</p>
-                        <p className={`text-sm leading-relaxed ${theme.text} break-words`}>{actionString}</p>
+                        <p className={`text-sm leading-relaxed ${theme.text} break-words whitespace-pre-line`}>{actionString}</p>
                       </div>
                     )}
-                    {demonstrationText && (
+                    {demonstrationText && muscleGroup === 'A' && (
                       <div className={`p-4 rounded-lg border ${theme.border} ${theme.infoBox} overflow-hidden`}>
                         <p className="text-xs font-bold text-emerald-600 uppercase tracking-wider mb-2">Demonstration</p>
-                        <p className={`text-sm leading-relaxed ${theme.text} break-words`}>{demonstrationText}</p>
+                        <p className={`text-sm leading-relaxed ${theme.text} break-words whitespace-pre-line`}>{demonstrationText}</p>
                       </div>
                     )}
                   </section>

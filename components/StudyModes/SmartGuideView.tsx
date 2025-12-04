@@ -437,6 +437,7 @@ const SmartGuideView: React.FC<SmartGuideViewProps> = ({ progressMap, onUpdatePr
         <AdvancedAnimationViewer
           muscleName={currentMuscle.name}
           muscleId={currentMuscle.id}
+          muscleGroup={currentMuscle.group}
           currentTheme={currentTheme}
           onClose={() => setShowAnimationViewer(false)}
           browserMode={false}

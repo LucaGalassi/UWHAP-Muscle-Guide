@@ -183,6 +183,7 @@ const FlashcardView: React.FC<FlashcardViewProps> = ({ muscle, onRate, onNext, a
       <AdvancedAnimationViewer
         muscleName={muscle.name}
         muscleId={muscle.id}
+        muscleGroup={muscle.group}
         currentTheme={currentTheme}
         onClose={() => setShowAdvancedAnim(false)}
         actionString={content?.action}
