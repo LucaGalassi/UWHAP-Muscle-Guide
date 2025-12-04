@@ -1,12 +1,13 @@
 # UWHAP Muscle Guide - Copilot Instructions
 
 ## Project Overview
-Interactive anatomy study app built with React 18, Vite, TypeScript, and Tailwind CSS. Features flashcards, quizzes, and spaced repetition (SRS). Deployed to GitHub Pages.
+Interactive anatomy study app built with React 18, Vite, TypeScript, and Tailwind CSS. Features flashcards, quizzes, and spaced repetition (SRS). All content is static—no external APIs or AI services. Deployed to GitHub Pages.
 
 ## Architecture
 
 ### Data Flow
 - **Single source of truth**: `MUSCLE_DATA` and `MUSCLE_DETAILS` in `constants.ts` define all muscles and their content
+- **Static content**: `muscleContentService.ts` serves muscle details from the static `MUSCLE_DETAILS` dictionary
 - **State management**: App-level state in `App.tsx` with prop drilling to children. No Redux/Zustand.
 - **Progress persistence**: Compressed Base64 encoding (`compressProgress`/`decompressProgress`) for URL sharing and localStorage
 
@@ -16,12 +17,13 @@ App.tsx                    # Global state (progress, theme, exam date)
 ├── Sidebar.tsx            # Navigation, settings modal, muscle list filtering
 ├── StudyDashboard.tsx     # Study mode selector
 ├── MuscleView.tsx         # Reference content display
-├── AnimationBrowser.tsx   # Browse motion library
-├── AdvancedAnimationViewer.tsx  # Full resource viewer with search/GIF lookup
+├── MotionBrowser.tsx      # Browse motion library with GIF/video search
+├── AdvancedAnimationViewer.tsx  # Full resource viewer (opens from MuscleView)
 └── StudyModes/
     ├── FlashcardView.tsx  # SRS-enabled flashcards with rating buttons
     ├── QuizView.tsx       # Multiple choice quizzes
     ├── QuizGenerator.ts   # Question generation with contextual distractors
+    ├── SmartGuideView.tsx # Adaptive SRS-based review
     └── LightningRoundView.tsx  # Timed review mode
 ```
 
@@ -31,11 +33,12 @@ App.tsx                    # Global state (progress, theme, exam date)
 - Access colors via: `const theme = THEME_CONFIG[currentTheme]`
 - Use template literals for dynamic classes: `` className={`${theme.cardBg} ${theme.border}`} ``
 
-### Animation/Motion Library
-- `animationService.ts`: Motion definitions with joint parameters, regions, and keywords
-- `AdvancedAnimationViewer.tsx`: Full-screen resource browser with GIF/video search
+### Motion Library
+- `animationService.ts`: Motion definitions with joint info, regions, and keywords for GIF/video search
+- `AdvancedAnimationViewer.tsx`: Resource viewer with external GIF/video search integration
 - `AnimationBrowser.tsx`: Grid/list view of all available motions
 - Motions defined as `MotionDefinition` with educational content (tips, clinical relevance, common errors)
+- Muscles mapped to motions via `MUSCLE_ANIMATION_MAPS`
 
 ## Key Conventions
 
@@ -80,7 +83,7 @@ npm run preview  # Preview production build locally
 1. Add to `MUSCLE_DATA` array in `constants.ts` using `m()` helper
 2. Add content to `MUSCLE_DETAILS` object with origin, insertion, action, demonstration, tips, clinicalConnection, relatedMuscles
 
-### Adding New Animations
+### Adding New Motions
 1. Define `MotionDefinition` in `animationService.ts`
 2. Add to `MOTIONS` object with unique id, joint config, region, keywords
 3. Map to muscles via `MUSCLE_ANIMATION_MAPS`

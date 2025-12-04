@@ -14,7 +14,7 @@ No setup required — open the link and start studying.
 
 ### Study Tools
 - **Muscle Explorer** — Browse 60+ muscles with detailed anatomical information including origin, insertion, action, and demonstration guides
-- **Flashcards** — Review muscles with flip-card style learning
+- **Flashcards** — Review muscles with flip-card style learning and SRS rating
 - **Quizzes** — Test your knowledge with auto-generated multiple choice questions
 - **Lightning Rounds** — Timed rapid-fire review sessions
 - **Smart Guide** — Adaptive spaced repetition system (SRS) that prioritizes muscles due for review
@@ -22,11 +22,11 @@ No setup required — open the link and start studying.
 ### Progress Tracking
 - **Spaced Repetition** — SM-2 based algorithm adjusted for exam timing
 - **Progress Sync** — Export/import progress via shareable codes or URLs
-- **Offline Support** — All content available without internet connection
+- **Offline Support** — All content available without internet connection (fully static)
 
 ### User Experience
 - **4 Beautiful Themes** — Modern, Midnight, Blueprint, and Nature
-- **Motion Library** — Browse anatomical movements with GIF/video search integration
+- **Motion Library** — Browse anatomical movements with external GIF/video search
 - **Exam Countdown** — Track days until your final exam
 - **Mobile Responsive** — Works seamlessly on desktop and mobile devices
 
@@ -64,7 +64,8 @@ The app will be available at `http://localhost:5173`
 │   ├── Sidebar.tsx         # Navigation and settings
 │   ├── MuscleView.tsx      # Detailed muscle information display
 │   ├── StudyDashboard.tsx  # Study mode selector
-│   ├── AnimationBrowser.tsx
+│   ├── AnimationBrowser.tsx # Motion library browser
+│   ├── AdvancedAnimationViewer.tsx # Resource viewer with GIF search
 │   └── StudyModes/
 │       ├── FlashcardView.tsx
 │       ├── QuizView.tsx
@@ -72,7 +73,8 @@ The app will be available at `http://localhost:5173`
 │       ├── SmartGuideView.tsx
 │       └── LightningRoundView.tsx
 ├── services/
-│   └── animationService.ts # Motion definitions
+│   ├── muscleContentService.ts  # Static muscle content provider
+│   └── animationService.ts      # Motion definitions
 └── utils/
     └── srs.ts              # Spaced repetition algorithm
 ```
@@ -80,6 +82,11 @@ The app will be available at `http://localhost:5173`
 ## 🎓 About
 
 This project was created to help UWHAP students study anatomy more effectively. All muscle content is carefully curated to match the program's Group A and Group B study requirements.
+
+**Key Design Decisions:**
+- Fully static content — no external API dependencies for reliability
+- Spaced repetition with exam-date awareness to optimize study time
+- Progress encoded in URLs for easy sharing between students
 
 ## 📝 License
 
