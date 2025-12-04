@@ -9,12 +9,11 @@ interface FlashcardViewProps {
   muscle: MuscleItem;
   onRate?: (rating: ConfidenceRating) => void;
   onNext: (correct: boolean) => void;
-  apiKey: string;
   mode?: 'BROWSE' | 'SRS';
-  currentTheme?: AppTheme; // Now accepts theme from parent
+  currentTheme?: AppTheme;
 }
 
-const FlashcardView: React.FC<FlashcardViewProps> = ({ muscle, onRate, onNext, apiKey, mode = 'SRS', currentTheme = 'modern' }) => {
+const FlashcardView: React.FC<FlashcardViewProps> = ({ muscle, onRate, onNext, mode = 'SRS', currentTheme = 'modern' }) => {
   const [isFlipped, setIsFlipped] = useState(false);
   const [content, setContent] = useState<MuscleContent | null>(null);
   const [loading, setLoading] = useState(false);
@@ -28,7 +27,7 @@ const FlashcardView: React.FC<FlashcardViewProps> = ({ muscle, onRate, onNext, a
     const load = async () => {
       setLoading(true);
       try {
-        const data = await fetchMuscleDetails(muscle, apiKey);
+        const data = await fetchMuscleDetails(muscle);
         if (mounted) {
           setContent(data);
         }
@@ -40,7 +39,7 @@ const FlashcardView: React.FC<FlashcardViewProps> = ({ muscle, onRate, onNext, a
     };
     load();
     return () => { mounted = false; };
-  }, [muscle, apiKey]);
+  }, [muscle]);
 
   const handleRating = (rating: ConfidenceRating) => {
     console.log('Rating selected:', rating);

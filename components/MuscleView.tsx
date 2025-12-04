@@ -15,8 +15,6 @@ import {
   Circle,
   ArrowRight,
   PlayCircle,
-  Sparkles,
-  X,
   Zap
 } from 'lucide-react';
 import { GROUP_A_REQUIREMENTS, GROUP_B_REQUIREMENTS } from '../constants';
@@ -40,27 +38,20 @@ interface MuscleViewProps {
   onSelectMuscle: (muscle: MuscleItem) => void;
   isLearned: boolean;
   toggleLearned: () => void;
-  apiKey: string;
-  onRelatedMuscleClick?: (muscle: MuscleItem) => void; // New optional prop for Study Mode override
+  onRelatedMuscleClick?: (muscle: MuscleItem) => void;
   currentTheme: AppTheme;
 }
 
-const MuscleView: React.FC<MuscleViewProps> = ({ muscle, onSelectMuscle, isLearned, toggleLearned, apiKey, onRelatedMuscleClick, currentTheme }) => {
+const MuscleView: React.FC<MuscleViewProps> = ({ muscle, onSelectMuscle, isLearned, toggleLearned, onRelatedMuscleClick, currentTheme }) => {
   const [content, setContent] = useState<MuscleContent | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [isBannerDismissed, setIsBannerDismissed] = useState(false);
   const [showAdvancedAnim, setShowAdvancedAnim] = useState(false);
   const [selectedMotion, setSelectedMotion] = useState<string | null>(null);
   const [selectedActionRef, setSelectedActionRef] = useState<string | null>(null);
   const theme = THEME_CONFIG[currentTheme];
 
-  // Check if we have static data for this muscle
-  const hasStaticData = !!MUSCLE_DETAILS[muscle.id];
-
   useEffect(() => {
-    // Reset banner dismissal when muscle changes
-    setIsBannerDismissed(false);
     setShowAdvancedAnim(false);
     
     let mounted = true;
@@ -69,7 +60,7 @@ const MuscleView: React.FC<MuscleViewProps> = ({ muscle, onSelectMuscle, isLearn
       setError(null);
       setContent(null);
       try {
-        const data = await fetchMuscleDetails(muscle, apiKey);
+        const data = await fetchMuscleDetails(muscle);
         if (mounted) setContent(data);
       } catch (err) {
         if (mounted) setError("Failed to load muscle details.");
@@ -80,7 +71,7 @@ const MuscleView: React.FC<MuscleViewProps> = ({ muscle, onSelectMuscle, isLearn
 
     loadData();
     return () => { mounted = false; };
-  }, [muscle, apiKey]);
+  }, [muscle]);
 
   const openSearchPopup = (query: string) => {
     const url = `https://www.google.com/search?tbm=isch&q=${encodeURIComponent(query)}`;
@@ -121,9 +112,6 @@ const MuscleView: React.FC<MuscleViewProps> = ({ muscle, onSelectMuscle, isLearn
       </div>
     );
   }
-
-  // Determine if we should show the AI banner
-  const showAiBanner = !hasStaticData && !apiKey && !isBannerDismissed;
 
   return (
     <div className={`h-full flex flex-col overflow-y-auto ${theme.cardBg} custom-scrollbar transition-colors duration-300`}>
@@ -201,28 +189,6 @@ const MuscleView: React.FC<MuscleViewProps> = ({ muscle, onSelectMuscle, isLearn
       {/* Main Content Grid */}
       {content && (
         <div className="flex-1 px-8 py-10 max-w-5xl mx-auto w-full space-y-10 pb-24">
-          
-          {/* AI Banner */}
-          {showAiBanner && (
-             <div className="relative p-4 bg-purple-50 border border-purple-100 rounded-xl flex items-start gap-4">
-                <div className="p-2 bg-purple-100 text-purple-600 rounded-lg shrink-0">
-                  <Sparkles className="w-5 h-5" />
-                </div>
-                <div className="flex-1">
-                  <h4 className={`text-sm font-bold ${theme.text}`}>AI Features Available</h4>
-                  <p className={`text-sm mt-1 leading-relaxed ${theme.subText}`}>
-                    Detailed content for <strong>{muscle.name}</strong> is not available in the local database. 
-                    You can add a Gemini API key in Settings to generate details.
-                  </p>
-                </div>
-                <button 
-                  onClick={() => setIsBannerDismissed(true)}
-                  className="text-purple-400 hover:text-purple-600 p-1"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-             </div>
-          )}
           
           {/* Top Row: O/I/A */}
           <div className="grid md:grid-cols-3 gap-8">

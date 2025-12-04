@@ -1,41 +1,90 @@
 # UWHAP Muscle Guide
 
-An interactive muscle reference and study companion built with React, Vite, and Tailwind CSS. Browse key anatomy facts, practice with multiple study modes, and keep your spaced-repetition progress synced across devices.
+An interactive anatomy study companion for the University of Western Australia Health & Physical Education program. Built with React, TypeScript, Vite, and Tailwind CSS.
 
 [![Deploy to GitHub Pages](https://github.com/LucaGalassi/UWHAP-Muscle-Guide/actions/workflows/deploy.yml/badge.svg)](https://github.com/LucaGalassi/UWHAP-Muscle-Guide/actions/workflows/deploy.yml)
 
-[![Auto version bump](https://github.com/LucaGalassi/UWHAP-Muscle-Guide/actions/workflows/auto-version-bump.yml/badge.svg)](https://github.com/LucaGalassi/UWHAP-Muscle-Guide/actions/workflows/auto-version-bump.yml)
+## 🎯 Live Demo
 
-## Live site
-- The app is hosted on GitHub Pages: https://lucagalassi.github.io/UWHAP-Muscle-Guide/
-- No setup is required—open the link to start studying.
+**[Try it now →](https://lucagalassi.github.io/UWHAP-Muscle-Guide/)**
 
-## Features
-- **Muscle explorer & study dashboard**: Browse muscles, track progress, and view essential metadata in one place.
-- **Study modes**: Flashcards, quizzes, smart guidance, and lightning rounds tailored for rapid review.
-- **Spaced-repetition friendly**: Persisted progress map with compressed shareable state so you can move between devices.
-- **Optional AI assistance**: Paste a Gemini API key into the in-app Settings prompt to generate supplemental explanations. Core content works without any key.
-- **Motion previews**: Inline animations for common actions to give quick visual context.
-- **Modern tooling**: TypeScript, Vite dev server, hot reload, and Tailwind-based styling.
+No setup required — open the link and start studying.
 
-## Using the Gemini assistant
-- AI lookups are opt-in and handled entirely in the browser.
-- When prompted in Settings (or via the welcome flow), paste a Gemini API key; no `.env` file is required.
-- If you leave the field blank, the app uses the built-in lab manual content instead.
+## ✨ Features
 
-## Local development (optional)
-Prerequisites: [Node.js](https://nodejs.org/) (LTS recommended)
+### Study Tools
+- **Muscle Explorer** — Browse 60+ muscles with detailed anatomical information including origin, insertion, action, and demonstration guides
+- **Flashcards** — Review muscles with flip-card style learning
+- **Quizzes** — Test your knowledge with auto-generated multiple choice questions
+- **Lightning Rounds** — Timed rapid-fire review sessions
+- **Smart Guide** — Adaptive spaced repetition system (SRS) that prioritizes muscles due for review
 
-1. Install dependencies
-   ```bash
-   npm install
-   ```
-2. Start the development server
-   ```bash
-   npm run dev
-   ```
-   Vite will print a local URL (typically `http://localhost:5173`).
+### Progress Tracking
+- **Spaced Repetition** — SM-2 based algorithm adjusted for exam timing
+- **Progress Sync** — Export/import progress via shareable codes or URLs
+- **Offline Support** — All content available without internet connection
 
-## Deployment
-- Deployments are automated to GitHub Pages via `.github/workflows/deploy.yml` on every push to `main` or via the **Deploy to GitHub Pages** workflow dispatch.
-- Artifacts are built with `npm run build` and published directly to the `github-pages` environment.
+### User Experience
+- **4 Beautiful Themes** — Modern, Midnight, Blueprint, and Nature
+- **Motion Library** — Browse anatomical movements with GIF/video search integration
+- **Exam Countdown** — Track days until your final exam
+- **Mobile Responsive** — Works seamlessly on desktop and mobile devices
+
+## 🛠️ Tech Stack
+
+- **Framework:** React 18 with TypeScript
+- **Build Tool:** Vite
+- **Styling:** Tailwind CSS with custom theming
+- **State Management:** React hooks with prop drilling
+- **Deployment:** GitHub Pages with automated CI/CD
+
+## 🚀 Local Development
+
+```bash
+# Clone the repository
+git clone https://github.com/LucaGalassi/UWHAP-Muscle-Guide.git
+cd UWHAP-Muscle-Guide
+
+# Install dependencies
+npm install
+
+# Start development server
+npm run dev
+```
+
+The app will be available at `http://localhost:5173`
+
+## 📁 Project Structure
+
+```
+├── App.tsx                 # Main app component with global state
+├── constants.ts            # Muscle data and theme configurations
+├── types.ts                # TypeScript type definitions
+├── components/
+│   ├── Sidebar.tsx         # Navigation and settings
+│   ├── MuscleView.tsx      # Detailed muscle information display
+│   ├── StudyDashboard.tsx  # Study mode selector
+│   ├── AnimationBrowser.tsx
+│   └── StudyModes/
+│       ├── FlashcardView.tsx
+│       ├── QuizView.tsx
+│       ├── QuizGenerator.ts
+│       ├── SmartGuideView.tsx
+│       └── LightningRoundView.tsx
+├── services/
+│   └── animationService.ts # Motion definitions
+└── utils/
+    └── srs.ts              # Spaced repetition algorithm
+```
+
+## 🎓 About
+
+This project was created to help UWHAP students study anatomy more effectively. All muscle content is carefully curated to match the program's Group A and Group B study requirements.
+
+## 📝 License
+
+MIT License — feel free to use this code as a reference for your own projects.
+
+---
+
+Made with ❤️ by [Luca Galassi](https://github.com/LucaGalassi)

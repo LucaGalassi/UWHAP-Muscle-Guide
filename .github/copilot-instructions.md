@@ -1,7 +1,7 @@
 # UWHAP Muscle Guide - Copilot Instructions
 
 ## Project Overview
-Interactive anatomy study app built with React 18, Vite, TypeScript, and Tailwind CSS. Features flashcards, quizzes, spaced repetition (SRS), and optional Gemini AI assistance. Deployed to GitHub Pages.
+Interactive anatomy study app built with React 18, Vite, TypeScript, and Tailwind CSS. Features flashcards, quizzes, and spaced repetition (SRS). Deployed to GitHub Pages.
 
 ## Architecture
 
@@ -12,7 +12,7 @@ Interactive anatomy study app built with React 18, Vite, TypeScript, and Tailwin
 
 ### Component Patterns
 ```
-App.tsx                    # Global state (progress, theme, API key, exam date)
+App.tsx                    # Global state (progress, theme, exam date)
 ├── Sidebar.tsx            # Navigation, settings modal, muscle list filtering
 ├── StudyDashboard.tsx     # Study mode selector
 ├── MuscleView.tsx         # Reference content display
@@ -47,9 +47,8 @@ App.tsx                    # Global state (progress, theme, API key, exam date)
 ### Content Retrieval Pattern
 ```typescript
 // services/geminiService.ts - fetchMuscleDetails()
-// 1. Check MUSCLE_DETAILS static dictionary first (fast, verified)
-// 2. Fall back to Gemini AI only if API key present and muscle not in static data
-// 3. Return placeholder content if both fail
+// 1. Check MUSCLE_DETAILS static dictionary (fast, verified)
+// 2. Return placeholder content if not found
 ```
 
 ### SRS Algorithm
@@ -60,7 +59,6 @@ App.tsx                    # Global state (progress, theme, API key, exam date)
 ### Component Props Pattern
 All study components receive:
 - `currentTheme: AppTheme` for styling
-- `apiKey: string` for optional AI
 - `onClose` / `onNext` callbacks for navigation
 
 ## Development Commands

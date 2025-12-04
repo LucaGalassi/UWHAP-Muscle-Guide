@@ -120,9 +120,6 @@ const App: React.FC = () => {
   // SRS Progress State
   const [progressMap, setProgressMap] = useState<Record<string, MuscleProgress>>({});
 
-  // AI Settings State
-  const [apiKey, setApiKey] = useState<string>('');
-
   // Global Theme State
   const [theme, setTheme] = useState<AppTheme>('modern');
 
@@ -242,20 +239,18 @@ const App: React.FC = () => {
         } catch {}
       }
       const storedName = localStorage.getItem('student_name');
-      const storedKey = localStorage.getItem('user_gemini_key');
       hasName = !!storedName;
-      hasKey = !!storedKey;
       
       // Check if welcome was previously dismissed
       const dismissed = localStorage.getItem('welcome_dismissed');
       welcomeDismissed = dismissed === '1';
       
       // Determine if this is a new user (no saved data at all)
-      const isNew = !hasProgress && !hasName && !hasKey && !welcomeDismissed;
+      const isNew = !hasProgress && !hasName && !welcomeDismissed;
       setIsNewUser(isNew);
       
       // Has any saved session data?
-      setHasSavedSession(hasProgress || hasName || hasKey);
+      setHasSavedSession(hasProgress || hasName);
     } catch {}
 
     // Load settings
@@ -269,15 +264,7 @@ const App: React.FC = () => {
     // Splash: show unless user disabled in settings
     setShowSplash(!hideSplashAlways);
 
-    // 1. Load API Key
-    try {
-      const storedKey = localStorage.getItem('user_gemini_key');
-      if (storedKey) setApiKey(storedKey);
-    } catch (e) {
-      console.error('Failed to load API key from localStorage', e);
-    }
-
-    // 2. Load Progress from LocalStorage (but allow URL to override)
+    // Load Progress from LocalStorage (but allow URL to override)
     let hasUrlProgress = false;
     if (window.location.search) {
       const params = new URLSearchParams(window.location.search);
@@ -438,15 +425,6 @@ const App: React.FC = () => {
     } catch {}
   };
 
-  const handleSetApiKey = (key: string) => {
-    setApiKey(key);
-    if (key) {
-      localStorage.setItem('user_gemini_key', key);
-    } else {
-      localStorage.removeItem('user_gemini_key');
-    }
-  };
-  
   const handleResetProgress = () => {
     if (confirm("Are you sure you want to reset all study progress? This cannot be undone.")) {
       setProgressMap({});
@@ -570,7 +548,6 @@ const App: React.FC = () => {
           onSelectMuscle={setSelectedMuscle}
           isLearned={(progressMap[selectedMuscle.id] as MuscleProgress | undefined)?.status === 'MASTERED'}
           toggleLearned={() => toggleLearnedSimple(selectedMuscle.id)}
-          apiKey={apiKey}
           currentTheme={theme}
         />
       );
@@ -612,7 +589,6 @@ const App: React.FC = () => {
                  setSelectedMuscle(random);
               }}
               onRate={(r) => recordFlashcardRating(r)}
-              apiKey={apiKey}
               mode="BROWSE"
               currentTheme={theme}
             />
@@ -626,7 +602,6 @@ const App: React.FC = () => {
               progressMap={progressMap}
               onUpdateProgress={updateMuscleProgress}
               onToggleLearned={toggleLearnedSimple}
-              apiKey={apiKey}
               currentTheme={theme}
               examDate={examDate}
             />
@@ -656,14 +631,12 @@ const App: React.FC = () => {
               localStorage.removeItem('srs_progress');
               localStorage.removeItem('student_name');
               localStorage.removeItem('app_theme');
-              localStorage.removeItem('user_gemini_key');
               localStorage.removeItem('welcome_dismissed');
               localStorage.removeItem('last_save_timestamp');
             } catch {}
             setProgressMap({});
             setStudentName('');
             setTheme('modern');
-            setApiKey('');
             setIsNewUser(true);
             setShowWelcome(true);
             setHasSavedSession(false);
@@ -735,8 +708,6 @@ const App: React.FC = () => {
             setCurrentMode(m);
             setActiveTool('NONE');
           }}
-          apiKey={apiKey}
-          onSetApiKey={handleSetApiKey}
           progressMap={progressMap}
           onResetProgress={handleResetProgress}
           currentTheme={theme}

@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { MUSCLE_DATA, THEME_CONFIG } from '../constants';
 import { MuscleItem, StudyMode, MuscleProgress, AppTheme } from '../types';
-import { Search, ChevronRight, BookOpen, CheckCircle2, Share2, Circle, X, Copy, Check, GraduationCap, LayoutList, Settings, Key, Trash2, Trophy, Clock, Sun, Moon, DraftingCompass, Leaf, Palette, Save, AlertTriangle, Timer, Play, Github } from 'lucide-react';
+import { Search, ChevronRight, BookOpen, CheckCircle2, Share2, Circle, X, Copy, Check, GraduationCap, LayoutList, Settings, Trash2, Trophy, Clock, Sun, Moon, DraftingCompass, Leaf, Palette, Save, AlertTriangle, Timer, Play, Github } from 'lucide-react';
 import pkg from '../package.json';
 
 interface SidebarProps {
@@ -15,8 +15,6 @@ interface SidebarProps {
   getSaveCode: (name: string) => string;
   currentMode: StudyMode;
   onSetMode: (mode: StudyMode) => void;
-  apiKey: string;
-  onSetApiKey: (key: string) => void;
   progressMap: Record<string, MuscleProgress>;
   onResetProgress?: () => void;
   currentTheme: AppTheme;
@@ -24,7 +22,7 @@ interface SidebarProps {
   daysUntilExam: number;
   studentName: string;
   onSetStudentName: (name: string) => void;
-  onOpenAnimationBrowser?: () => void; // NEW
+  onOpenAnimationBrowser?: () => void;
   examDate: number;
   onSetExamDate: (date: number) => void;
 }
@@ -40,8 +38,6 @@ const Sidebar: React.FC<SidebarProps> = ({
   getSaveCode,
   currentMode,
   onSetMode,
-  apiKey,
-  onSetApiKey,
   progressMap,
   onResetProgress,
   currentTheme,
@@ -59,7 +55,6 @@ const Sidebar: React.FC<SidebarProps> = ({
   const [showSettingsModal, setShowSettingsModal] = useState(false);
   const [copyFeedback, setCopyFeedback] = useState(false);
   const [copyCodeFeedback, setCopyCodeFeedback] = useState(false);
-  const [tempKey, setTempKey] = useState(apiKey);
   // Removed local shareName state in favor of prop
   const [skipWelcome, setSkipWelcome] = useState<boolean>(() => {
     try { return localStorage.getItem('welcome_dismissed') === '1'; } catch { return false; }
@@ -123,8 +118,7 @@ const Sidebar: React.FC<SidebarProps> = ({
     setTimeout(() => setCopyCodeFeedback(false), 2000);
   };
 
-  const handleSaveKey = () => {
-    onSetApiKey(tempKey);
+  const handleSaveSettings = () => {
     // Save exam date if changed
     if (tempExamDate) {
       const parsed = new Date(tempExamDate).getTime();
@@ -137,12 +131,6 @@ const Sidebar: React.FC<SidebarProps> = ({
       localStorage.setItem('settings_auto_resume', autoResume ? '1' : '0');
       localStorage.setItem('settings_hide_splash', hideSplash ? '1' : '0');
     } catch {}
-    setShowSettingsModal(false);
-  };
-
-  const handleRemoveKey = () => {
-    setTempKey('');
-    onSetApiKey('');
     setShowSettingsModal(false);
   };
 
@@ -179,7 +167,6 @@ const Sidebar: React.FC<SidebarProps> = ({
               )}
               <button 
                 onClick={() => {
-                  setTempKey(apiKey);
                   setShowSettingsModal(true);
                 }}
                 className={`p-2 rounded-full transition-all ${theme.sidebarSubText} hover:bg-black/5 hover:${theme.sidebarText}`}
@@ -413,11 +400,6 @@ const Sidebar: React.FC<SidebarProps> = ({
           <div className="flex items-center justify-between text-[10px] font-bold">
             <span className={`${theme.sidebarSubText} opacity-50`}>v{pkg.version}</span>
             <div className="flex items-center gap-2">
-              <div className={`flex items-center gap-1 ${apiKey ? 'text-emerald-600' : theme.sidebarSubText}`}>
-                <Key className="w-3 h-3" />
-                <span className="uppercase tracking-wider">{apiKey ? 'AI' : 'No AI'}</span>
-              </div>
-              <span className={`${theme.sidebarSubText} opacity-30`}>|</span>
               <button
                 onClick={() => setShowSettingsModal(true)}
                 className={`flex items-center gap-1 ${theme.sidebarSubText} hover:text-brand-600 transition-colors uppercase tracking-wider`}
@@ -714,38 +696,6 @@ const Sidebar: React.FC<SidebarProps> = ({
                       </label>
                     </div>
                   </div>
-
-                  {/* API Key Entry */}
-                  <div className="space-y-3">
-                    <div className="flex items-start gap-3">
-                      <div className={`p-2 rounded-lg ${isDarkTheme ? 'bg-amber-900/40 text-amber-200' : 'bg-amber-50 text-amber-600'}`}>
-                        <Key className="w-5 h-5" />
-                      </div>
-                      <div>
-                        <h4 className="text-sm font-bold">AI Features (Optional)</h4>
-                        <p className={`text-xs mt-1 leading-relaxed ${theme.subText}`}>
-                          Add a Gemini API key for extra content. Core lab manual data is free.
-                        </p>
-                      </div>
-                    </div>
-
-                    <input
-                      type="password"
-                      placeholder="Enter Gemini API Key..."
-                      value={tempKey}
-                      onChange={(e) => setTempKey(e.target.value)}
-                      className={`w-full px-3 py-2 rounded-lg text-sm focus:ring-2 focus:ring-brand-500/20 outline-none border ${theme.border} ${isDarkTheme ? 'bg-slate-900' : currentTheme === 'nature' ? 'bg-[#f5f5f4]' : 'bg-slate-50'}`}
-                    />
-
-                    <div className="flex justify-between items-center">
-                      <button
-                        onClick={handleRemoveKey}
-                        className={`text-xs font-semibold flex items-center gap-1 ${isDarkTheme ? 'text-red-200 hover:text-red-100' : 'text-red-500 hover:underline'}`}
-                      >
-                        <Trash2 className="w-3 h-3" /> Remove Key
-                      </button>
-                    </div>
-                  </div>
                 </div>
 
                 {onResetProgress && (
@@ -806,7 +756,7 @@ const Sidebar: React.FC<SidebarProps> = ({
 
                 <div className={`pt-2 sticky bottom-0 ${isDarkTheme ? 'bg-slate-900/80' : 'bg-white/90'} backdrop-blur`}>
                   <button
-                    onClick={handleSaveKey}
+                    onClick={handleSaveSettings}
                     className="w-full px-4 py-2 bg-brand-600 text-white text-sm font-bold rounded-lg hover:bg-brand-700"
                   >
                     Save Settings

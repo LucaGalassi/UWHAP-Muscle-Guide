@@ -12,7 +12,6 @@ interface SmartGuideViewProps {
   progressMap: Record<string, MuscleProgress>;
   onUpdateProgress: (progress: MuscleProgress) => void;
   onToggleLearned: (id: string) => void;
-  apiKey: string;
   currentTheme: AppTheme;
   examDate?: number; // Optional exam date timestamp
 }
@@ -20,7 +19,7 @@ interface SmartGuideViewProps {
 type GuidePhase = 'DASHBOARD' | 'LEARN' | 'QUIZ' | 'REVIEW_CARD';
 type LearnFilter = 'ALL' | 'A' | 'B';
 
-const SmartGuideView: React.FC<SmartGuideViewProps> = ({ progressMap, onUpdateProgress, onToggleLearned, apiKey, currentTheme, examDate }) => {
+const SmartGuideView: React.FC<SmartGuideViewProps> = ({ progressMap, onUpdateProgress, onToggleLearned, currentTheme, examDate }) => {
   const [sessionQueue, setSessionQueue] = useState<string[]>([]);
   const [currentMuscleId, setCurrentMuscleId] = useState<string | null>(null);
   const [phase, setPhase] = useState<GuidePhase>('DASHBOARD');
@@ -350,7 +349,6 @@ const SmartGuideView: React.FC<SmartGuideViewProps> = ({ progressMap, onUpdatePr
                    onSelectMuscle={() => {}} 
                    isLearned={progressMap[relatedMusclePopup.id]?.status === 'MASTERED'}
                    toggleLearned={() => onToggleLearned(relatedMusclePopup.id)}
-                   apiKey={apiKey}
                    onRelatedMuscleClick={(m) => setRelatedMusclePopup(m)}
                    currentTheme={currentTheme}
                 />
@@ -387,7 +385,6 @@ const SmartGuideView: React.FC<SmartGuideViewProps> = ({ progressMap, onUpdatePr
                  onSelectMuscle={() => {}} 
                  isLearned={progressMap[currentMuscle.id]?.status === 'MASTERED'} 
                  toggleLearned={() => onToggleLearned(currentMuscle.id)} 
-                 apiKey={apiKey} 
                  onRelatedMuscleClick={(m) => setRelatedMusclePopup(m)}
                  currentTheme={currentTheme}
                />
@@ -424,7 +421,6 @@ const SmartGuideView: React.FC<SmartGuideViewProps> = ({ progressMap, onUpdatePr
                muscle={currentMuscle} 
                onRate={handleProgressUpdate} 
                onNext={() => {}} 
-               apiKey={apiKey} 
                mode="SRS"
                currentTheme={currentTheme}
              />

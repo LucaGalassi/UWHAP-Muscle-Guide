@@ -23,11 +23,6 @@ export interface MuscleContent {
   relatedMuscles: RelatedMuscle[];
 }
 
-export interface ApiKeyContextType {
-  hasKey: boolean;
-  setHasKey: (v: boolean) => void;
-}
-
 // Learning Types
 export type StudyMode = 'REFERENCE' | 'STUDY';
 export type LearningTool = 'FLASHCARDS' | 'QUIZ' | 'SMART_GUIDE' | 'LIGHTNING' | 'NONE';
