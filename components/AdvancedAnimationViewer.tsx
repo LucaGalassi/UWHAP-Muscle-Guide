@@ -210,16 +210,16 @@ const AdvancedAnimationViewer: React.FC<AdvancedAnimationViewerProps> = ({
                   </p>
                 </div>
                 <div className="rounded-lg px-3 py-2 border border-dashed border-current/20">
-                  <p className="font-semibold text-[11px] text-brand-600">Axis</p>
-                  <p className={theme.text}>{selectedMotion.joint.axis || 'Multi-axis'}</p>
-                </div>
-                <div className="rounded-lg px-3 py-2 border border-dashed border-current/20">
                   <p className="font-semibold text-[11px] text-brand-600">Joint</p>
                   <p className={theme.text}>{selectedMotion.joint.name}</p>
                 </div>
                 <div className="rounded-lg px-3 py-2 border border-dashed border-current/20">
                   <p className="font-semibold text-[11px] text-brand-600">Region</p>
                   <p className={theme.text}>{selectedMotion.region}</p>
+                </div>
+                <div className="rounded-lg px-3 py-2 border border-dashed border-current/20">
+                  <p className="font-semibold text-[11px] text-brand-600">Type</p>
+                  <p className={theme.text}>{selectedMotion.displayName.split(' ').pop()}</p>
                 </div>
               </div>
             </div>
@@ -328,7 +328,7 @@ const AdvancedAnimationViewer: React.FC<AdvancedAnimationViewerProps> = ({
                             className={`px-3 py-2.5 rounded-lg border ${theme.border} ${theme.cardBg} text-xs font-medium hover:border-brand-400 hover:bg-brand-50/50 transition-colors flex flex-col items-center justify-center gap-1.5 ${theme.text}`}
                           >
                             <Search className="w-4 h-4 text-brand-500 flex-shrink-0" />
-                            <span className="truncate text-center">{muscleName}</span>
+                            <span className="truncate text-center">Muscle GIF</span>
                           </button>
                         )}
                         <button
@@ -341,7 +341,7 @@ const AdvancedAnimationViewer: React.FC<AdvancedAnimationViewerProps> = ({
                           className={`px-3 py-2.5 rounded-lg border ${theme.border} ${theme.cardBg} text-xs font-medium hover:border-brand-400 hover:bg-brand-50/50 transition-colors flex flex-col items-center justify-center gap-1.5 ${theme.text}`}
                         >
                           <PlayCircle className="w-4 h-4 text-brand-500 flex-shrink-0" />
-                          <span className="truncate text-center">{selectedMotion.displayName}</span>
+                          <span className="truncate text-center">Motion GIF</span>
                         </button>
                         <button
                           onClick={() =>
@@ -353,7 +353,7 @@ const AdvancedAnimationViewer: React.FC<AdvancedAnimationViewerProps> = ({
                           className={`px-3 py-2.5 rounded-lg border ${theme.border} ${theme.cardBg} text-xs font-medium hover:border-brand-400 hover:bg-brand-50/50 transition-colors flex flex-col items-center justify-center gap-1.5 ${theme.text}`}
                         >
                           <Activity className="w-4 h-4 text-brand-500 flex-shrink-0" />
-                          <span className="truncate text-center">{selectedMotion.joint.name}</span>
+                          <span className="truncate text-center">Joint GIF</span>
                         </button>
                       </div>
                     </div>
@@ -373,7 +373,7 @@ const AdvancedAnimationViewer: React.FC<AdvancedAnimationViewerProps> = ({
                             className={`px-3 py-2.5 rounded-lg border ${theme.border} ${theme.cardBg} text-xs font-medium hover:border-red-400 hover:bg-red-50/50 transition-colors flex flex-col items-center justify-center gap-1.5 ${theme.text}`}
                           >
                             <ExternalLink className="w-4 h-4 text-red-500 flex-shrink-0" />
-                            <span className="truncate text-center">{muscleName}</span>
+                            <span className="truncate text-center">Muscle Video</span>
                           </button>
                         )}
                         <button
@@ -386,7 +386,7 @@ const AdvancedAnimationViewer: React.FC<AdvancedAnimationViewerProps> = ({
                           className={`px-3 py-2.5 rounded-lg border ${theme.border} ${theme.cardBg} text-xs font-medium hover:border-red-400 hover:bg-red-50/50 transition-colors flex flex-col items-center justify-center gap-1.5 ${theme.text}`}
                         >
                           <PlayCircle className="w-4 h-4 text-red-500 flex-shrink-0" />
-                          <span className="truncate text-center">{selectedMotion.displayName}</span>
+                          <span className="truncate text-center">Motion Video</span>
                         </button>
                         <button
                           onClick={() =>
@@ -398,7 +398,7 @@ const AdvancedAnimationViewer: React.FC<AdvancedAnimationViewerProps> = ({
                           className={`px-3 py-2.5 rounded-lg border ${theme.border} ${theme.cardBg} text-xs font-medium hover:border-red-400 hover:bg-red-50/50 transition-colors flex flex-col items-center justify-center gap-1.5 ${theme.text}`}
                         >
                           <Activity className="w-4 h-4 text-red-500 flex-shrink-0" />
-                          <span className="truncate text-center">{selectedMotion.joint.name}</span>
+                          <span className="truncate text-center">Joint Video</span>
                         </button>
                       </div>
                     </div>

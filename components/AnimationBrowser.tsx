@@ -172,9 +172,6 @@ const AnimationBrowser: React.FC<AnimationBrowserProps> = ({ currentTheme, onClo
                           <span className={`px-2 py-1 rounded ${theme.badge} font-mono`}>
                             {motion.joint.minDeg}° to {motion.joint.maxDeg}°
                           </span>
-                          <span className={theme.subText}>
-                            {motion.joint.axis || 'Multi-axis'}
-                          </span>
                         </div>
                         <div className="mt-2 flex flex-wrap gap-2 text-[11px] font-semibold">
                           <span className={`px-2 py-1 rounded-full border ${theme.border} ${theme.subText}`}>
