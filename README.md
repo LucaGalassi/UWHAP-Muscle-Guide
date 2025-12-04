@@ -22,7 +22,7 @@ No setup required — open the link and start studying.
 ### Progress Tracking
 - **Spaced Repetition** — SM-2 based algorithm adjusted for exam timing
 - **Progress Sync** — Export/import progress via shareable codes or URLs
-- **Offline Support** — All content available without internet connection (fully static)
+- **Static Content** — No external API dependencies, all data bundled in the app
 
 ### User Experience
 - **4 Beautiful Themes** — Modern, Midnight, Blueprint, and Nature
