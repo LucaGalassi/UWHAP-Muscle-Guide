@@ -274,7 +274,7 @@ const MuscleView: React.FC<MuscleViewProps> = ({ muscle, onSelectMuscle, isLearn
                 : 'bg-orange-50 text-orange-600'
               }`}>
                 <Info className="w-3.5 h-3.5" />
-                Must point to origin & insertion on an unpainted skeleton (not on your own body).
+                Must also point to origin & insertion on an unpainted skeleton.
               </p>
             </div>
           )}
