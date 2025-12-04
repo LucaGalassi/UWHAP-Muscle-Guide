@@ -1,11 +1,15 @@
-import * as THREE from 'three';
-
 /**
- * Animation Service v2.0
- * Comprehensive animation database with deep 3D model tag integration.
- * All node tags and material tags from the GLB models are mapped for
- * educational anatomical visualization.
+ * Animation Service v3.0 (Simplified)
+ * Motion definitions and educational content for anatomy study.
+ * Used by AnimationBrowser and AdvancedAnimationViewer for resource lookup.
+ * 
+ * Note: 3D model rendering removed in v3.0. This service retains motion
+ * definitions and educational content for the resource browser.
  */
+
+// Simple Vector3 type to replace THREE.Vector3 (no longer used for rendering)
+type Vector3 = { x: number; y: number; z: number };
+const vec3 = (x: number, y: number, z: number): Vector3 => ({ x, y, z });
 
 // ============================================================================
 // 3D MODEL TAG DEFINITIONS - Direct from GLB Files
@@ -491,12 +495,12 @@ export const ANATOMY_LAYERS: LayerConfig[] = [
 export interface JointSpec {
   id: string;
   name: string;
-  axis: THREE.Vector3; // Local axis of rotation
+  axis: Vector3; // Local axis of rotation (no longer used for rendering)
   minDeg: number;
   maxDeg: number;
   neutralDeg: number; // Resting anatomical position
   region: 'upper' | 'lower' | 'axial' | 'hand' | 'foot';
-  // NEW: Associated 3D model tags for animation
+  // Associated anatomical tags for educational content
   primaryBones: string[];  // Bones that move
   secondaryBones: string[]; // Bones that move slightly
   musclesToHighlight: string[]; // Muscles involved (for educational highlighting)
@@ -510,7 +514,7 @@ export const JOINTS: Record<string, JointSpec> = {
   shoulderFlexExt: {
     id: 'shoulderFlexExt',
     name: 'Shoulder Flexion/Extension',
-    axis: new THREE.Vector3(1, 0, 0),
+    axis: vec3(1, 0, 0),
     minDeg: -60,
     maxDeg: 180,
     neutralDeg: 0,
@@ -532,7 +536,7 @@ export const JOINTS: Record<string, JointSpec> = {
   shoulderAbdAdd: {
     id: 'shoulderAbdAdd',
     name: 'Shoulder Abduction/Adduction',
-    axis: new THREE.Vector3(0, 0, 1),
+    axis: vec3(0, 0, 1),
     minDeg: -30,
     maxDeg: 180,
     neutralDeg: 0,
@@ -552,7 +556,7 @@ export const JOINTS: Record<string, JointSpec> = {
   shoulderRotation: {
     id: 'shoulderRotation',
     name: 'Shoulder Medial/Lateral Rotation',
-    axis: new THREE.Vector3(0, 1, 0),
+    axis: vec3(0, 1, 0),
     minDeg: -90,
     maxDeg: 90,
     neutralDeg: 0,
@@ -573,7 +577,7 @@ export const JOINTS: Record<string, JointSpec> = {
   shoulderHorizAbdAdd: {
     id: 'shoulderHorizAbdAdd',
     name: 'Shoulder Horizontal Abd/Add',
-    axis: new THREE.Vector3(0, 1, 0),
+    axis: vec3(0, 1, 0),
     minDeg: -30,
     maxDeg: 135,
     neutralDeg: 90,
@@ -594,7 +598,7 @@ export const JOINTS: Record<string, JointSpec> = {
   elbowFlexExt: {
     id: 'elbowFlexExt',
     name: 'Elbow Flexion/Extension',
-    axis: new THREE.Vector3(1, 0, 0),
+    axis: vec3(1, 0, 0),
     minDeg: 0,
     maxDeg: 150,
     neutralDeg: 0,
@@ -621,7 +625,7 @@ export const JOINTS: Record<string, JointSpec> = {
   forearmProSup: {
     id: 'forearmProSup',
     name: 'Forearm Pronation/Supination',
-    axis: new THREE.Vector3(0, 1, 0),
+    axis: vec3(0, 1, 0),
     minDeg: -90,
     maxDeg: 90,
     neutralDeg: 0,
@@ -646,7 +650,7 @@ export const JOINTS: Record<string, JointSpec> = {
   wristFlexExt: {
     id: 'wristFlexExt',
     name: 'Wrist Flexion/Extension',
-    axis: new THREE.Vector3(1, 0, 0),
+    axis: vec3(1, 0, 0),
     minDeg: -80,
     maxDeg: 70,
     neutralDeg: 0,
@@ -673,7 +677,7 @@ export const JOINTS: Record<string, JointSpec> = {
   wristDeviation: {
     id: 'wristDeviation',
     name: 'Wrist Radial/Ulnar Deviation',
-    axis: new THREE.Vector3(0, 0, 1),
+    axis: vec3(0, 0, 1),
     minDeg: -30,
     maxDeg: 20,
     neutralDeg: 0,
@@ -704,7 +708,7 @@ export const JOINTS: Record<string, JointSpec> = {
   hipFlexExt: {
     id: 'hipFlexExt',
     name: 'Hip Flexion/Extension',
-    axis: new THREE.Vector3(1, 0, 0),
+    axis: vec3(1, 0, 0),
     minDeg: -30,
     maxDeg: 125,
     neutralDeg: 0,
@@ -727,7 +731,7 @@ export const JOINTS: Record<string, JointSpec> = {
   hipAbdAdd: {
     id: 'hipAbdAdd',
     name: 'Hip Abduction/Adduction',
-    axis: new THREE.Vector3(0, 0, 1),
+    axis: vec3(0, 0, 1),
     minDeg: -30,
     maxDeg: 45,
     neutralDeg: 0,
@@ -749,7 +753,7 @@ export const JOINTS: Record<string, JointSpec> = {
   hipRotation: {
     id: 'hipRotation',
     name: 'Hip Medial/Lateral Rotation',
-    axis: new THREE.Vector3(0, 1, 0),
+    axis: vec3(0, 1, 0),
     minDeg: -45,
     maxDeg: 45,
     neutralDeg: 0,
@@ -776,7 +780,7 @@ export const JOINTS: Record<string, JointSpec> = {
   kneeFlexExt: {
     id: 'kneeFlexExt',
     name: 'Knee Flexion/Extension',
-    axis: new THREE.Vector3(1, 0, 0),
+    axis: vec3(1, 0, 0),
     minDeg: 0,
     maxDeg: 140,
     neutralDeg: 0,
@@ -806,7 +810,7 @@ export const JOINTS: Record<string, JointSpec> = {
   ankleFlexExt: {
     id: 'ankleFlexExt',
     name: 'Ankle Dorsiflexion/Plantarflexion',
-    axis: new THREE.Vector3(1, 0, 0),
+    axis: vec3(1, 0, 0),
     minDeg: -50,
     maxDeg: 20,
     neutralDeg: 0,
@@ -834,7 +838,7 @@ export const JOINTS: Record<string, JointSpec> = {
   ankleInvEv: {
     id: 'ankleInvEv',
     name: 'Ankle Inversion/Eversion',
-    axis: new THREE.Vector3(0, 0, 1),
+    axis: vec3(0, 0, 1),
     minDeg: -35,
     maxDeg: 15,
     neutralDeg: 0,
@@ -864,7 +868,7 @@ export const JOINTS: Record<string, JointSpec> = {
   spineFlexExt: {
     id: 'spineFlexExt',
     name: 'Spine Flexion/Extension',
-    axis: new THREE.Vector3(1, 0, 0),
+    axis: vec3(1, 0, 0),
     minDeg: -30,
     maxDeg: 85,
     neutralDeg: 0,
@@ -886,7 +890,7 @@ export const JOINTS: Record<string, JointSpec> = {
   spineLateralFlex: {
     id: 'spineLateralFlex',
     name: 'Spine Lateral Flexion',
-    axis: new THREE.Vector3(0, 0, 1),
+    axis: vec3(0, 0, 1),
     minDeg: -40,
     maxDeg: 40,
     neutralDeg: 0,
@@ -907,7 +911,7 @@ export const JOINTS: Record<string, JointSpec> = {
   spineRotation: {
     id: 'spineRotation',
     name: 'Spine Rotation',
-    axis: new THREE.Vector3(0, 1, 0),
+    axis: vec3(0, 1, 0),
     minDeg: -45,
     maxDeg: 45,
     neutralDeg: 0,
@@ -930,7 +934,7 @@ export const JOINTS: Record<string, JointSpec> = {
   scapulaElevDep: {
     id: 'scapulaElevDep',
     name: 'Scapular Elevation/Depression',
-    axis: new THREE.Vector3(0, 1, 0),
+    axis: vec3(0, 1, 0),
     minDeg: -10,
     maxDeg: 10,
     neutralDeg: 0,
@@ -953,7 +957,7 @@ export const JOINTS: Record<string, JointSpec> = {
   scapulaProRet: {
     id: 'scapulaProRet',
     name: 'Scapular Protraction/Retraction',
-    axis: new THREE.Vector3(1, 0, 0),
+    axis: vec3(1, 0, 0),
     minDeg: -15,
     maxDeg: 15,
     neutralDeg: 0,
@@ -974,7 +978,7 @@ export const JOINTS: Record<string, JointSpec> = {
   scapulaRotation: {
     id: 'scapulaRotation',
     name: 'Scapular Upward/Downward Rotation',
-    axis: new THREE.Vector3(0, 0, 1),
+    axis: vec3(0, 0, 1),
     minDeg: -30,
     maxDeg: 60,
     neutralDeg: 0,
@@ -1000,7 +1004,7 @@ export const JOINTS: Record<string, JointSpec> = {
   fingerFlexExt: {
     id: 'fingerFlexExt',
     name: 'Finger Flexion/Extension',
-    axis: new THREE.Vector3(1, 0, 0),
+    axis: vec3(1, 0, 0),
     minDeg: 0,
     maxDeg: 90,
     neutralDeg: 0,
@@ -1030,7 +1034,7 @@ export const JOINTS: Record<string, JointSpec> = {
   thumbOpposition: {
     id: 'thumbOpposition',
     name: 'Thumb Opposition',
-    axis: new THREE.Vector3(0.5, 0.5, 0.7),
+    axis: vec3(0.5, 0.5, 0.7),
     minDeg: 0,
     maxDeg: 60,
     neutralDeg: 0,
@@ -1056,7 +1060,7 @@ export const JOINTS: Record<string, JointSpec> = {
   toeFlexExt: {
     id: 'toeFlexExt',
     name: 'Toe Flexion/Extension',
-    axis: new THREE.Vector3(1, 0, 0),
+    axis: vec3(1, 0, 0),
     minDeg: -30,
     maxDeg: 70,
     neutralDeg: 0,
