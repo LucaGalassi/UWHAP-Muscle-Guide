@@ -1,7 +1,7 @@
 {
   "name": "ap-muscle-guide",
   "private": true,
-  "version": "9.8.19",
+  "version": "9.8.20",
   "type": "module",
   "scripts": {
     "dev": "vite",
