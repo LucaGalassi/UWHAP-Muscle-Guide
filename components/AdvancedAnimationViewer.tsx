@@ -115,7 +115,7 @@ const AdvancedAnimationViewer: React.FC<AdvancedAnimationViewerProps> = ({
                 {browserMode ? 'Animation Library' : `${muscleName} — Study View`}
               </h3>
               <p className={`text-xs ${theme.subText}`}>
-                Curated learning resources and motion context (no 3D viewer required)
+                Browse available motion and animation content
               </p>
             </div>
           </div>

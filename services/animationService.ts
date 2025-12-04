@@ -2356,8 +2356,8 @@ export const MUSCLE_ANIMATION_MAPS: Record<string, MuscleAnimationMap> = {
   },
   'pectoralis-major': {
     muscleId: 'pectoralis-major',
-    primaryMotions: ['shoulderFlexion', 'shoulderHorizAdduction', 'shoulderMedialRotation'],
-    secondaryMotions: ['shoulderAdduction'],
+    primaryMotions: ['shoulderFlexion', 'shoulderAdduction', 'shoulderMedialRotation'],
+    secondaryMotions: ['shoulderHorizAdduction'],
     gifSearchTerms: ['bench press', 'chest fly', 'pec contraction'],
     modelTags: ['Pectoralis major muscle.r', 'Clavicular part of pectoralis major muscle.r', 'Sternocostal part of pectoralis major muscle.r', 'Abdominal part of pectoralis major muscle.r']
   },
@@ -2487,26 +2487,26 @@ export const MUSCLE_ANIMATION_MAPS: Record<string, MuscleAnimationMap> = {
   },
   'flexor-carpi-radialis': {
     muscleId: 'flexor-carpi-radialis',
-    primaryMotions: ['wristFlexion', 'wristRadialDeviation'],
-    secondaryMotions: [],
+    primaryMotions: ['wristFlexion'],
+    secondaryMotions: ['wristRadialDeviation'],
     gifSearchTerms: ['wrist flexion', 'radial deviation']
   },
   'flexor-carpi-ulnaris': {
     muscleId: 'flexor-carpi-ulnaris',
-    primaryMotions: ['wristFlexion', 'wristUlnarDeviation'],
-    secondaryMotions: [],
+    primaryMotions: ['wristFlexion'],
+    secondaryMotions: ['wristUlnarDeviation'],
     gifSearchTerms: ['wrist flexion', 'ulnar deviation']
   },
-  'extensor-carpi-radialis-longus': {
-    muscleId: 'extensor-carpi-radialis-longus',
-    primaryMotions: ['wristExtension', 'wristRadialDeviation'],
-    secondaryMotions: [],
+  'extensor-carpi-radialis': {
+    muscleId: 'extensor-carpi-radialis',
+    primaryMotions: ['wristExtension'],
+    secondaryMotions: ['wristRadialDeviation'],
     gifSearchTerms: ['wrist extension', 'radial deviation']
   },
   'extensor-carpi-ulnaris': {
     muscleId: 'extensor-carpi-ulnaris',
-    primaryMotions: ['wristExtension', 'wristUlnarDeviation'],
-    secondaryMotions: [],
+    primaryMotions: ['wristExtension'],
+    secondaryMotions: ['wristUlnarDeviation'],
     gifSearchTerms: ['wrist extension', 'ulnar deviation']
   },
   'palmaris-longus': {
@@ -2517,6 +2517,18 @@ export const MUSCLE_ANIMATION_MAPS: Record<string, MuscleAnimationMap> = {
   },
 
   // HIP/THIGH
+  'iliacus': {
+    muscleId: 'iliacus',
+    primaryMotions: ['hipFlexion'],
+    secondaryMotions: [],
+    gifSearchTerms: ['hip flexion', 'leg raise']
+  },
+  'psoas-major': {
+    muscleId: 'psoas-major',
+    primaryMotions: ['hipFlexion'],
+    secondaryMotions: [],
+    gifSearchTerms: ['hip flexion', 'leg raise']
+  },
   'iliopsoas': {
     muscleId: 'iliopsoas',
     primaryMotions: ['hipFlexion'],
@@ -2526,7 +2538,7 @@ export const MUSCLE_ANIMATION_MAPS: Record<string, MuscleAnimationMap> = {
   'gluteus-maximus': {
     muscleId: 'gluteus-maximus',
     primaryMotions: ['hipExtension', 'hipLateralRotation'],
-    secondaryMotions: ['hipAbduction'],
+    secondaryMotions: [],
     gifSearchTerms: ['hip extension', 'glute squeeze']
   },
   'gluteus-medius': {
@@ -2543,13 +2555,13 @@ export const MUSCLE_ANIMATION_MAPS: Record<string, MuscleAnimationMap> = {
   },
   'tensor-fasciae-latae': {
     muscleId: 'tensor-fasciae-latae',
-    primaryMotions: ['hipFlexion', 'hipAbduction', 'hipMedialRotation'],
-    secondaryMotions: [],
+    primaryMotions: ['hipAbduction', 'hipMedialRotation'],
+    secondaryMotions: ['hipFlexion'],
     gifSearchTerms: ['hip flexion', 'abduction', 'TFL']
   },
   'sartorius': {
     muscleId: 'sartorius',
-    primaryMotions: ['hipFlexion', 'hipAbduction', 'hipLateralRotation', 'kneeFlexion'],
+    primaryMotions: ['hipFlexion', 'kneeFlexion', 'hipLateralRotation', 'hipAbduction'],
     secondaryMotions: [],
     gifSearchTerms: ['hip flexion', 'knee flexion', 'crossed leg']
   },
@@ -2597,8 +2609,8 @@ export const MUSCLE_ANIMATION_MAPS: Record<string, MuscleAnimationMap> = {
   },
   'adductor-longus': {
     muscleId: 'adductor-longus',
-    primaryMotions: ['hipAdduction'],
-    secondaryMotions: ['hipFlexion'],
+    primaryMotions: ['hipAdduction', 'hipMedialRotation'],
+    secondaryMotions: [],
     gifSearchTerms: ['hip adduction', 'adductor']
   },
   'adductor-brevis': {
@@ -2615,8 +2627,8 @@ export const MUSCLE_ANIMATION_MAPS: Record<string, MuscleAnimationMap> = {
   },
   'gracilis': {
     muscleId: 'gracilis',
-    primaryMotions: ['hipAdduction', 'kneeFlexion'],
-    secondaryMotions: ['hipFlexion'],
+    primaryMotions: ['hipAdduction', 'hipMedialRotation', 'kneeFlexion'],
+    secondaryMotions: [],
     gifSearchTerms: ['hip adduction', 'knee flexion']
   },
   'pectineus': {
@@ -2683,9 +2695,9 @@ export const MUSCLE_ANIMATION_MAPS: Record<string, MuscleAnimationMap> = {
     secondaryMotions: [],
     gifSearchTerms: ['trunk rotation', 'oblique']
   },
-  'transversus-abdominis': {
-    muscleId: 'transversus-abdominis',
-    primaryMotions: ['spineFlexion'],
+  'transverse-abdominis': {
+    muscleId: 'transverse-abdominis',
+    primaryMotions: [],
     secondaryMotions: [],
     gifSearchTerms: ['core compression', 'abdominal brace']
   },
@@ -2700,6 +2712,26 @@ export const MUSCLE_ANIMATION_MAPS: Record<string, MuscleAnimationMap> = {
     primaryMotions: ['spineLateralFlexionRight', 'spineLateralFlexionLeft'],
     secondaryMotions: ['spineExtension'],
     gifSearchTerms: ['lateral flexion', 'side bend']
+  },
+  // FOREARM/HAND - Additional muscles
+  'extensor-digitorum': {
+    muscleId: 'extensor-digitorum',
+    primaryMotions: [],
+    secondaryMotions: [],
+    gifSearchTerms: ['finger extension', 'hand extension']
+  },
+  'flexor-digitorum-superficialis': {
+    muscleId: 'flexor-digitorum-superficialis',
+    primaryMotions: [],
+    secondaryMotions: [],
+    gifSearchTerms: ['finger flexion', 'grip']
+  },
+  // HIP - Additional muscles
+  'piriformis': {
+    muscleId: 'piriformis',
+    primaryMotions: ['hipAbduction', 'hipLateralRotation'],
+    secondaryMotions: [],
+    gifSearchTerms: ['hip external rotation', 'piriformis stretch']
   }
 };
 
@@ -2709,15 +2741,29 @@ export const MUSCLE_ANIMATION_MAPS: Record<string, MuscleAnimationMap> = {
 
 /**
  * Get all motions for a specific muscle by ID
+ * Also includes antagonist motions to enable proper antagonist flip functionality
  */
 export function getMotionsForMuscle(muscleId: string): MotionDefinition[] {
   const map = MUSCLE_ANIMATION_MAPS[muscleId];
   if (!map) return [];
   
   const allMotionIds = [...map.primaryMotions, ...map.secondaryMotions];
-  return allMotionIds
+  const motions = allMotionIds
     .map(id => MOTIONS[id])
     .filter(Boolean);
+  
+  // Add antagonist motions for each motion to enable proper flip functionality
+  const antagonistMotions: MotionDefinition[] = [];
+  motions.forEach(motion => {
+    if (motion.antagonistMotion) {
+      const antagonist = MOTIONS[motion.antagonistMotion];
+      if (antagonist && !motions.some(m => m.id === antagonist.id) && !antagonistMotions.some(m => m.id === antagonist.id)) {
+        antagonistMotions.push(antagonist);
+      }
+    }
+  });
+  
+  return [...motions, ...antagonistMotions];
 }
 
 /**
