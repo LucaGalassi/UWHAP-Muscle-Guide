@@ -2,9 +2,10 @@
 
 An interactive muscle reference and study companion built with React, Vite, and Tailwind CSS. Browse key anatomy facts, practice with multiple study modes, and keep your spaced-repetition progress synced across devices.
 
-[![Deploy static content to Pages](https://github.com/LucaGalassi/UWHAP-Muscle-Guide/actions/workflows/pages-build-deployment.yml/badge.svg)](https://github.com/LucaGalassi/UWHAP-Muscle-Guide/actions/workflows/pages-build-deployment.yml)
+[![Deploy to GitHub Pages](https://github.com/LucaGalassi/UWHAP-Muscle-Guide/actions/workflows/deploy.yml/badge.svg)](https://github.com/LucaGalassi/UWHAP-Muscle-Guide/actions/workflows/deploy.yml)
+
 [![Auto version bump](https://github.com/LucaGalassi/UWHAP-Muscle-Guide/actions/workflows/auto-version-bump.yml/badge.svg)](https://github.com/LucaGalassi/UWHAP-Muscle-Guide/actions/workflows/auto-version-bump.yml)
-[![Build and Deploy from Main](https://github.com/LucaGalassi/UWHAP-Muscle-Guide/actions/workflows/build-on-gh-pages.yml/badge.svg)](https://github.com/LucaGalassi/UWHAP-Muscle-Guide/actions/workflows/build-on-gh-pages.yml)
+
 ## Live site
 - The app is hosted on GitHub Pages: https://lucagalassi.github.io/UWHAP-Muscle-Guide/
 - No setup is required—open the link to start studying.
