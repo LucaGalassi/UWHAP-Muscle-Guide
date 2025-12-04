@@ -316,23 +316,21 @@ const AdvancedAnimationViewer: React.FC<AdvancedAnimationViewerProps> = ({
                     {/* Google GIF Search */}
                     <div className={`p-3 rounded-lg border ${theme.border} ${theme.infoBox}`}>
                       <p className={`text-[11px] uppercase tracking-wider ${theme.subText} mb-2`}>Google GIF Search</p>
-                      <div className="grid grid-cols-3 gap-2">
-                        <button
-                          onClick={() =>
-                            window.open(
-                              `https://www.google.com/search?tbm=isch&q=${encodeURIComponent(
-                                browserMode 
-                                  ? `${selectedMotion.displayName} anatomy animation gif`
-                                  : `${muscleName} muscle action animation gif`
-                              )}`,
-                              '_blank'
-                            )
-                          }
-                          className={`px-3 py-2.5 rounded-lg border ${theme.border} ${theme.cardBg} text-xs font-medium hover:border-brand-400 hover:bg-brand-50/50 transition-colors flex flex-col items-center justify-center gap-1.5 ${theme.text}`}
-                        >
-                          <Search className="w-4 h-4 text-brand-500 flex-shrink-0" />
-                          <span className="truncate text-center">{browserMode ? selectedMotion.displayName : muscleName}</span>
-                        </button>
+                      <div className={`grid gap-2 ${browserMode ? 'grid-cols-2' : 'grid-cols-3'}`}>
+                        {!browserMode && (
+                          <button
+                            onClick={() =>
+                              window.open(
+                                `https://www.google.com/search?tbm=isch&q=${encodeURIComponent(`${muscleName} muscle action animation gif`)}`,
+                                '_blank'
+                              )
+                            }
+                            className={`px-3 py-2.5 rounded-lg border ${theme.border} ${theme.cardBg} text-xs font-medium hover:border-brand-400 hover:bg-brand-50/50 transition-colors flex flex-col items-center justify-center gap-1.5 ${theme.text}`}
+                          >
+                            <Search className="w-4 h-4 text-brand-500 flex-shrink-0" />
+                            <span className="truncate text-center">{muscleName}</span>
+                          </button>
+                        )}
                         <button
                           onClick={() =>
                             window.open(
@@ -363,23 +361,21 @@ const AdvancedAnimationViewer: React.FC<AdvancedAnimationViewerProps> = ({
                     {/* YouTube Animation Search */}
                     <div className={`p-3 rounded-lg border ${theme.border} ${theme.infoBox}`}>
                       <p className={`text-[11px] uppercase tracking-wider ${theme.subText} mb-2`}>YouTube Animation Search</p>
-                      <div className="grid grid-cols-3 gap-2">
-                        <button
-                          onClick={() =>
-                            window.open(
-                              `https://www.youtube.com/results?search_query=${encodeURIComponent(
-                                browserMode 
-                                  ? `${selectedMotion.displayName} anatomy tutorial`
-                                  : `${muscleName} muscle anatomy animation`
-                              )}`,
-                              '_blank'
-                            )
-                          }
-                          className={`px-3 py-2.5 rounded-lg border ${theme.border} ${theme.cardBg} text-xs font-medium hover:border-red-400 hover:bg-red-50/50 transition-colors flex flex-col items-center justify-center gap-1.5 ${theme.text}`}
-                        >
-                          <ExternalLink className="w-4 h-4 text-red-500 flex-shrink-0" />
-                          <span className="truncate text-center">{browserMode ? selectedMotion.displayName : muscleName}</span>
-                        </button>
+                      <div className={`grid gap-2 ${browserMode ? 'grid-cols-2' : 'grid-cols-3'}`}>
+                        {!browserMode && (
+                          <button
+                            onClick={() =>
+                              window.open(
+                                `https://www.youtube.com/results?search_query=${encodeURIComponent(`${muscleName} muscle anatomy animation`)}`,
+                                '_blank'
+                              )
+                            }
+                            className={`px-3 py-2.5 rounded-lg border ${theme.border} ${theme.cardBg} text-xs font-medium hover:border-red-400 hover:bg-red-50/50 transition-colors flex flex-col items-center justify-center gap-1.5 ${theme.text}`}
+                          >
+                            <ExternalLink className="w-4 h-4 text-red-500 flex-shrink-0" />
+                            <span className="truncate text-center">{muscleName}</span>
+                          </button>
+                        )}
                         <button
                           onClick={() =>
                             window.open(
