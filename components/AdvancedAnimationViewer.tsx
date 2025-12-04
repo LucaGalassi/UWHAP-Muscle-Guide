@@ -57,16 +57,23 @@ const AdvancedAnimationViewer: React.FC<AdvancedAnimationViewerProps> = ({
 }) => {
   const theme = THEME_CONFIG[currentTheme];
 
+  // Check if muscle has mapped motions
+  const hasMappedMotions = useMemo(() => {
+    if (browserMode || !muscleId) return true;
+    return getMotionsForMuscle(muscleId).length > 0;
+  }, [browserMode, muscleId]);
+
   const availableMotions = useMemo(() => {
     if (browserMode || !muscleId) {
       return Object.values(MOTIONS);
     }
     const motions = getMotionsForMuscle(muscleId);
-    return motions.length > 0 ? motions : Object.values(MOTIONS).slice(0, 8);
+    // Return empty array if no mapped motions - don't show random ones
+    return motions;
   }, [browserMode, muscleId]);
 
-  const [selectedMotion, setSelectedMotion] = useState<MotionDefinition>(
-    () => availableMotions[0] ?? Object.values(MOTIONS)[0]
+  const [selectedMotion, setSelectedMotion] = useState<MotionDefinition | null>(
+    () => availableMotions[0] ?? null
   );
   const [regionFilter, setRegionFilter] = useState<string>('all');
   const [searchTerm, setSearchTerm] = useState<string>('');
@@ -79,12 +86,15 @@ const AdvancedAnimationViewer: React.FC<AdvancedAnimationViewerProps> = ({
   }, [initialMotionId, availableMotions]);
 
   useEffect(() => {
-    if (!selectedMotion || !availableMotions.some((m) => m.id === selectedMotion.id)) {
-      setSelectedMotion(availableMotions[0] ?? Object.values(MOTIONS)[0]);
+    if (availableMotions.length === 0) {
+      setSelectedMotion(null);
+    } else if (!selectedMotion || !availableMotions.some((m) => m.id === selectedMotion.id)) {
+      setSelectedMotion(availableMotions[0]);
     }
   }, [availableMotions, selectedMotion]);
 
   const filteredMotions = useMemo(() => {
+    if (availableMotions.length === 0) return [];
     return availableMotions.filter((motion) => {
       const matchesRegion = regionFilter === 'all' || motion.region === regionFilter;
       const term = searchTerm.toLowerCase();
@@ -131,7 +141,9 @@ const AdvancedAnimationViewer: React.FC<AdvancedAnimationViewerProps> = ({
           </button>
         </div>
 
-        <div className="flex-1 overflow-hidden grid grid-cols-1 md:grid-cols-[320px_1fr]">
+        <div className={`flex-1 overflow-hidden grid grid-cols-1 ${hasMappedMotions ? 'md:grid-cols-[320px_1fr]' : ''}`}>
+          {/* Only show sidebar when motions are available */}
+          {hasMappedMotions && (
           <aside className={`border-r ${theme.border} ${theme.sidebarBg} flex flex-col overflow-hidden`}>
             <div className="p-4 space-y-4 flex-shrink-0 border-b border-dashed border-current/10">
               <div className="space-y-2">
@@ -182,7 +194,7 @@ const AdvancedAnimationViewer: React.FC<AdvancedAnimationViewerProps> = ({
                     key={motion.id}
                     onClick={() => setSelectedMotion(motion)}
                     className={`w-full text-left px-3 py-2 rounded-lg border ${theme.border} transition-all overflow-hidden ${
-                      selectedMotion.id === motion.id
+                      selectedMotion?.id === motion.id
                         ? 'bg-brand-500 text-white border-brand-500 shadow-sm'
                         : `${theme.cardBg} ${theme.text} hover:border-brand-300`
                     }`}
@@ -193,7 +205,7 @@ const AdvancedAnimationViewer: React.FC<AdvancedAnimationViewerProps> = ({
                         {motion.joint.minDeg}°–{motion.joint.maxDeg}°
                       </span>
                     </div>
-                    <div className={`text-[11px] break-words ${selectedMotion.id === motion.id ? 'text-white/90' : theme.subText}`}>
+                    <div className={`text-[11px] break-words ${selectedMotion?.id === motion.id ? 'text-white/90' : theme.subText}`}>
                       {motion.description}
                     </div>
                   </button>
@@ -201,6 +213,7 @@ const AdvancedAnimationViewer: React.FC<AdvancedAnimationViewerProps> = ({
               </div>
             </div>
 
+            {selectedMotion && (
             <div className={`p-4 border-t ${theme.border} ${theme.cardBg}`}>
               <div className="flex items-center gap-2 mb-2">
                 <BookOpen className="w-4 h-4 text-brand-500" />
@@ -227,10 +240,13 @@ const AdvancedAnimationViewer: React.FC<AdvancedAnimationViewerProps> = ({
                 </div>
               </div>
             </div>
+            )}
           </aside>
+          )}
 
           <div className="flex-1 overflow-y-auto p-6 space-y-6 custom-scrollbar min-h-0">
-            {/* Tab Navigation */}
+            {/* Tab Navigation - only show tabs when motions are available */}
+            {hasMappedMotions && (
             <div className="flex items-center gap-2 mb-4">
               <button
                 onClick={() => setActiveTab('actions')}
@@ -257,8 +273,10 @@ const AdvancedAnimationViewer: React.FC<AdvancedAnimationViewerProps> = ({
                 Study Guides
               </button>
             </div>
+            )}
 
-            {/* Selected Motion Info (Always visible) */}
+            {/* Selected Motion Info (only visible when motions are available) */}
+            {selectedMotion && (
             <section className={`rounded-xl border ${theme.border} ${theme.cardBg} p-4 shadow-sm overflow-hidden`}>
               <div className="flex items-start justify-between gap-4 flex-wrap">
                 <div className="flex-1 min-w-0">
@@ -282,9 +300,10 @@ const AdvancedAnimationViewer: React.FC<AdvancedAnimationViewerProps> = ({
                 </div>
               </div>
             </section>
+            )}
 
             {/* Tab 1: Muscle Actions - GIF Search focused */}
-            {activeTab === 'actions' && (
+            {(activeTab === 'actions' || !hasMappedMotions) && (
               <>
                 {/* Study Requirements (Priority) */}
                 {!browserMode && (actionString || demonstrationText || muscleGroup) && (
@@ -345,7 +364,7 @@ const AdvancedAnimationViewer: React.FC<AdvancedAnimationViewerProps> = ({
                     {/* Google GIF Search */}
                     <div className={`p-3 rounded-lg border ${theme.border} ${theme.infoBox}`}>
                       <p className={`text-[11px] uppercase tracking-wider ${theme.subText} mb-2`}>Google GIF Search</p>
-                      <div className={`grid gap-2 ${browserMode ? 'grid-cols-2' : 'grid-cols-3'}`}>
+                      <div className={`grid gap-2 ${(!browserMode && !selectedMotion) ? 'grid-cols-1' : (browserMode ? 'grid-cols-2' : 'grid-cols-3')}`}>
                         {!browserMode && (
                           <button
                             onClick={() =>
@@ -360,6 +379,8 @@ const AdvancedAnimationViewer: React.FC<AdvancedAnimationViewerProps> = ({
                             <span className="truncate text-center">Muscle GIF</span>
                           </button>
                         )}
+                        {selectedMotion && (
+                        <>
                         <button
                           onClick={() =>
                             window.open(
@@ -384,13 +405,15 @@ const AdvancedAnimationViewer: React.FC<AdvancedAnimationViewerProps> = ({
                           <Activity className="w-4 h-4 text-brand-500 flex-shrink-0" />
                           <span className="truncate text-center">Joint GIF</span>
                         </button>
+                        </>
+                        )}
                       </div>
                     </div>
 
                     {/* YouTube Animation Search */}
                     <div className={`p-3 rounded-lg border ${theme.border} ${theme.infoBox}`}>
                       <p className={`text-[11px] uppercase tracking-wider ${theme.subText} mb-2`}>YouTube Animation Search</p>
-                      <div className={`grid gap-2 ${browserMode ? 'grid-cols-2' : 'grid-cols-3'}`}>
+                      <div className={`grid gap-2 ${(!browserMode && !selectedMotion) ? 'grid-cols-1' : (browserMode ? 'grid-cols-2' : 'grid-cols-3')}`}>
                         {!browserMode && (
                           <button
                             onClick={() =>
@@ -405,6 +428,8 @@ const AdvancedAnimationViewer: React.FC<AdvancedAnimationViewerProps> = ({
                             <span className="truncate text-center">Muscle Video</span>
                           </button>
                         )}
+                        {selectedMotion && (
+                        <>
                         <button
                           onClick={() =>
                             window.open(
@@ -429,6 +454,8 @@ const AdvancedAnimationViewer: React.FC<AdvancedAnimationViewerProps> = ({
                           <Activity className="w-4 h-4 text-red-500 flex-shrink-0" />
                           <span className="truncate text-center">Joint Video</span>
                         </button>
+                        </>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -511,8 +538,8 @@ const AdvancedAnimationViewer: React.FC<AdvancedAnimationViewerProps> = ({
               </>
             )}
 
-            {/* Tab 2: Study Guides - Learning aids and resources */}
-            {activeTab === 'guides' && (
+            {/* Tab 2: Study Guides - Learning aids and resources (only when motions available) */}
+            {activeTab === 'guides' && selectedMotion && (
               <>
                 {/* Learning Aids Section */}
                 <section className={`p-4 rounded-xl border ${theme.border} ${theme.cardBg} space-y-4`}>
