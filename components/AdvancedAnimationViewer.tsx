@@ -40,6 +40,7 @@ interface AdvancedAnimationViewerProps {
   insertionString?: string;
   browserMode?: boolean;
   initialMotionId?: string;
+}
 
 const AdvancedAnimationViewer: React.FC<AdvancedAnimationViewerProps> = ({
   muscleName,
