@@ -129,11 +129,11 @@ const FlashcardView: React.FC<FlashcardViewProps> = ({ muscle, onRate, onNext, a
             </div>
             <div className="space-y-4">
               <div className={`p-4 rounded-xl border ${theme.infoBox}`}>
-                <p className="text-xs font-semibold uppercase tracking-widest text-emerald-500 mb-2">Origin</p>
+                <p className="text-xs font-semibold uppercase tracking-widest text-red-500 mb-2">Origin</p>
                 <p className={`text-base leading-relaxed ${theme.text}`}>{content?.origin || '...'}</p>
               </div>
               <div className={`p-4 rounded-xl border ${theme.infoBox}`}>
-                <p className="text-xs font-semibold uppercase tracking-widest text-rose-500 mb-2">Insertion</p>
+                <p className="text-xs font-semibold uppercase tracking-widest text-blue-500 mb-2">Insertion</p>
                 <p className={`text-base leading-relaxed ${theme.text}`}>{content?.insertion || '...'}</p>
               </div>
               <div className={`p-4 rounded-xl border ${theme.infoBox}`}>

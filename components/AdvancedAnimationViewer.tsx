@@ -422,9 +422,9 @@ const AdvancedAnimationViewer: React.FC<AdvancedAnimationViewerProps> = ({
                           '_blank'
                         )
                       }
-                        className={`px-3 py-2 rounded-lg border ${theme.border} ${theme.cardBg} text-xs font-medium hover:border-emerald-400 transition-colors ${theme.text} overflow-hidden`}
+                        className={`px-3 py-2 rounded-lg border ${theme.border} ${theme.cardBg} text-xs font-medium hover:border-red-400 transition-colors ${theme.text} overflow-hidden`}
                       >
-                        <span className="text-blue-600 font-semibold truncate">Origin</span>
+                        <span className="text-red-500 font-semibold truncate">Origin</span>
                       </button>
                       <button
                         onClick={() =>
@@ -435,9 +435,9 @@ const AdvancedAnimationViewer: React.FC<AdvancedAnimationViewerProps> = ({
                           '_blank'
                         )
                       }
-                        className={`px-3 py-2 rounded-lg border ${theme.border} ${theme.cardBg} text-xs font-medium hover:border-rose-400 transition-colors ${theme.text} overflow-hidden`}
+                        className={`px-3 py-2 rounded-lg border ${theme.border} ${theme.cardBg} text-xs font-medium hover:border-blue-400 transition-colors ${theme.text} overflow-hidden`}
                       >
-                        <span className="text-rose-600 font-semibold truncate">Insertion</span>
+                        <span className="text-blue-500 font-semibold truncate">Insertion</span>
                       </button>
                       <button
                         onClick={() =>
@@ -465,14 +465,14 @@ const AdvancedAnimationViewer: React.FC<AdvancedAnimationViewerProps> = ({
                       <div className="space-y-2 text-sm">
                         {originString && (
                           <div className={`p-3 rounded-lg border ${theme.border} ${theme.infoBox} overflow-hidden`}>
-                            <p className="text-xs font-bold uppercase tracking-wider text-blue-600 mb-1">Origin</p>
-                            <p className={`${theme.text} text-blue-600 break-words`}>{originString}</p>
+                            <p className="text-xs font-bold uppercase tracking-wider text-red-500 mb-1">Origin</p>
+                            <p className={`${theme.text} break-words`}>{originString}</p>
                           </div>
                         )}
                         {insertionString && (
                           <div className={`p-3 rounded-lg border ${theme.border} ${theme.infoBox} overflow-hidden`}>
-                            <p className="text-xs font-bold uppercase tracking-wider text-rose-600 mb-1">Insertion</p>
-                            <p className={`${theme.text} text-rose-600 break-words`}>{insertionString}</p>
+                            <p className="text-xs font-bold uppercase tracking-wider text-blue-500 mb-1">Insertion</p>
+                            <p className={`${theme.text} break-words`}>{insertionString}</p>
                           </div>
                         )}
                       </div>

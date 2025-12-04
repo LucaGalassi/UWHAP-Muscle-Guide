@@ -228,7 +228,7 @@ const MuscleView: React.FC<MuscleViewProps> = ({ muscle, onSelectMuscle, isLearn
           <div className="grid md:grid-cols-3 gap-8">
             <InfoCard 
               title="Origin" 
-              icon={<MapPin className="w-4 h-4 text-emerald-600" />}
+              icon={<MapPin className="w-4 h-4 text-red-500" />}
               content={content.origin}
               className="md:col-span-1"
               onSearch={() => openSearchPopup(`${muscle.name} muscle origin anatomy diagram`)}
@@ -237,7 +237,7 @@ const MuscleView: React.FC<MuscleViewProps> = ({ muscle, onSelectMuscle, isLearn
             />
             <InfoCard 
               title="Insertion" 
-              icon={<MapPin className="w-4 h-4 text-rose-600" />}
+              icon={<MapPin className="w-4 h-4 text-blue-500" />}
               content={content.insertion}
               className="md:col-span-1"
               onSearch={() => openSearchPopup(`${muscle.name} muscle insertion anatomy diagram`)}

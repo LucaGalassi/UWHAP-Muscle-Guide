@@ -35,8 +35,13 @@ export const generateQuizQuestion = (muscleId?: string): QuizQuestion => {
   
   if (!content) throw new Error("Muscle content not found");
 
-  const types: ('ORIGIN' | 'INSERTION' | 'ACTION' | 'IDENTIFY')[] = ['ORIGIN', 'INSERTION', 'ACTION', 'IDENTIFY'];
-  const type = types[Math.floor(Math.random() * types.length)];
+  // Group A: Can ask ORIGIN, INSERTION, ACTION, IDENTIFY
+  // Group B: Can only ask ACTION, IDENTIFY (no origin/insertion requirements)
+  const groupATypes: ('ORIGIN' | 'INSERTION' | 'ACTION' | 'IDENTIFY')[] = ['ORIGIN', 'INSERTION', 'ACTION', 'IDENTIFY'];
+  const groupBTypes: ('ACTION' | 'IDENTIFY')[] = ['ACTION', 'IDENTIFY'];
+  
+  const availableTypes = targetMuscle.group === 'A' ? groupATypes : groupBTypes;
+  const type = availableTypes[Math.floor(Math.random() * availableTypes.length)];
 
   let question = "";
   let correctAnswer = "";
