@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { MuscleItem, MuscleContent, AppTheme } from '../types';
-import { fetchMuscleDetails } from '../services/geminiService';
+import { fetchMuscleDetails } from '../services/muscleContentService';
 import { MUSCLE_DETAILS, MUSCLE_DATA, THEME_CONFIG } from '../constants';
 import { 
   Play, 

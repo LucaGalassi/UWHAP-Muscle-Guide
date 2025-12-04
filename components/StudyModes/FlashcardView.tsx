@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { MuscleItem, MuscleContent, ConfidenceRating, AppTheme } from '../../types';
-import { fetchMuscleDetails } from '../../services/geminiService';
+import { fetchMuscleDetails } from '../../services/muscleContentService';
 import { THEME_CONFIG } from '../../constants';
 import { Activity, PlayCircle } from 'lucide-react';
 import AdvancedAnimationViewer from '../AdvancedAnimationViewer';

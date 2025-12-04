@@ -46,7 +46,7 @@ App.tsx                    # Global state (progress, theme, exam date)
 
 ### Content Retrieval Pattern
 ```typescript
-// services/geminiService.ts - fetchMuscleDetails()
+// services/muscleContentService.ts - fetchMuscleDetails()
 // 1. Check MUSCLE_DETAILS static dictionary (fast, verified)
 // 2. Return placeholder content if not found
 ```
