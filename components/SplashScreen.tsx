@@ -102,18 +102,9 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onFinish, studentName, hasS
     <div className={`fixed inset-0 z-[100] flex flex-col items-center justify-center bg-slate-950 transition-all duration-700 ease-in-out ${isExiting ? 'opacity-0 scale-110 pointer-events-none' : 'opacity-100 scale-100'}`}>
       {/* Version & Credits - Top Right Corner */}
       <div className="absolute top-4 right-4 flex items-center gap-3 z-10">
-        <span className="text-slate-500 text-xs font-medium opacity-60">Made with <span className="text-red-400">❤️</span> by Luca G</span>
+        <span className="text-slate-500 text-xs font-medium opacity-60">Made with <span className="text-red-400">❤️</span>&nbsp;by <a href="https://github.com/LucaGalassi/UWHAP-Muscle-Guide" target="_blank" rel="noopener noreferrer" className="hover:text-slate-300 transition-colors inline-flex items-center gap-1">Luca G <Github className="w-3 h-3" /></a></span>
         <span className="text-slate-600">·</span>
         <span className="text-slate-500 text-xs font-medium opacity-50">v{pkg.version}</span>
-        <a 
-          href="https://github.com/LucaGalassi/UWHAP-Muscle-Guide" 
-          target="_blank" 
-          rel="noopener noreferrer"
-          className="text-slate-500 hover:text-slate-300 transition-colors opacity-50 hover:opacity-100"
-          title="View on GitHub"
-        >
-          <Github className="w-4 h-4" />
-        </a>
       </div>
 
       <div className="relative mb-12">

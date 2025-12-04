@@ -146,7 +146,7 @@ const Sidebar: React.FC<SidebarProps> = ({
               </div>
               <div>
                 <h1 className={`text-lg font-black tracking-tight leading-none ${theme.sidebarText}`}>
-                  Muscle<br/>Guide <span className="text-[10px] font-normal opacity-50 ml-1">v{pkg.version}</span>
+                  Muscle<br/>Guide
                 </h1>
                 {studentName && (
                   <p className={`text-[10px] font-bold uppercase tracking-wider mt-1 ${theme.sidebarSubText}`}>
@@ -397,8 +397,7 @@ const Sidebar: React.FC<SidebarProps> = ({
         
         {/* Footer */}
         <div className={`p-4 border-t ${theme.sidebarBorder} ${theme.sidebarBg}`}>
-          <div className="flex items-center justify-between text-[10px] font-bold">
-            <span className={`${theme.sidebarSubText} opacity-50`}>v{pkg.version}</span>
+          <div className="flex items-center justify-end text-[10px] font-bold">
             <div className="flex items-center gap-2">
               <button
                 onClick={() => setShowSettingsModal(true)}
@@ -410,16 +409,17 @@ const Sidebar: React.FC<SidebarProps> = ({
             </div>
           </div>
           <div className={`text-center mt-2 text-[9px] ${theme.sidebarSubText} opacity-50 uppercase tracking-wider flex items-center justify-center gap-1.5`}>
-            Made with <span className="text-red-500">❤️</span> by Luca G
+            Made with <span className="text-red-500">❤️</span>&nbsp;by{' '}
             <a 
               href="https://github.com/LucaGalassi/UWHAP-Muscle-Guide" 
               target="_blank" 
               rel="noopener noreferrer"
-              className="hover:opacity-100 opacity-70 transition-opacity"
+              className="hover:opacity-100 opacity-70 transition-opacity inline-flex items-center gap-1"
               title="View on GitHub"
             >
-              <Github className="w-3 h-3" />
+              Luca G <Github className="w-3 h-3" />
             </a>
+            <span className={`${theme.sidebarSubText} opacity-70`}>· v{pkg.version}</span>
           </div>
         </div>
       </div>
