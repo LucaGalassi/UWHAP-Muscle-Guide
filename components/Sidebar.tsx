@@ -410,7 +410,7 @@ const Sidebar: React.FC<SidebarProps> = ({
             </div>
           </div>
           <div className={`text-center mt-2 text-[9px] ${theme.sidebarSubText} opacity-50 uppercase tracking-wider flex items-center justify-center gap-1.5`}>
-            Made by Luca G
+            Made with <span className="text-red-500">❤️</span> by Luca G
             <a 
               href="https://github.com/LucaGalassi/UWHAP-Muscle-Guide" 
               target="_blank" 
