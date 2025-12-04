@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { MUSCLE_DATA, THEME_CONFIG } from '../constants';
 import { MuscleItem, StudyMode, MuscleProgress, AppTheme } from '../types';
-import { Search, ChevronRight, BookOpen, CheckCircle2, Share2, Circle, X, Copy, Check, GraduationCap, LayoutList, Settings, Key, Trash2, Trophy, Clock, Sun, Moon, DraftingCompass, Leaf, Palette, Save, AlertTriangle, Timer, Play } from 'lucide-react';
+import { Search, ChevronRight, BookOpen, CheckCircle2, Share2, Circle, X, Copy, Check, GraduationCap, LayoutList, Settings, Key, Trash2, Trophy, Clock, Sun, Moon, DraftingCompass, Leaf, Palette, Save, AlertTriangle, Timer, Play, Github } from 'lucide-react';
 import pkg from '../package.json';
 
 interface SidebarProps {
@@ -427,8 +427,17 @@ const Sidebar: React.FC<SidebarProps> = ({
               </button>
             </div>
           </div>
-          <div className={`text-center mt-2 text-[9px] ${theme.sidebarSubText} opacity-50 uppercase tracking-wider`}>
+          <div className={`text-center mt-2 text-[9px] ${theme.sidebarSubText} opacity-50 uppercase tracking-wider flex items-center justify-center gap-1.5`}>
             Made by Luca G
+            <a 
+              href="https://github.com/LucaGalassi/UWHAP-Muscle-Guide" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="hover:opacity-100 opacity-70 transition-opacity"
+              title="View on GitHub"
+            >
+              <Github className="w-3 h-3" />
+            </a>
           </div>
         </div>
       </div>

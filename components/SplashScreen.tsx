@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Activity, Clock, AlertTriangle, Settings, Key, UserPlus, KeyRound, ArrowRight, CheckCircle, XCircle } from 'lucide-react';
+import { Activity, Clock, AlertTriangle, Settings, Key, UserPlus, KeyRound, ArrowRight, CheckCircle, XCircle, Github } from 'lucide-react';
 import pkg from '../package.json';
 
 interface SplashScreenProps {
@@ -101,8 +101,17 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onFinish, studentName, hasS
   return (
     <div className={`fixed inset-0 z-[100] flex flex-col items-center justify-center bg-slate-950 transition-all duration-700 ease-in-out ${isExiting ? 'opacity-0 scale-110 pointer-events-none' : 'opacity-100 scale-100'}`}>
       {/* Version Badge - Top Right Corner */}
-      <div className="absolute top-4 right-4 text-slate-500 text-xs font-bold opacity-50 z-10">
-        v{pkg.version}
+      <div className="absolute top-4 right-4 flex items-center gap-2 z-10">
+        <span className="text-slate-500 text-xs font-bold opacity-50">v{pkg.version}</span>
+        <a 
+          href="https://github.com/LucaGalassi/UWHAP-Muscle-Guide" 
+          target="_blank" 
+          rel="noopener noreferrer"
+          className="text-slate-500 hover:text-slate-300 transition-colors opacity-50 hover:opacity-100"
+          title="View on GitHub"
+        >
+          <Github className="w-4 h-4" />
+        </a>
       </div>
 
       <div className="relative mb-12">
