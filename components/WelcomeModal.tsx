@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Play, Download, AlertTriangle, Timer, CheckCircle, ArrowRight, GraduationCap, Brain, Save, ShieldAlert, ChevronRight, Palette, Sparkles, Moon, Ruler, Leaf, User } from 'lucide-react';
+import { Play, Download, AlertTriangle, Timer, CheckCircle, ArrowRight, GraduationCap, Brain, Save, ShieldAlert, ChevronRight, Palette, Sparkles, Moon, Ruler, Leaf, User, Github, Heart } from 'lucide-react';
 import { THEME_CONFIG } from '../constants';
 import appPackage from '../package.json';
 import { AppTheme } from '../types';
@@ -270,6 +270,40 @@ const WelcomeModal: React.FC<WelcomeModalProps> = ({ onDismiss, onResume, daysUn
               <span className={`font-black ${isDarkTutorial ? 'text-red-300' : 'text-red-600'}`}>IMPORTANT:</span> ALWAYS verify specific origin/insertion, muscle information, text, etc with the official course materials if in doubt. The Lab Manual is your absolute source of truth for the exam. Once again this content was made heavly assited with AI, so mistakes are likely. Report any issues or mistakes to Luca for fixing.
             </p>
           </div>
+        </div>
+      )
+    },
+    {
+      title: "Open Source Project",
+      subtitle: "Made with ❤️ by Luca G",
+      icon: <Github className={`w-12 h-12 ${isDarkTutorial ? 'text-slate-300' : currentTheme === 'nature' ? 'text-stone-600' : 'text-slate-700'}`} />,
+      content: (
+        <div className={`space-y-4 text-sm leading-relaxed ${tutorialMuted}`}>
+          <p className={tutorialText}>
+            This project is <strong>100% open source</strong> and freely available on GitHub. Built with React, TypeScript, and Tailwind CSS.
+          </p>
+          <div className={`p-4 rounded-xl flex items-start gap-3 ${tutorialGoal}`}>
+            <Heart className={`w-5 h-5 mt-0.5 shrink-0 ${isDarkTutorial ? 'text-red-400' : 'text-red-500'}`} />
+            <div>
+              <p className="font-bold text-xs uppercase tracking-wide">Community Driven</p>
+              <p className="text-xs mt-1">Contributions, bug reports, and feature suggestions are always welcome!</p>
+            </div>
+          </div>
+          <p className={tutorialText}>
+            Interested in exploring the source code, suggesting improvements, or reporting bugs?
+          </p>
+          <a 
+            href="https://github.com/LucaGalassi/UWHAP-Muscle-Guide" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className={`flex items-center justify-center gap-2 p-4 rounded-xl font-bold text-sm transition-all hover:scale-[1.02] ${isDarkTutorial ? 'bg-slate-800 text-white hover:bg-slate-700 border border-slate-600' : currentTheme === 'nature' ? 'bg-stone-800 text-white hover:bg-stone-700' : 'bg-slate-900 text-white hover:bg-slate-800'}`}
+          >
+            <Github className="w-5 h-5" />
+            View on GitHub
+          </a>
+          <p className={`text-xs text-center ${tutorialMuted}`}>
+            Star the repo if you find it helpful! ⭐
+          </p>
         </div>
       )
     }
