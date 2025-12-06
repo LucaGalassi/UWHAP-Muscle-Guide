@@ -15,7 +15,7 @@ import { Menu, ArrowLeft, AlertTriangle, Timer } from 'lucide-react';
 
 // Compression Helpers
 const STATUS_MAP = ['NEW', 'LEARNING', 'REVIEW', 'MASTERED'];
-const DEFAULT_EXAM_DATE = new Date('2025-12-08T09:30:00').getTime(); // Default exam date as timestamp
+const DEFAULT_EXAM_DATE = new Date('2025-12-08T09:30:00+08:00').getTime(); // Default exam date as timestamp (Perth time)
 
 const compressProgress = (map: Record<string, MuscleProgress>): string => {
   const minified = Object.values(map).map(p => {
