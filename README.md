@@ -1,6 +1,6 @@
 # UWHAP Muscle Guide
 
-An interactive anatomy study companion for the University of Western Australia Health & Physical Education program. Built with React, TypeScript, Vite, and Tailwind CSS.
+An interactive anatomy study companion for the UWH & Madison College A&P1 Muscle Study Guide. Built with React, TypeScript, Vite, and Tailwind CSS.
 
 [![Deploy to GitHub Pages](https://github.com/LucaGalassi/UWHAP-Muscle-Guide/actions/workflows/deploy.yml/badge.svg)](https://github.com/LucaGalassi/UWHAP-Muscle-Guide/actions/workflows/deploy.yml)
 
