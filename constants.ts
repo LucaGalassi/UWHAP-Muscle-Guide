@@ -213,7 +213,7 @@ export const MUSCLE_DETAILS: Record<string, MuscleContent> = {
     origin: "Scapula - Coracoid Process and superior margin of Glenoid Fossa",
     insertion: "Radius - Radial Tuberosity",
     action: "1. Flexes forearm at elbow\n2. Supinates forearm\n3. Flexes shoulder",
-    demonstration: "1. Stand with your arm relaxed by your side.\n2. To demonstrate flexion: Slowly bend your elbow, bringing your hand toward your shoulder. Squeeze the front of your upper arm.\n3. To demonstrate supination: Keep your elbow bent at 90 degrees and rotate your wrist so your palm faces up (like holding a bowl of soup).",
+    demonstration: "1. Bend your elbow, bringing your hand toward your shoulder (flexion).\n2. With elbow bent at 90°, rotate your palm to face up (supination).",
     tips: [
       "Mnemonic: 'Corkscrew Muscle' - it pulls the cork out (supination) and then pulls the cork (flexion).",
       "Short head originates from Coracoid process (Coracoid = Crow's beak).",
@@ -237,7 +237,7 @@ export const MUSCLE_DETAILS: Record<string, MuscleContent> = {
     origin: "Humerus - Anterior Distal Half",
     insertion: "Ulna - Coronoid Process",
     action: "Flexes forearm at elbow (Prime Mover - Principle Flexor of the forearm)",
-    demonstration: "1. Pronate your hand (palm facing down) to disengage the biceps slightly.\n2. Flex your elbow, bringing your hand toward your shoulder.\n3. The muscle is located deep to the biceps, but you can feel it bulging on the sides of the lower upper arm.",
+    demonstration: "1. With palm facing down (pronated), bend your elbow, bringing your hand toward your shoulder.",
     tips: [
       "The 'Workhorse' of the elbow flexors.",
       "It is deep to the biceps brachii.",
@@ -260,7 +260,7 @@ export const MUSCLE_DETAILS: Record<string, MuscleContent> = {
     origin: "Humerus - Distal End, above Lateral Epicondyle",
     insertion: "Radius - Styloid Process",
     action: "Flexes forearm at elbow",
-    demonstration: "1. Position your hand in a 'neutral' position (thumbs up, like a handshake).\n2. Flex your elbow against resistance (try pulling up on a table edge).\n3. Observe the prominent ridge popping up on the top/thumb-side of your forearm.",
+    demonstration: "1. Position your hand thumbs-up (neutral/handshake position).\n2. Bend your elbow (flexion).",
     tips: [
       "The 'Beer Drinking' muscle - it flexes the elbow best when the hand is in neutral (handshake) position.",
       "Prominent when you flex your elbow against resistance with thumb up.",
@@ -280,7 +280,7 @@ export const MUSCLE_DETAILS: Record<string, MuscleContent> = {
     origin: "Humerus - two origins on the posterior surface: one proximal and one distal\nScapula - Infraglenoid Tubercle",
     insertion: "Ulna - Olecranon Process",
     action: "Extends forearm at elbow",
-    demonstration: "1. Bend your elbow.\n2. Straighten (extend) your arm forcefully behind you.\n3. Feel the back of your upper arm tighten. This is the triceps engaging to straighten the joint.",
+    demonstration: "1. Bend your elbow.\n2. Straighten your arm completely (extension).",
     tips: [
       "Tri-ceps means 'Three Heads': Long, Lateral, and Medial.",
       "The Long head crosses the shoulder joint (helps extend shoulder), the others do not.",
@@ -302,7 +302,7 @@ export const MUSCLE_DETAILS: Record<string, MuscleContent> = {
     origin: "Humerus - Medial Epicondyle & Ulna - Coronoid Process",
     insertion: "Radius - midshaft",
     action: "Pronates forearm",
-    demonstration: "1. Start with your palm facing up (supinated).\n2. Rotate your forearm so your palm faces down (pronation).\n3. Imagine throwing a card onto a table.",
+    demonstration: "1. Start with palm facing up (supinated).\n2. Rotate your forearm so your palm faces down (pronation).",
     tips: [
       "Shape resembles a diagonal strap across the upper forearm.",
       "Mnemonic: 'Pass the Taters' (Pronator Teres).",
@@ -322,7 +322,7 @@ export const MUSCLE_DETAILS: Record<string, MuscleContent> = {
     origin: "Humerus - Lateral Epicondyle & Ulna - proximal end",
     insertion: "Radius - proximal 1/3 of anterior shaft",
     action: "Supinates forearm",
-    demonstration: "1. Start with your palm facing down.\n2. Rotate your forearm so your palm faces up.\n3. Mnemonic action: Imagine holding a bowl of soup.",
+    demonstration: "1. Start with palm facing down (pronated).\n2. Rotate your forearm so your palm faces up (supination).",
     tips: [
       "Think 'Holding a bowl of Soup' (Supination).",
       "Deep muscle, wraps around the radius.",
@@ -383,7 +383,7 @@ export const MUSCLE_DETAILS: Record<string, MuscleContent> = {
     origin: "Zygomatic bone",
     insertion: "Skin & Muscle at corner of mouth",
     action: "Raises corners of mouth during smiling",
-    demonstration: "1. Smile broadly, raising the corners of your mouth toward your cheekbones.\n2. Feel the muscle contract over your cheekbones.",
+    demonstration: "1. Smile broadly, raising the corners of your mouth toward your cheekbones.",
     tips: [
       "The 'Smiling Muscle'.",
       "Runs from the cheekbone (Zygomatic arch) to the mouth corner.",
@@ -402,7 +402,7 @@ export const MUSCLE_DETAILS: Record<string, MuscleContent> = {
     origin: "Epicranial aponeurosis",
     insertion: "Skin of eyebrows & top of nose",
     action: "Elevates eyebrows (to show surprise), wrinkles forehead",
-    demonstration: "1. Raise your eyebrows high as if surprised.\n2. Feel the horizontal wrinkles form on your forehead.",
+    demonstration: "1. Raise your eyebrows high as if surprised.",
     tips: [
       "Frontal belly of the Epicranius (Occipitofrontalis).",
       "Think: 'Surprise!' muscle.",
@@ -421,7 +421,7 @@ export const MUSCLE_DETAILS: Record<string, MuscleContent> = {
     origin: "Fascia of chest, covering the pectoral muscles & part of the deltoid muscles",
     insertion: "Mandible - lower margin, Skin at corner of mouth",
     action: "Depresses the mandible - 'grimacing'",
-    demonstration: "1. Pull the corners of your mouth down.\n2. Tense the skin of your neck (like a lizard).\n3. Observe the vertical bands standing out on your neck.",
+    demonstration: "1. Pull the corners of your mouth down (grimacing).\n2. Tense the skin of your neck.",
     tips: [
       "The 'Shaving Muscle' (tenses skin of neck).",
       "Very superficial, thin sheet of muscle.",
@@ -441,7 +441,7 @@ export const MUSCLE_DETAILS: Record<string, MuscleContent> = {
     origin: "Zygomatic Arch",
     insertion: "Mandible - Ramus and Angle",
     action: "Elevates the mandible (Prime mover of jaw closure)",
-    demonstration: "1. Place fingers on the angle of your jaw (below ears).\n2. Clench your teeth firmly.\n3. Feel the muscle bulge out hard.",
+    demonstration: "1. Clench your teeth firmly (elevates mandible/closes jaw).",
     tips: [
       "The 'Chewer'. One of the strongest muscles in the body for its size.",
       "Feel it bulge at the angle of your jaw when you clench teeth.",
@@ -464,7 +464,7 @@ export const MUSCLE_DETAILS: Record<string, MuscleContent> = {
     origin: "Temporal Fossa",
     insertion: "Mandible - Coronoid Process",
     action: "Elevates & retracts mandible",
-    demonstration: "1. Place fingers on your temples.\n2. Clench your teeth.\n3. Feel the muscle tighten under your fingertips.",
+    demonstration: "1. Clench your teeth (elevates mandible).\n2. Move jaw backward (retraction).",
     tips: [
       "Fan-shaped muscle covering the temple.",
       "Passes under the Zygomatic arch.",
@@ -483,7 +483,7 @@ export const MUSCLE_DETAILS: Record<string, MuscleContent> = {
     origin: "Sternum - Manubrium & Clavicle",
     insertion: "Temporal bone - Mastoid Process & Occipital bone",
     action: "1. Flexes Neck\n2. Rotates the head\n3. Elevates (sternum/clavicle)",
-    demonstration: "1. To show rotation: Turn your head to the LEFT. The RIGHT SCM will pop out.\n2. To show flexion: Bring your chin to your chest.",
+    demonstration: "1. Rotation: Turn your head to the left (right SCM contracts).\n2. Flexion: Bring your chin to your chest.",
     tips: [
       "Name tells you the attachments: Sterno (Sternum), Cleido (Clavicle), Mastoid (Mastoid process).",
       "The 'Prayer Muscle' (bilateral contraction flexes head down).",
@@ -508,7 +508,7 @@ export const MUSCLE_DETAILS: Record<string, MuscleContent> = {
     origin: "Humerus - Medial Epicondyle",
     insertion: "Base of 2nd & 3rd Metacarpals (palmar surface)",
     action: "1. Flexes the wrist\n2. Abducts the hand toward the radius at the wrist",
-    demonstration: "1. Flex your wrist (palm towards forearm).\n2. Tilt your hand towards your thumb (radial deviation).",
+    demonstration: "1. Flex your wrist (bend palm toward forearm).\n2. Tilt your hand toward your thumb (radial deviation/abduction).",
     tips: [
       "Originates from the 'Common Flexor Tendon' (Medial Epicondyle).",
       "Follows the radius bone to the thumb side.",
@@ -531,7 +531,7 @@ export const MUSCLE_DETAILS: Record<string, MuscleContent> = {
     origin: "Humerus - Medial Epicondyle; Ulna - Olecranon & posterior surface",
     insertion: "Pisiform, Hamate, & Base of 5th Metacarpal",
     action: "1. Flexes the wrist\n2. Adducts the hand toward the ulna at the wrist",
-    demonstration: "1. Flex your wrist.\n2. Tilt your hand towards your pinky finger (ulnar deviation).",
+    demonstration: "1. Flex your wrist (bend palm toward forearm).\n2. Tilt your hand toward your pinky finger (ulnar deviation/adduction).",
     tips: [
       "Most medial of the superficial flexors.",
       "Ulnar nerve runs just underneath it ('funny bone' sensation).",
@@ -600,7 +600,7 @@ export const MUSCLE_DETAILS: Record<string, MuscleContent> = {
     origin: "Humerus - Lateral Epicondyle",
     insertion: "Four tendons onto Distal Phalanges #2-#5",
     action: "Extends fingers",
-    demonstration: "1. Open your hand flat.\n2. Lift your fingers up (hyperextend) as if waving.\n3. You can see the tendons moving on the back of your hand.",
+    demonstration: "1. Open your hand flat.\n2. Lift your fingers up (extend fingers).",
     tips: [
       "Look at the back of your hand; these are the tendons you see when you wiggle your fingers.",
       "Notice the 'intertendinous connections' (little bridges between tendons) that make it hard to lift just the ring finger.",
@@ -621,7 +621,7 @@ export const MUSCLE_DETAILS: Record<string, MuscleContent> = {
     origin: "Tibia - proximal 1/2 of anterolateral surface",
     insertion: "Base of 1st Metatarsal & Medial Cuneiform (plantar surface)",
     action: "1. Dorsiflexes the ankle\n2. Inverts the ankle & foot",
-    demonstration: "1. Sit with legs hanging freely.\n2. Pull your toes/foot up towards your shin (Dorsiflexion).\n3. Turn the sole of your foot inward (Inversion).",
+    demonstration: "1. Pull your toes/foot up toward your shin (dorsiflexion).\n2. Turn the sole of your foot inward (inversion).",
     tips: [
       "The 'Shin Splint' muscle.",
       "Primary dorsiflexor (lifts foot up to prevent tripping).",
@@ -644,7 +644,7 @@ export const MUSCLE_DETAILS: Record<string, MuscleContent> = {
     origin: "Femur - Lateral and Medial Condyles",
     insertion: "Calcaneus via the Achilles Tendon",
     action: "1. Plantar flexion of the ankle\n2. Flexes the knee",
-    demonstration: "1. Stand up.\n2. Raise your heels off the ground (tiptoes).\n3. Feel the large muscle belly on the back of your calf contract.",
+    demonstration: "1. Rise up on your tiptoes (plantarflexion).\n2. Bend your knee slightly (knee flexion).",
     tips: [
       "The 'Calf' muscle (Belly of the leg).",
       "Crosses two joints (knee and ankle).",
@@ -667,7 +667,7 @@ export const MUSCLE_DETAILS: Record<string, MuscleContent> = {
     origin: "Tibia - proximal shaft & Fibula - proximal shaft",
     insertion: "Calcaneus via the Achilles Tendon",
     action: "Plantar flexion of the ankle",
-    demonstration: "1. Sit in a chair with knees bent at 90 degrees.\n2. Raise your heels off the ground.\n3. Because the knee is bent, the gastrocnemius is slack, isolating the Soleus.",
+    demonstration: "1. Sit with knees bent at 90°.\n2. Raise your heels off the ground (plantarflexion with knee bent isolates soleus).",
     tips: [
       "Shaped like a 'Sole' (flat fish).",
       "Deep to the Gastrocnemius.",
@@ -689,7 +689,7 @@ export const MUSCLE_DETAILS: Record<string, MuscleContent> = {
     origin: "Tibia - Lateral Condyle; Fibula - proximal 3/4; Interosseous Membrane",
     insertion: "Middle and Distal Phalanges #2-#5, dorsal surface",
     action: "1. Extends toes\n2. Dorsiflexes foot",
-    demonstration: "1. Lift your four smaller toes up towards your shin.\n2. Feel the tendons activate on top of your foot.",
+    demonstration: "1. Lift your four smaller toes up toward your shin (toe extension + dorsiflexion).",
     tips: [
       "Lateral to the Tibialis Anterior.",
       "Split into 4 tendons on top of the foot.",
@@ -710,7 +710,7 @@ export const MUSCLE_DETAILS: Record<string, MuscleContent> = {
     origin: "Occipital bone & Ligamentum Nuchae & Spinous Processes C7-T12",
     insertion: "Scapula - Spine and Acromion Process & Clavicle - lateral 3rd",
     action: "1. Extends head at neck\n2. Adducts scapulae\n3. & 4. Elevates & depresses scapula",
-    demonstration: "1. Upper Fibers: Shrug your shoulders up toward your ears.\n2. Middle Fibers: Pull your shoulder blades together (retraction).\n3. Lower Fibers: Pull your shoulder blades down.",
+    demonstration: "1. Upper Fibers: Shrug your shoulders up (elevation).\n2. Middle Fibers: Squeeze your shoulder blades together (retraction/adduction).\n3. Lower Fibers: Pull your shoulders down (depression).",
     tips: [
       "Shaped like a 'Trapezoid' (diamond shape on back).",
       "Three distinct fiber sets: Upper (elevates/shrugs), Middle (retracts/squeezes), Lower (depresses).",
@@ -733,7 +733,7 @@ export const MUSCLE_DETAILS: Record<string, MuscleContent> = {
     origin: "Clavicle - Lateral 3rd & Scapula - Acromion Process & Spine",
     insertion: "Humerus - Deltoid Tuberosity",
     action: "1. Flexes the shoulder\n2. Extends the shoulder\n3. Abducts the shoulder",
-    demonstration: "1. Anterior: Raise arm forward.\n2. Middle: Raise arm to the side (flap wings).\n3. Posterior: Extend arm backward.",
+    demonstration: "1. Anterior: Raise arm forward (flexion).\n2. Middle: Raise arm to the side (abduction).\n3. Posterior: Move arm backward (extension).",
     tips: [
       "Shaped like the Greek letter Delta (triangle).",
       "Ant/Mid/Post fibers act like 3 different muscles.",
@@ -756,7 +756,7 @@ export const MUSCLE_DETAILS: Record<string, MuscleContent> = {
     origin: "Clavicle, Sternum, Costal cartilages #1-#6",
     insertion: "Humerus - Lateral margin of Intertubercular Sulcus",
     action: "1. Flexes shoulder\n2. Adducts shoulder\n3. Medially rotates shoulder",
-    demonstration: "1. Hold arms out to sides.\n2. Clap hands together in front of your chest (Adduction).\n3. Push palms together to feel the chest muscles harden.",
+    demonstration: "1. Hold arms out to sides, then bring them together in front of your chest (adduction).\n2. Raise arm forward (flexion).\n3. Rotate arm inward (medial rotation).",
     tips: [
       "The 'Push-up' muscle.",
       "Has a Clavicular head (upper chest) and Sternocostal head (lower chest).",
@@ -779,7 +779,7 @@ export const MUSCLE_DETAILS: Record<string, MuscleContent> = {
     origin: "Ilium - Iliac Crest, T7-S5 Vertebrae - Spinous Processes, Ribs #8-#12",
     insertion: "Humerus - medial margin of Intertubercular Sulcus",
     action: "1. Extends shoulder\n2. Adducts shoulder\n3. Medially rotates shoulder",
-    demonstration: "1. Reach high above your head.\n2. Pull your arms down and back as if doing a pull-up.\n3. Feel the wide muscle on the sides of your back engage.",
+    demonstration: "1. Reach arms up overhead, then pull them down and back (extension + adduction).\n2. Rotate arms inward (medial rotation).",
     tips: [
       "Latissimus Dorsi = 'Widest of the Back'.",
       "The 'Handcuff Muscle' (Extension, Adduction, Medial Rotation - motion to put arms behind back).",
@@ -802,7 +802,7 @@ export const MUSCLE_DETAILS: Record<string, MuscleContent> = {
     origin: "Scapula - supraspinous fossa",
     insertion: "Humerus - Greater Tubercle",
     action: "Abducts arm/shoulder",
-    demonstration: "1. Let arm hang by side.\n2. Initiate lifting the arm to the side (first 15 degrees only).\n3. This muscle starts the motion before the deltoid kicks in.",
+    demonstration: "1. With arm hanging at side, initiate lifting the arm to the side (first 15° of abduction).",
     tips: [
       "Part of Rotator Cuff (SITS).",
       "Initiates abduction (first 0-15 degrees).",
@@ -822,7 +822,7 @@ export const MUSCLE_DETAILS: Record<string, MuscleContent> = {
     origin: "Scapula - infraspinous fossa",
     insertion: "Humerus - Greater Tubercle",
     action: "Laterally rotates arm/shoulder",
-    demonstration: "1. Keep elbow tucked into side, bent at 90 degrees.\n2. Rotate hand outward (away from body).\n3. Feel the muscle on the back of the shoulder blade.",
+    demonstration: "1. Keep elbow tucked at side, bent at 90°.\n2. Rotate your hand outward away from body (lateral/external rotation).",
     tips: [
       "Part of Rotator Cuff (SITS).",
       "Located 'Infra' (below) the spine of scapula.",
@@ -842,7 +842,7 @@ export const MUSCLE_DETAILS: Record<string, MuscleContent> = {
     origin: "Scapula - lateral border",
     insertion: "Humerus - Greater Tubercle",
     action: "Laterally rotates arm/shoulder",
-    demonstration: "1. Same action as Infraspinatus: Elbow at side, rotate hand outward.",
+    demonstration: "1. Elbow at side, bent at 90°, rotate hand outward (lateral rotation).",
     tips: [
       "Part of Rotator Cuff (SITS).",
       "The 'Little Brother' to the Infraspinatus (does same action).",
@@ -862,7 +862,7 @@ export const MUSCLE_DETAILS: Record<string, MuscleContent> = {
     origin: "Scapula - subscapular fossa",
     insertion: "Humerus - Lesser Tubercle",
     action: "Medially rotates arm/shoulder",
-    demonstration: "1. Place hand behind your back (internally rotate).\n2. Try to lift your hand off your back against resistance.",
+    demonstration: "1. Place hand behind your back (medial/internal rotation).\n2. Try to lift your hand off your back.",
     tips: [
       "Part of Rotator Cuff (SITS).",
       "The ONLY Rotator Cuff muscle on the ANTERIOR (front) of scapula.",
@@ -884,7 +884,7 @@ export const MUSCLE_DETAILS: Record<string, MuscleContent> = {
     origin: "Pubis bone - Pubic Crest and Pubic Symphysis",
     insertion: "Costal Cartilage of ribs #5-#7 & Xiphoid Process",
     action: "Flexes vertebral column & trunk",
-    demonstration: "1. Perform a 'crunch' motion, bringing rib cage toward pelvis.\n2. Feel the ridges of the 'six-pack' contract.",
+    demonstration: "1. Perform a crunch motion, bringing rib cage toward pelvis (trunk flexion).",
     tips: [
       "The 'Six Pack' muscle.",
       "Fibers run vertically (Rectus = Straight).",
@@ -907,7 +907,7 @@ export const MUSCLE_DETAILS: Record<string, MuscleContent> = {
     origin: "Ribs #5-#12",
     insertion: "Linea Alba, Pubic Crest & Iliac Crest",
     action: "1. Flexes vertebral column & trunk\n2. Rotates trunk\n3. Compresses abdominal wall",
-    demonstration: "1. Twist your torso to the opposite side.\n2. Feel the muscle on the side of your ribs contract.",
+    demonstration: "1. Twist your torso to the opposite side (rotation).\n2. Bend sideways (lateral flexion).\n3. Do a crunch (trunk flexion).",
     tips: [
       "Fibers run 'Hands in Pockets' direction (Down and In).",
       "Largest and most superficial of lateral abs.",
@@ -927,7 +927,7 @@ export const MUSCLE_DETAILS: Record<string, MuscleContent> = {
     origin: "Inguinal Ligament, Iliac Crest & Lumbar Fascia",
     insertion: "Linea Alba, Pubic Crest, Ribs #8-#12",
     action: "1. Flexes vertebral column & trunk\n2. Rotates trunk\n3. Compresses abdominal wall",
-    demonstration: "1. Twist your torso to the SAME side.\n2. Located deep to the external oblique.",
+    demonstration: "1. Twist your torso to the same side (rotation).\n2. Bend sideways (lateral flexion).\n3. Do a crunch (trunk flexion).",
     tips: [
       "Fibers run Perpendicular to External Oblique (Up and In).",
       "Rotation: Turns trunk to SAME side.",
@@ -946,7 +946,7 @@ export const MUSCLE_DETAILS: Record<string, MuscleContent> = {
     origin: "Inguinal Ligament, Iliac Crest & Cartilages #6-#12",
     insertion: "Linea Alba, Pubic Crest",
     action: "Compresses abdomen",
-    demonstration: "1. Exhale completely.\n2. 'Suck in' your stomach/navel towards your spine.",
+    demonstration: "1. Exhale completely.\n2. Draw your belly button in toward your spine (abdominal compression).",
     tips: [
       "The 'Corset Muscle'.",
       "Deepest abdominal layer.",
@@ -965,7 +965,7 @@ export const MUSCLE_DETAILS: Record<string, MuscleContent> = {
      origin: "Iliac Crest, Sacrum, Lumbar spinous processes",
      insertion: "Ribs and cervical vertebrae",
      action: "Extends vertebral column",
-     demonstration: "1. Lie face down.\n2. Lift your chest off the floor (Supermans).\n3. Feel the cords running parallel to your spine.",
+     demonstration: "1. Lie face down, lift your chest off the floor (back extension).\n2. Or stand and arch your back backward.",
      tips: [
          "Mnemonic: 'I Love Spaghetti' (Lateral to Medial columns): Iliocostalis, Longissimus, Spinalis.",
          "Main antagonist to Rectus Abdominis.",
@@ -986,7 +986,7 @@ export const MUSCLE_DETAILS: Record<string, MuscleContent> = {
     origin: "Ilium - Iliac Fossa",
     insertion: "Femur - Lesser Trochanter",
     action: "Flexes the hip/thigh",
-    demonstration: "1. Lift your knee towards your chest (Hip Flexion).",
+    demonstration: "1. Lift your knee toward your chest (hip flexion).",
     tips: [
       "Fills the 'bowl' of the pelvis.",
       "Joins with Psoas Major to form 'Iliopsoas'.",
@@ -1009,7 +1009,7 @@ export const MUSCLE_DETAILS: Record<string, MuscleContent> = {
     origin: "T12-L5 Bodies & Vertebrae",
     insertion: "Femur - Lesser Trochanter",
     action: "Flexes the hip/thigh",
-    demonstration: "1. Lift your knee towards your chest.",
+    demonstration: "1. Lift your knee toward your chest (hip flexion).",
     tips: [
       "Filet Mignon of the human body (anatomically analogous).",
       "Originates from the spine, passes through pelvis to leg.",
@@ -1031,7 +1031,7 @@ export const MUSCLE_DETAILS: Record<string, MuscleContent> = {
     origin: "Ilium - posterior gluteal line, Sacrum, Coccyx",
     insertion: "Femur - Gluteal Tuberosity & Iliotibial Tract",
     action: "1. Extends the hip/thigh\n2. Laterally rotates the hip/thigh",
-    demonstration: "1. Stand and kick your leg backward.\n2. Squeeze your buttocks.",
+    demonstration: "1. Kick your leg backward (hip extension).\n2. Rotate your thigh outward (lateral rotation).",
     tips: [
       "Largest muscle in the body by volume.",
       "Powerful extensor (climbing stairs, standing from chair).",
@@ -1054,7 +1054,7 @@ export const MUSCLE_DETAILS: Record<string, MuscleContent> = {
     origin: "Ilium - posterior surface",
     insertion: "Femur - Greater Trochanter",
     action: "1. Abducts the hip/thigh\n2. Medially rotates the hip/thigh",
-    demonstration: "1. Stand and lift your leg out to the side (Abduction).\n2. Palpate the side of your hip.",
+    demonstration: "1. Lift your leg out to the side (hip abduction).\n2. Rotate your thigh inward (medial rotation).",
     tips: [
       "The 'Hip Stabilizer'.",
       "Prevents pelvis from dropping when walking (Trendelenburg sign).",
@@ -1077,7 +1077,7 @@ export const MUSCLE_DETAILS: Record<string, MuscleContent> = {
     origin: "Sacrum (anterior)",
     insertion: "Femur - Greater Trochanter",
     action: "1. Abducts the hip/thigh\n2. Laterally rotates the hip/thigh",
-    demonstration: "1. Sit with legs crossed (ankle on opposite knee).\n2. This stretches the piriformis deep in the buttock.",
+    demonstration: "1. Sit with one ankle resting on opposite knee.\n2. Rotate thigh outward (lateral rotation) and lift knee out to side (abduction).",
     tips: [
       "Pear-shaped muscle.",
       "Key landmark: Sciatic nerve usually runs just below it.",
@@ -1096,7 +1096,7 @@ export const MUSCLE_DETAILS: Record<string, MuscleContent> = {
     origin: "Ilium - anterior aspect of Iliac Crest & ASIS",
     insertion: "Tibia - via the Iliotibial Tract",
     action: "1. Abducts the hip/thigh\n2. Rotates hip/thigh medially",
-    demonstration: "1. Stand on one leg.\n2. Feel the muscle tense on the outer hip near your pocket.",
+    demonstration: "1. Lift your leg out to the side (hip abduction).\n2. Rotate your thigh inward (medial rotation).",
     tips: [
       "TFL = 'Tensor' (tightener) of 'Fascia Lata' (side thigh fascia).",
       "Connects to the IT Band.",
@@ -1115,7 +1115,7 @@ export const MUSCLE_DETAILS: Record<string, MuscleContent> = {
     origin: "Ilium - Anterior Superior Iliac Spine (ASIS)",
     insertion: "Tibia - medial surface of proximal tibia",
     action: "1. Flexes the hip/thigh\n2. Flexes the knee\n3. Externally rotates the hip/thigh\n4. Abducts the hip/thigh",
-    demonstration: "1. Sit down and cross one leg over the other so your ankle rests on your knee (Tailor sit).\n2. This combines Flexion, Abduction, and External Rotation (FABER).",
+    demonstration: "1. Sit and cross one leg over the other (ankle on opposite knee).\n2. This combines hip flexion, abduction, external rotation, and knee flexion (FABER position).",
     tips: [
       "Longest muscle in the body.",
       "The 'Tailor's Muscle' (Latin 'Sartor' = Tailor) - positions leg to sit cross-legged.",
@@ -1138,7 +1138,7 @@ export const MUSCLE_DETAILS: Record<string, MuscleContent> = {
     origin: "Pubis - near Pubic Symphysis",
     insertion: "Tibia - medial surface of proximal tibia",
     action: "1. Adducts the hip/thigh\n2. Medially rotates the hip/thigh\n3. Flexes the knee",
-    demonstration: "1. Stand and squeeze legs together.\n2. Feel the cord-like tendon on the very inner thigh.",
+    demonstration: "1. Squeeze your legs together (hip adduction).\n2. Rotate your thigh inward (medial rotation).\n3. Bend your knee (knee flexion).",
     tips: [
       "The 'Groin' muscle strap.",
       "Most medial muscle of the thigh.",
@@ -1158,7 +1158,7 @@ export const MUSCLE_DETAILS: Record<string, MuscleContent> = {
     origin: "Pubis - near Pubic Symphysis",
     insertion: "Femur - Linea Aspera",
     action: "1. Adducts the hip/thigh\n2. Medially rotates the hip/thigh",
-    demonstration: "1. Squeeze your knees together against resistance (like a ball).",
+    demonstration: "1. Squeeze your knees together (hip adduction).\n2. Rotate your thigh inward (medial rotation).",
     tips: [
       "Fan-shaped muscle in the inner thigh.",
       "Palpable tendon near the pubic bone.",
@@ -1183,7 +1183,7 @@ export const MUSCLE_DETAILS: Record<string, MuscleContent> = {
     origin: "Ilium - Anterior Inferior Iliac Spine (AIIS)",
     insertion: "Patella & Tibia - Tibial Tuberosity (via Patellar tendon)",
     action: "1. Extends the knee\n2. Flexes the hip",
-    demonstration: "1. Kick your leg out straight (knee extension).\n2. Lift your straight leg up towards the ceiling (hip flexion).",
+    demonstration: "1. Kick your leg out straight (knee extension).\n2. Lift your straight leg toward the ceiling (hip flexion).",
     tips: [
       "The ONLY Quad muscle that crosses the hip joint.",
       "Rectus = Straight (runs straight down thigh).",
@@ -1206,7 +1206,7 @@ export const MUSCLE_DETAILS: Record<string, MuscleContent> = {
     origin: "Femur - greater trochanter & Linea Aspera",
     insertion: "Patella & Tibia - Tibial Tuberosity",
     action: "Extends the leg at the knee",
-    demonstration: "1. Straighten your knee.\n2. Feel the large muscle on the outer part of your thigh.",
+    demonstration: "1. Straighten your knee (knee extension).",
     tips: [
       "Largest head of the Quadriceps.",
       "Lateral side of thigh.",
@@ -1229,7 +1229,7 @@ export const MUSCLE_DETAILS: Record<string, MuscleContent> = {
     origin: "Femur - medial edge of Linea Aspera",
     insertion: "Patella & Tibia - Tibial Tuberosity",
     action: "Extends the leg at the knee",
-    demonstration: "1. Straighten your knee completely.\n2. Feel the teardrop-shaped muscle on the inner thigh, just above the knee.",
+    demonstration: "1. Straighten your knee completely (knee extension).",
     tips: [
       "The 'Teardrop' muscle just above the knee.",
       "Important for patellar tracking (pulls patella medially).",
@@ -1251,7 +1251,7 @@ export const MUSCLE_DETAILS: Record<string, MuscleContent> = {
     origin: "Femur - anterior and lateral shaft",
     insertion: "Patella & Tibia - Tibial Tuberosity",
     action: "Extends the leg at the knee",
-    demonstration: "1. Straighten knee.\n2. Cannot be felt directly as it is deep to Rectus Femoris.",
+    demonstration: "1. Straighten your knee (knee extension).\n2. Note: This muscle is deep to rectus femoris and cannot be directly seen or felt.",
     tips: [
       "Hidden deep to the Rectus Femoris.",
       "Wraps around the femur shaft.",
@@ -1275,7 +1275,7 @@ export const MUSCLE_DETAILS: Record<string, MuscleContent> = {
     origin: "Ischium - Ischial Tuberosity & Femur - Linea Aspera",
     insertion: "Fibula - Head & Tibia - Lateral Condyle",
     action: "1. Flexes the knee\n2. Extends the hip",
-    demonstration: "1. Stand and curl your heel towards your buttock (knee flexion).\n2. Feel the tendon on the OUTER back of the knee.",
+    demonstration: "1. Curl your heel toward your buttock (knee flexion).\n2. Kick your leg backward (hip extension).",
     tips: [
       "Lateral Hamstring.",
       "Two heads (Long and Short). Short head only flexes knee.",
@@ -1298,7 +1298,7 @@ export const MUSCLE_DETAILS: Record<string, MuscleContent> = {
     origin: "Ischium - Ischial Tuberosity",
     insertion: "Tibia - Medial surface of proximal shaft",
     action: "1. Flexes the knee\n2. Extends the hip",
-    demonstration: "1. Curl heel to buttock.\n2. Feel the distinct cord-like tendon on the INNER back of the knee.",
+    demonstration: "1. Curl your heel toward your buttock (knee flexion).\n2. Kick your leg backward (hip extension).",
     tips: [
       "Medial Hamstring.",
       "Semi-TENDIN-osus = Long Tendon (looks like a whip).",
@@ -1321,7 +1321,7 @@ export const MUSCLE_DETAILS: Record<string, MuscleContent> = {
     origin: "Ischium - Ischial Tuberosity",
     insertion: "Tibia - Medial Condyle",
     action: "1. Flexes the knee\n2. Extends the hip",
-    demonstration: "1. Curl heel to buttock.\n2. Located deep to Semitendinosus on the medial side.",
+    demonstration: "1. Curl your heel toward your buttock (knee flexion).\n2. Kick your leg backward (hip extension).",
     tips: [
       "Medial Hamstring.",
       "Semi-MEMBRAN-osus = Wide Membrane (flat shape).",
@@ -1343,7 +1343,7 @@ export const MUSCLE_DETAILS: Record<string, MuscleContent> = {
     origin: "Humerus - Medial Epicondyle & Radius/Ulna - proximal portions",
     insertion: "Middle Phalanges of digits 2-5",
     action: "Flexes fingers at PIP joint (middle knuckle)",
-    demonstration: "1. Make a loose fist.\n2. Bend your middle knuckles while keeping fingertips straight if possible.",
+    demonstration: "1. Make a loose fist.\n2. Bend your middle knuckles (PIP joints) while keeping fingertips straight (flexes fingers).",
     tips: [
       "Superficialis = Superficial (closer to surface).",
       "Tendons split to allow Flexor Digitorum Profundus through.",
