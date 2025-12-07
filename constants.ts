@@ -224,7 +224,14 @@ export const MUSCLE_DETAILS: Record<string, MuscleContent> = {
       { id: "brachialis", name: "Brachialis", relation: "Synergist (Forearm Flexion)" },
       { id: "triceps-brachii", name: "Triceps brachii", relation: "Antagonist (Extension)" },
       { id: "supinator", name: "Supinator", relation: "Synergist (Supination)" }
-    ]
+    ],
+    memoryTips: {
+      mnemonic: "\"Bi-CEPS, Bi-JOBS\" - Two heads (Bi-ceps) doing two main jobs: Flexion & Supination. Think of opening a bottle: twist the cap (supinate) then pull it out (flex).",
+      originTip: "\"Crow's Beak & Socket\" - Short head from Coracoid (crow's beak shape), Long head from Glenoid (the socket). Both on the SCAPULA.",
+      insertionTip: "\"Biceps Rides the Radius\" - Inserts on Radial Tuberosity. Remember: both start with 'R' and the biceps pulls the radius to supinate.",
+      actionTip: "\"Flex, Spin, Lift\" - Flexes elbow, Supinates forearm (soup bowl), assists shoulder Flexion. Think: holding a bowl of soup while bringing it to your mouth.",
+      demonstrationTip: "Show the classic 'flex' pose (elbow flexion), then turn palm up like holding soup (supination). Two moves, two actions."
+    }
   },
   "brachialis": {
     origin: "Humerus - Anterior Distal Half",
@@ -240,7 +247,14 @@ export const MUSCLE_DETAILS: Record<string, MuscleContent> = {
     relatedMuscles: [
       { id: "biceps-brachii", name: "Biceps brachii", relation: "Superficial Synergist" },
       { id: "brachioradialis", name: "Brachioradialis", relation: "Synergist" }
-    ]
+    ],
+    memoryTips: {
+      mnemonic: "\"Brachialis = The BRUTE\" - Pure, powerful flexor. No fancy rotations, just raw strength. The workhorse hiding under the biceps.",
+      originTip: "\"Hugging the Humerus\" - Anterior distal half of humerus. It wraps around the front bottom of the upper arm bone.",
+      insertionTip: "\"U-lna for U-nique\" - Inserts on Ulna (Coronoid Process). Since it's on the ulna, it can ONLY flex (no rotation possible).",
+      actionTip: "\"One Job Wonder\" - Only flexes the elbow. Unlike biceps, it can't supinate because it's attached to the ulna, not radius.",
+      demonstrationTip: "Palm DOWN (pronated) to take biceps out of play, then flex. Feel the sides of your lower upper arm bulge - that's the brachialis working."
+    }
   },
   "brachioradialis": {
     origin: "Humerus - Distal End, above Lateral Epicondyle",
@@ -256,7 +270,11 @@ export const MUSCLE_DETAILS: Record<string, MuscleContent> = {
     relatedMuscles: [
       { id: "brachialis", name: "Brachialis", relation: "Synergist (Flexion)" },
       { id: "extensor-carpi-radialis", name: "Extensor carpi radialis", relation: "Synergist (Abduction)" }
-    ]
+    ],
+    memoryTips: {
+      mnemonic: "\"Beer muscle\" - Best position for flexing is thumbs up, like holding a beer mug. Brachioradialis = Beer-achioradialis!",
+      actionTip: "\"Neutral Flexor\" - Strongest when hand is in neutral (handshake) position. It's the bridge muscle between arm and forearm flexors."
+    }
   },
   "triceps-brachii": {
     origin: "Humerus - two origins on the posterior surface: one proximal and one distal\nScapula - Infraglenoid Tubercle",
@@ -271,7 +289,14 @@ export const MUSCLE_DETAILS: Record<string, MuscleContent> = {
     clinicalConnection: "Triceps Tendonitis: Common in weightlifters (bench press) or throwers.",
     relatedMuscles: [
       { id: "biceps-brachii", name: "Biceps brachii", relation: "Antagonist (Flexion)" }
-    ]
+    ],
+    memoryTips: {
+      mnemonic: "\"TRI-ceps = THREE heads, ONE job\" - Long, Lateral, Medial heads all work together to extend. Remember: 3 heads, 1 action (extension).",
+      originTip: "\"Long from Low, Two from the Bone\" - Long head from scapula (infraglenoid tubercle - below socket), Lateral & Medial heads from humerus.",
+      insertionTip: "\"Funny Bone Connection\" - Inserts on Olecranon (that bony point of your elbow). Hit it and you feel the ulnar nerve - the 'funny bone'!",
+      actionTip: "\"Opposite of Biceps\" - Triceps Extends, Biceps Flexes. Think of pushing vs pulling.",
+      demonstrationTip: "Push-up motion or straighten arm behind you. Feel the horseshoe shape on back of arm harden."
+    }
   },
   "pronator-teres": {
     origin: "Humerus - Medial Epicondyle & Ulna - Coronoid Process",
@@ -287,7 +312,11 @@ export const MUSCLE_DETAILS: Record<string, MuscleContent> = {
     relatedMuscles: [
       { id: "supinator", name: "Supinator", relation: "Antagonist (Supination)" },
       { id: "biceps-brachii", name: "Biceps brachii", relation: "Antagonist (Supination)" }
-    ]
+    ],
+    memoryTips: {
+      mnemonic: "\"Pass the Taters\" - Pronator Teres. Passing motion (palm down) = pronation. Teres sounds like 'taters' (potatoes)!",
+      actionTip: "\"Palm Down = Pronation\" - Remember: ProNation = Palm dowN. You're 'pro' at putting your palm down!"
+    }
   },
   "supinator": {
     origin: "Humerus - Lateral Epicondyle & Ulna - proximal end",
@@ -303,7 +332,11 @@ export const MUSCLE_DETAILS: Record<string, MuscleContent> = {
     relatedMuscles: [
       { id: "pronator-teres", name: "Pronator teres", relation: "Antagonist (Pronation)" },
       { id: "biceps-brachii", name: "Biceps brachii", relation: "Synergist (Supination)" }
-    ]
+    ],
+    memoryTips: {
+      mnemonic: "\"SUPinator = SOUP bowl\" - Hold a bowl of SOUP, palm UP = SUPination. Don't spill your soup!",
+      actionTip: "\"SUP-inate = Palm UP\" - The word itself tells you: SUP = UP. SUPinator turns palm UP to hold SUP (soup)."
+    }
   },
 
   // --- Head, Face, Trunk & Neck ---
@@ -321,7 +354,11 @@ export const MUSCLE_DETAILS: Record<string, MuscleContent> = {
     relatedMuscles: [
       { id: "zygomaticus", name: "Zygomaticus", relation: "Antagonist (Smile vs Pucker)" },
       { id: "platysma", name: "Platysma", relation: "Associated Facial Muscle" }
-    ]
+    ],
+    memoryTips: {
+      mnemonic: "\"ORbicularis ORIS = ORAL circle\" - Circular muscle around the ORAL opening. Think: O for circular, ORIS for mouth!",
+      actionTip: "\"Kiss, Whistle, Pucker\" - All the things you do with pursed lips. Think of making an 'O' shape with your mouth."
+    }
   },
   "orbicularis-oculi": {
     origin: "Frontal bone, Maxillary bone & ligaments around orbit",
@@ -336,7 +373,11 @@ export const MUSCLE_DETAILS: Record<string, MuscleContent> = {
     clinicalConnection: "Weakness seen in Myasthenia Gravis (ptosis/drooping).",
     relatedMuscles: [
       { id: "frontalis", name: "Frontalis", relation: "Synergist (Expression)" }
-    ]
+    ],
+    memoryTips: {
+      mnemonic: "\"ORbicularis OCULI = OCULAR circle\" - Circular muscle around the EYE (ocular). O for circle, OCULI for eye!",
+      actionTip: "\"Wink & Squint\" - This muscle does both! Gentle close = blink, forceful = squint/wink."
+    }
   },
   "zygomaticus": {
     origin: "Zygomatic bone",
@@ -351,7 +392,11 @@ export const MUSCLE_DETAILS: Record<string, MuscleContent> = {
     clinicalConnection: "Major muscle involved in genuine (Duchenne) smiling.",
     relatedMuscles: [
       { id: "orbicularis-oris", name: "Orbicularis oris", relation: "Antagonist (Smile vs Pucker)" }
-    ]
+    ],
+    memoryTips: {
+      mnemonic: "\"Zygo = Yoke (cheekbone), Smile from Cheek\" - The zygomatic bone is your cheekbone. This muscle pulls mouth corners UP to cheek = SMILE!",
+      actionTip: "\"Cheek-to-Cheek Smile\" - Pulls mouth corners up toward cheekbones. Big genuine smile = Duchenne smile = Zygomaticus in action!"
+    }
   },
   "frontalis": {
     origin: "Epicranial aponeurosis",
@@ -366,7 +411,11 @@ export const MUSCLE_DETAILS: Record<string, MuscleContent> = {
     clinicalConnection: "Often the target for Botox injections to smooth forehead wrinkles.",
     relatedMuscles: [
       { id: "orbicularis-oculi", name: "Orbicularis oculi", relation: "Adjacent Facial Muscle" }
-    ]
+    ],
+    memoryTips: {
+      mnemonic: "\"FRONT-alis on the FRONT\" - Located on the FRONTal bone = forehead. Makes forehead wrinkles when surprised!",
+      actionTip: "\"Surprise Face!\" - Raises eyebrows = surprise expression. Botox's #1 target for those forehead lines!"
+    }
   },
   "platysma": {
     origin: "Fascia of chest, covering the pectoral muscles & part of the deltoid muscles",
@@ -382,7 +431,11 @@ export const MUSCLE_DETAILS: Record<string, MuscleContent> = {
     relatedMuscles: [
       { id: "sternocleidomastoid", name: "Sternocleidomastoid", relation: "Deep to Platysma" },
       { id: "masseter", name: "Masseter", relation: "Synergist (Jaw movement)" }
-    ]
+    ],
+    memoryTips: {
+      mnemonic: "\"Platypus PLATYSMA\" - Makes a pouty platypus face! Pulls corners of mouth DOWN and tenses neck skin.",
+      actionTip: "\"Grimace & Tense\" - Depression of jaw/mouth corners + neck tensing. Make a 'yuck' face - that's platysma!"
+    }
   },
   "masseter": {
     origin: "Zygomatic Arch",
@@ -398,7 +451,14 @@ export const MUSCLE_DETAILS: Record<string, MuscleContent> = {
     relatedMuscles: [
       { id: "temporalis", name: "Temporalis", relation: "Synergist (Elevation)" },
       { id: "platysma", name: "Platysma", relation: "Antagonist (Depression)" }
-    ]
+    ],
+    memoryTips: {
+      mnemonic: "\"MASSETER = MASSIVE chewer\" - One of the strongest muscles pound-for-pound! Clench jaw = feel the MASSIVE masseter bulge.",
+      originTip: "\"Cheek to Jaw\" - From Zygomatic arch (cheekbone) down to mandible angle. Think: from cheek to chew!",
+      insertionTip: "\"Angle of the Jaw\" - Feel below your ear at the corner of your jaw - that's where masseter inserts on mandible's ramus and angle.",
+      actionTip: "\"CLENCH = Elevate\" - Elevates mandible = closes jaw = CLENCH. The power-biter muscle!",
+      demonstrationTip: "Clench teeth hard and feel the bulge at jaw angle. The harder you clench, the more it pops out!"
+    }
   },
   "temporalis": {
     origin: "Temporal Fossa",
@@ -413,7 +473,11 @@ export const MUSCLE_DETAILS: Record<string, MuscleContent> = {
     clinicalConnection: "Tension headaches often involve the Temporalis muscle.",
     relatedMuscles: [
       { id: "masseter", name: "Masseter", relation: "Synergist (Elevation)" }
-    ]
+    ],
+    memoryTips: {
+      mnemonic: "\"TEMPORALIS at your TEMPLES\" - Fan-shaped muscle at your temples! Clench and feel it at your temples.",
+      actionTip: "\"Close & Pull Back\" - Elevates (closes) AND retracts (pulls back) mandible. Two jobs: bite down and pull jaw back."
+    }
   },
   "sternocleidomastoid": {
     origin: "Sternum - Manubrium & Clavicle",
@@ -429,7 +493,14 @@ export const MUSCLE_DETAILS: Record<string, MuscleContent> = {
     relatedMuscles: [
       { id: "trapezius", name: "Trapezius", relation: "Synergist (Neck Extension/Movement)" },
       { id: "platysma", name: "Platysma", relation: "Superficial to SCM" }
-    ]
+    ],
+    memoryTips: {
+      mnemonic: "\"SCM = The muscle name IS the attachment!\" - Sterno (sternum) + Cleido (clavicle) + Mastoid (mastoid process). The name tells you everything!",
+      originTip: "\"SC = Sterno-Cleido\" - Origin from Sternum (manubrium) and Clavicle. Two origins at the front of neck base.",
+      insertionTip: "\"M = Mastoid\" - Inserts on Mastoid process (behind ear). Feel the bump behind your ear - that's where SCM attaches!",
+      actionTip: "\"Opposite Turn, Same Flex\" - Turn RIGHT, LEFT SCM pops out (opposite side). Both together = flex neck (chin to chest).",
+      demonstrationTip: "Turn head LEFT → see RIGHT SCM pop out as a diagonal cord on neck. Remember: opposite side muscle does the turning!"
+    }
   },
 
   // --- Forearm muscles acting on Hand/Fingers ---
@@ -447,7 +518,14 @@ export const MUSCLE_DETAILS: Record<string, MuscleContent> = {
     relatedMuscles: [
       { id: "flexor-carpi-ulnaris", name: "Flexor carpi ulnaris", relation: "Synergist (Flexion) / Antagonist (Deviation)" },
       { id: "extensor-carpi-radialis", name: "Extensor carpi radialis", relation: "Antagonist (Extension) / Synergist (Abduction)" }
-    ]
+    ],
+    memoryTips: {
+      mnemonic: "\"Flexor-CARPI-RADIALIS = Flex wrist, tilt to RADIUS (thumb) side\" - CARPI = wrist, RADIALIS = radial/thumb side. Flexes & abducts (radial deviation).",
+      originTip: "\"Medial Epicondyle = Flexor Home\" - All wrist flexors originate from medial epicondyle. Think: M for Medial, M for (the middle/inner elbow bump).",
+      insertionTip: "\"2nd & 3rd Metacarpals\" - Thumb-side metacarpals. The tendon is where you feel your radial pulse!",
+      actionTip: "\"Flex & Thumb-Tilt\" - Flexes wrist AND tilts hand toward thumb (radial deviation/abduction).",
+      demonstrationTip: "Flex wrist (palm toward forearm) + tilt toward thumb. Feel the tendon pop up on the thumb-side of your wrist."
+    }
   },
   "flexor-carpi-ulnaris": {
     origin: "Humerus - Medial Epicondyle; Ulna - Olecranon & posterior surface",
@@ -463,7 +541,14 @@ export const MUSCLE_DETAILS: Record<string, MuscleContent> = {
     relatedMuscles: [
       { id: "flexor-carpi-radialis", name: "Flexor carpi radialis", relation: "Synergist (Flexion) / Antagonist (Deviation)" },
       { id: "extensor-carpi-ulnaris", name: "Extensor carpi ulnaris", relation: "Antagonist (Extension) / Synergist (Adduction)" }
-    ]
+    ],
+    memoryTips: {
+      mnemonic: "\"Flexor-CARPI-ULNARIS = Flex wrist, tilt to ULNA (pinky) side\" - ULNARIS = ulnar/pinky side. Flexes & adducts (ulnar deviation).",
+      originTip: "\"Medial Epicondyle + Ulna\" - Starts at medial epicondyle AND wraps around ulna. Two-headed origin.",
+      insertionTip: "\"Pisiform, Hamate, 5th MC\" - Three pinky-side bones! Think: PHP (Pisiform, Hamate, 5th metacarPal).",
+      actionTip: "\"Flex & Pinky-Tilt\" - Flexes wrist AND tilts hand toward pinky (ulnar deviation/adduction).",
+      demonstrationTip: "Flex wrist + tilt toward pinky. Feel the tendon on the pinky-side of your wrist near the pisiform bone."
+    }
   },
   "extensor-carpi-radialis": {
     origin: "Humerus - Lateral Supracondylar Ridge/Epicondyle",
@@ -479,7 +564,14 @@ export const MUSCLE_DETAILS: Record<string, MuscleContent> = {
     relatedMuscles: [
       { id: "extensor-carpi-ulnaris", name: "Extensor carpi ulnaris", relation: "Synergist (Extension) / Antagonist (Deviation)" },
       { id: "flexor-carpi-radialis", name: "Flexor carpi radialis", relation: "Antagonist (Flexion) / Synergist (Abduction)" }
-    ]
+    ],
+    memoryTips: {
+      mnemonic: "\"Extensor-CARPI-RADIALIS = Extend wrist, tilt to RADIUS (thumb) side\" - Extends & abducts to thumb side.",
+      originTip: "\"Lateral Epicondyle = Extensor Home (Tennis Elbow spot)\" - All wrist extensors from lateral epicondyle. L for Lateral, L for 'Let it extend'.",
+      insertionTip: "\"2nd & 3rd Metacarpals (dorsal)\" - Same metacarpals as FCR but on the BACK (dorsal) of hand.",
+      actionTip: "\"Extend & Thumb-Tilt\" - Extends wrist AND tilts hand toward thumb. Works WITH FCR for thumb-side deviation.",
+      demonstrationTip: "Cock your wrist back (extension) + tilt toward thumb. Key muscle for gripping - stabilizes wrist for power grip."
+    }
   },
   "extensor-carpi-ulnaris": {
     origin: "Humerus - Lateral Epicondyle",
@@ -495,7 +587,14 @@ export const MUSCLE_DETAILS: Record<string, MuscleContent> = {
     relatedMuscles: [
       { id: "extensor-carpi-radialis", name: "Extensor carpi radialis", relation: "Synergist (Extension) / Antagonist (Deviation)" },
       { id: "flexor-carpi-ulnaris", name: "Flexor carpi ulnaris", relation: "Antagonist (Flexion) / Synergist (Adduction)" }
-    ]
+    ],
+    memoryTips: {
+      mnemonic: "\"Extensor-CARPI-ULNARIS = Extend wrist, tilt to ULNA (pinky) side\" - Extends & adducts to pinky side.",
+      originTip: "\"Lateral Epicondyle\" - Even though it goes to ulnar side, it starts at lateral epicondyle like all extensors.",
+      insertionTip: "\"5th Metacarpal (dorsal)\" - Pinky metacarpal, back of hand. Opposite corner from ECR.",
+      actionTip: "\"Extend & Pinky-Tilt\" - Extends wrist AND tilts hand toward pinky. Works WITH FCU for pinky-side deviation.",
+      demonstrationTip: "Extend wrist + tilt toward pinky. Feel the tendon on the back of wrist near the pinky side."
+    }
   },
   "extensor-digitorum": {
     origin: "Humerus - Lateral Epicondyle",
@@ -510,7 +609,11 @@ export const MUSCLE_DETAILS: Record<string, MuscleContent> = {
     clinicalConnection: "",
     relatedMuscles: [
       { id: "flexor-digitorum-superficialis", name: "Flexor digitorum superficialis", relation: "Antagonist (Flexion)" }
-    ]
+    ],
+    memoryTips: {
+      mnemonic: "\"Extensor DIGITORUM = Extends DIGITS (fingers)\" - DIGITORUM = digits/fingers. Opens the hand and extends all 4 fingers!",
+      actionTip: "\"Wave Goodbye\" - Extend fingers to wave. Those visible tendons on the back of your hand = extensor digitorum!"
+    }
   },
 
   // --- Lower Leg & Foot ---
@@ -528,7 +631,14 @@ export const MUSCLE_DETAILS: Record<string, MuscleContent> = {
     relatedMuscles: [
       { id: "extensor-digitorum-longus", name: "Extensor digitorum longus", relation: "Synergist (Dorsiflexion)" },
       { id: "gastrocnemius", name: "Gastrocnemius", relation: "Antagonist (Plantarflexion)" }
-    ]
+    ],
+    memoryTips: {
+      mnemonic: "\"TIBIALIS ANTERIOR = Front of TIBIA, pulls foot ANTERIOR (up)\" - Located on the ANTERIOR (front) of tibia, pulls foot up (dorsiflexion)!",
+      originTip: "\"Upper Half of Shin\" - Proximal 1/2 of tibia's front-outer surface. Feel the muscle belly next to your shin bone.",
+      insertionTip: "\"Big Toe Side\" - 1st Metatarsal & Medial Cuneiform = big toe side of foot. Pulls foot up AND in.",
+      actionTip: "\"Toe-Up & Turn-In\" - Dorsiflexes (toes up toward shin) + Inverts (sole faces inward). Think: lifting foot to avoid tripping.",
+      demonstrationTip: "Pull foot up toward shin (dorsiflexion) + turn sole inward (inversion). Feel the muscle pop out next to your shin bone."
+    }
   },
   "gastrocnemius": {
     origin: "Femur - Lateral and Medial Condyles",
@@ -544,7 +654,14 @@ export const MUSCLE_DETAILS: Record<string, MuscleContent> = {
     relatedMuscles: [
       { id: "soleus", name: "Soleus", relation: "Synergist (Plantarflexion)" },
       { id: "tibialis-anterior", name: "Tibialis anterior", relation: "Antagonist (Dorsiflexion)" }
-    ]
+    ],
+    memoryTips: {
+      mnemonic: "\"GASTRO = Belly (of the leg)\" - The muscle that gives your calf its shape! Greek 'gaster' = belly. It's the 'belly' of your leg.",
+      originTip: "\"Two Heads from Femur\" - Medial and Lateral condyles of femur (above knee). Crosses the knee joint!",
+      insertionTip: "\"Achilles = Heel\" - Via famous Achilles tendon to calcaneus (heel bone). Strongest tendon in the body!",
+      actionTip: "\"Tiptoe & Knee Bend\" - Plantarflexes ankle (point toes/tiptoe) + flexes knee (because it crosses both joints).",
+      demonstrationTip: "Rise up on tiptoes - that's gastrocnemius power! Feel the two muscle bellies bulge in your calf."
+    }
   },
   "soleus": {
     origin: "Tibia - proximal shaft & Fibula - proximal shaft",
@@ -559,7 +676,14 @@ export const MUSCLE_DETAILS: Record<string, MuscleContent> = {
     clinicalConnection: "Important for posture (prevents you from falling forward while standing).",
     relatedMuscles: [
       { id: "gastrocnemius", name: "Gastrocnemius", relation: "Synergist (Plantarflexion)" }
-    ]
+    ],
+    memoryTips: {
+      mnemonic: "\"SOLEUS = SOLE (flat fish)\" - Flat fish-shaped muscle deep to gastrocnemius. SOLEUS rhymes with 'sole-eus' = sole of foot pusher!",
+      originTip: "\"Below the Knee\" - From proximal tibia & fibula (NOT femur). Doesn't cross knee = can't flex knee.",
+      insertionTip: "\"Same Achilles Tendon\" - Joins gastrocnemius to insert on calcaneus via Achilles. Together = triceps surae.",
+      actionTip: "\"Ankle Only\" - Only plantarflexes ankle. No knee action (doesn't cross knee joint like gastrocnemius).",
+      demonstrationTip: "Sit with knee bent (slackens gastrocnemius), then point toes. That's pure soleus working!"
+    }
   },
   "extensor-digitorum-longus": {
     origin: "Tibia - Lateral Condyle; Fibula - proximal 3/4; Interosseous Membrane",
@@ -574,7 +698,11 @@ export const MUSCLE_DETAILS: Record<string, MuscleContent> = {
     clinicalConnection: "",
     relatedMuscles: [
       { id: "tibialis-anterior", name: "Tibialis anterior", relation: "Synergist (Dorsiflexion)" }
-    ]
+    ],
+    memoryTips: {
+      mnemonic: "\"EXTENSOR DIGITORUM LONGUS = Long toe Extender\" - Extends the DIGITS (toes) + helps with dorsiflexion. LONGUS = it's the long one!",
+      actionTip: "\"Toes Up, Foot Up\" - Extends toes 2-5 AND assists dorsiflexion. Visible tendons fan out on top of foot."
+    }
   },
 
   // --- Shoulder & Upper Arm ---
@@ -592,7 +720,14 @@ export const MUSCLE_DETAILS: Record<string, MuscleContent> = {
     relatedMuscles: [
       { id: "sternocleidomastoid", name: "Sternocleidomastoid", relation: "Synergist (Head Extension)" },
       { id: "latissimus-dorsi", name: "Latissimus dorsi", relation: "Posterior Back Muscle" }
-    ]
+    ],
+    memoryTips: {
+      mnemonic: "\"TRAP-ezius = TRAP-ezoid shaped\" - Diamond/trapezoid shape on your upper back. The 'shrugging' muscle!",
+      originTip: "\"Skull to Mid-Back\" - From occipital bone down to T12. Long muscle covering upper back like a cape!",
+      insertionTip: "\"Shoulder Blade & Collarbone\" - Scapular spine, acromion, and lateral clavicle. Controls the shoulder blade!",
+      actionTip: "\"Three Fibers, Three Jobs\" - Upper = shrug UP, Middle = squeeze BACK (retract), Lower = pull DOWN. Remember: U-M-L = Up-Middle-Low.",
+      demonstrationTip: "Shrug shoulders (upper), squeeze shoulder blades together (middle), pull shoulders down (lower). Three demos for three fiber groups!"
+    }
   },
   "deltoid": {
     origin: "Clavicle - Lateral 3rd & Scapula - Acromion Process & Spine",
@@ -608,7 +743,14 @@ export const MUSCLE_DETAILS: Record<string, MuscleContent> = {
     relatedMuscles: [
       { id: "supraspinatus", name: "Supraspinatus", relation: "Synergist (Abduction)" },
       { id: "pectoralis-major", name: "Pectoralis major", relation: "Synergist (Flexion) / Antagonist (Extension)" }
-    ]
+    ],
+    memoryTips: {
+      mnemonic: "\"DELTOID = DELTA (Δ) triangle\" - Triangle-shaped shoulder cap. Three parts do three things!",
+      originTip: "\"Collarbone to Shoulder Blade\" - Lateral clavicle + acromion + scapular spine. Wraps around shoulder joint like a shoulder pad.",
+      insertionTip: "\"Deltoid Tuberosity\" - Halfway down the lateral humerus. The muscle 'bump' you can feel on outer arm.",
+      actionTip: "\"Front-Side-Back\" - Anterior flexes (forward), Middle abducts (sideways), Posterior extends (backward). Like a compass!",
+      demonstrationTip: "Raise arm forward (flex), sideways (abduct), backward (extend). Three separate moves for three deltoid parts!"
+    }
   },
   "pectoralis-major": {
     origin: "Clavicle, Sternum, Costal cartilages #1-#6",
@@ -624,7 +766,14 @@ export const MUSCLE_DETAILS: Record<string, MuscleContent> = {
     relatedMuscles: [
       { id: "deltoid", name: "Deltoid", relation: "Synergist (Flexion)" },
       { id: "latissimus-dorsi", name: "Latissimus dorsi", relation: "Antagonist (Flexion) / Synergist (Adduction)" }
-    ]
+    ],
+    memoryTips: {
+      mnemonic: "\"PEC MAJOR = Push-up MAJOR\" - The main chest muscle for pushing. Does the heavy lifting!",
+      originTip: "\"Collarbone-Breastbone-Ribs\" - Clavicle + Sternum + Ribs 1-6. Wide origin = powerful muscle!",
+      insertionTip: "\"Bicipital Groove (Lateral lip)\" - Lateral side of intertubercular sulcus. Remember: Pec MAJOR = Lateral lip (both end in 'al').",
+      actionTip: "\"FAM - Flex, Adduct, Medially rotate\" - Brings arm forward (flex), across chest (adduct), and rotates inward.",
+      demonstrationTip: "Push-up motion or clap hands together in front. Feel chest harden = pec major engaging!"
+    }
   },
   "latissimus-dorsi": {
     origin: "Ilium - Iliac Crest, T7-S5 Vertebrae - Spinous Processes, Ribs #8-#12",
@@ -640,7 +789,14 @@ export const MUSCLE_DETAILS: Record<string, MuscleContent> = {
     relatedMuscles: [
       { id: "pectoralis-major", name: "Pectoralis major", relation: "Antagonist (Flexion) / Synergist (Adduction)" },
       { id: "teres-minor", name: "Teres major", relation: "Synergist" }
-    ]
+    ],
+    memoryTips: {
+      mnemonic: "\"LATISSIMUS DORSI = Widest of the Back\" - Latin: latissimus = widest, dorsi = back. Biggest back muscle!",
+      originTip: "\"Half the Back\" - From iliac crest up to T7, plus lower ribs. Massive origin = massive muscle!",
+      insertionTip: "\"Bicipital Groove (Medial lip)\" - Medial side of intertubercular sulcus. Lat = Medial lip (opposite of pec major!).",
+      actionTip: "\"EAM - Extend, Adduct, Medially rotate\" - Pull arm back, across, and rotate in. Think: pull-up motion or handcuff position.",
+      demonstrationTip: "Do a pull-up motion (or lat pull-down). Feel the 'wings' on your sides engage. That's the lats!"
+    }
   },
   "supraspinatus": {
     origin: "Scapula - supraspinous fossa",
@@ -656,7 +812,11 @@ export const MUSCLE_DETAILS: Record<string, MuscleContent> = {
     relatedMuscles: [
       { id: "deltoid", name: "Deltoid", relation: "Synergist (Abduction)" },
       { id: "infraspinatus", name: "Infraspinatus", relation: "Rotator Cuff Partner" }
-    ]
+    ],
+    memoryTips: {
+      mnemonic: "\"SUPRA-spinatus = ABOVE the spine, starts abduction\" - SUPRA = above. Located above scapular spine. Starts the arm lift!",
+      actionTip: "\"The Starter\" - Initiates abduction (first 15°), then deltoid takes over. Think: ignition key that starts the car!"
+    }
   },
   "infraspinatus": {
     origin: "Scapula - infraspinous fossa",
@@ -672,7 +832,11 @@ export const MUSCLE_DETAILS: Record<string, MuscleContent> = {
     relatedMuscles: [
       { id: "teres-minor", name: "Teres minor", relation: "Synergist (Lateral Rotation)" },
       { id: "subscapularis", name: "Subscapularis", relation: "Antagonist (Medial Rotation)" }
-    ]
+    ],
+    memoryTips: {
+      mnemonic: "\"INFRA-spinatus = Below the spine, rotates OUT\" - INFRA = below (infrared is below red). External rotator!",
+      actionTip: "\"Door Opening Motion\" - Laterally rotates (externally rotates) the arm. Think: elbow at side, opening a door outward."
+    }
   },
   "teres-minor": {
     origin: "Scapula - lateral border",
@@ -688,7 +852,11 @@ export const MUSCLE_DETAILS: Record<string, MuscleContent> = {
     relatedMuscles: [
       { id: "infraspinatus", name: "Infraspinatus", relation: "Synergist (Lateral Rotation)" },
       { id: "teres-major", name: "Teres major", relation: "Similar name, different action" }
-    ]
+    ],
+    memoryTips: {
+      mnemonic: "\"TERES MINOR = Infraspinatus's little helper\" - MINOR = small. Does same job as infraspinatus (lateral rotation). The SITS sidekick!",
+      actionTip: "\"Same as Infraspinatus\" - Lateral rotation. Two muscles, same job. Teres minor is the backup external rotator."
+    }
   },
   "subscapularis": {
     origin: "Scapula - subscapular fossa",
@@ -704,7 +872,11 @@ export const MUSCLE_DETAILS: Record<string, MuscleContent> = {
     relatedMuscles: [
       { id: "infraspinatus", name: "Infraspinatus", relation: "Antagonist (Lateral Rotation)" },
       { id: "pectoralis-major", name: "Pectoralis major", relation: "Synergist (Medial Rotation)" }
-    ]
+    ],
+    memoryTips: {
+      mnemonic: "\"SUB-scapularis = UNDER the scapula, rotates IN\" - SUB = under/below. Only rotator cuff on FRONT. Internal rotator!",
+      actionTip: "\"The Odd One Out\" - ONLY rotator cuff that medially rotates. ONLY one on front of scapula. ONLY one on Lesser tubercle. Triple unique!"
+    }
   },
 
   // --- Trunk Movement ---
@@ -722,7 +894,14 @@ export const MUSCLE_DETAILS: Record<string, MuscleContent> = {
     relatedMuscles: [
       { id: "external-oblique", name: "External oblique", relation: "Synergist (Flexion)" },
       { id: "erector-spinae", name: "Erector spinae", relation: "Antagonist (Extension)" }
-    ]
+    ],
+    memoryTips: {
+      mnemonic: "\"RECTUS = Straight, ABDOMINIS = Abdomen\" - Straight muscle down your abdomen = six-pack! Runs straight up and down.",
+      originTip: "\"Pubis to Ribs\" - From pubic bone UP to lower ribs. Think: from 'P' (pubis) pulling up to 'R' (ribs).",
+      insertionTip: "\"Ribs 5-7 + Xiphoid\" - Attaches to lower ribs and the sword-shaped xiphoid process at bottom of sternum.",
+      actionTip: "\"Crunch = Trunk Flexion\" - Brings ribs toward pelvis. The muscle behind sit-ups and crunches!",
+      demonstrationTip: "Do a crunch/sit-up. Feel the six-pack ridges harden as you bring chest toward knees."
+    }
   },
   "external-oblique": {
     origin: "Ribs #5-#12",
@@ -738,7 +917,11 @@ export const MUSCLE_DETAILS: Record<string, MuscleContent> = {
     relatedMuscles: [
       { id: "internal-oblique", name: "Internal oblique", relation: "Synergist (Rotation/Flexion)" },
       { id: "rectus-abdominis", name: "Rectus abdominis", relation: "Synergist (Flexion)" }
-    ]
+    ],
+    memoryTips: {
+      mnemonic: "\"EXTERNAL oblique = Hands in Pockets\" - Fibers run like putting hands in front pockets (down and in). Most superficial = EXTERNAL.",
+      actionTip: "\"Twist to OPPOSITE\" - Turns trunk to OPPOSITE side. Right external oblique turns you LEFT."
+    }
   },
   "internal-oblique": {
     origin: "Inguinal Ligament, Iliac Crest & Lumbar Fascia",
@@ -753,7 +936,11 @@ export const MUSCLE_DETAILS: Record<string, MuscleContent> = {
     clinicalConnection: "",
     relatedMuscles: [
       { id: "external-oblique", name: "External oblique", relation: "Synergist (Rotation/Flexion)" }
-    ]
+    ],
+    memoryTips: {
+      mnemonic: "\"INTERNAL oblique = Up and In (opposite of external)\" - Fibers perpendicular to external. Deep = INTERNAL.",
+      actionTip: "\"Twist to SAME side\" - Turns trunk to SAME side. Right internal oblique turns you RIGHT. Opposite of external!"
+    }
   },
   "transverse-abdominis": {
     origin: "Inguinal Ligament, Iliac Crest & Cartilages #6-#12",
@@ -768,7 +955,11 @@ export const MUSCLE_DETAILS: Record<string, MuscleContent> = {
     clinicalConnection: "",
     relatedMuscles: [
       { id: "rectus-abdominis", name: "Rectus abdominis", relation: "Core Stabilizer" }
-    ]
+    ],
+    memoryTips: {
+      mnemonic: "\"TRANSVERSE = Across (horizontal fibers)\" - Fibers run horizontally like a corset/belt. The deepest ab muscle!",
+      actionTip: "\"The Corset\" - Compresses abdomen like tightening a corset. Suck in your belly = transverse abdominis!"
+    }
   },
   "erector-spinae": {
      origin: "Iliac Crest, Sacrum, Lumbar spinous processes",
@@ -783,7 +974,11 @@ export const MUSCLE_DETAILS: Record<string, MuscleContent> = {
      clinicalConnection: "Common source of lower back pain/spasms.",
      relatedMuscles: [
          { id: "rectus-abdominis", name: "Rectus abdominis", relation: "Antagonist (Flexion)" }
-     ]
+     ],
+     memoryTips: {
+       mnemonic: "\"ERECTOR SPINAE = Erects the Spine\" - Makes you stand upright! Antagonist to rectus abdominis (flexion vs extension).",
+       actionTip: "\"I Love Spaghetti\" - The three columns: Iliocostalis (lateral), Longissimus (middle), Spinalis (medial). ILS = I Love Spaghetti!"
+     }
   },
 
   // --- Hip ---
@@ -801,7 +996,14 @@ export const MUSCLE_DETAILS: Record<string, MuscleContent> = {
     relatedMuscles: [
       { id: "psoas-major", name: "Psoas major", relation: "Synergist (Hip Flexion)" },
       { id: "rectus-femoris", name: "Rectus femoris", relation: "Synergist (Hip Flexion)" }
-    ]
+    ],
+    memoryTips: {
+      mnemonic: "\"ILIACUS fills the ILIAC fossa\" - Named after where it lives! The bowl-shaped fossa on inner pelvis.",
+      originTip: "\"Fills the Bowl\" - Iliac Fossa is the 'bowl' of your pelvis. Iliacus fills that concave space.",
+      insertionTip: "\"Lesser Trochanter Twins\" - Both Iliacus and Psoas insert on Lesser Trochanter = Iliopsoas!",
+      actionTip: "\"Knee to Chest\" - Pure hip flexion. Part of the iliopsoas powerhouse!",
+      demonstrationTip: "Lift knee toward chest (marching motion). That's iliacus (with psoas) pulling your thigh up."
+    }
   },
   "psoas-major": {
     origin: "T12-L5 Bodies & Vertebrae",
@@ -816,7 +1018,14 @@ export const MUSCLE_DETAILS: Record<string, MuscleContent> = {
     clinicalConnection: "Psoas Abscess: Infection spreading from lumbar vertebrae.",
     relatedMuscles: [
       { id: "iliacus", name: "Iliacus", relation: "Synergist (Hip Flexion)" }
-    ]
+    ],
+    memoryTips: {
+      mnemonic: "\"PSOAS = The Filet Mignon\" - In cows, this muscle is the tenderloin/filet mignon. The delicious hip flexor!",
+      originTip: "\"Spine to Hip\" - Only muscle connecting spine directly to leg! From T12-L5 down to femur.",
+      insertionTip: "\"Lesser Trochanter (with Iliacus)\" - They merge to form iliopsoas and share insertion.",
+      actionTip: "\"The Deep Hip Flexor\" - Pulls from spine, through pelvis, to flex hip. Tight psoas = swayback posture!",
+      demonstrationTip: "Lift knee to chest. Psoas is deep - you can't palpate it, but it's the engine of hip flexion."
+    }
   },
   "gluteus-maximus": {
     origin: "Ilium - posterior gluteal line, Sacrum, Coccyx",
@@ -832,7 +1041,14 @@ export const MUSCLE_DETAILS: Record<string, MuscleContent> = {
     relatedMuscles: [
       { id: "biceps-femoris", name: "Biceps femoris", relation: "Synergist (Extension)" },
       { id: "iliacus", name: "Iliacus", relation: "Antagonist (Flexion)" }
-    ]
+    ],
+    memoryTips: {
+      mnemonic: "\"Gluteus MAXIMUS = MAXIMUM size\" - Biggest muscle in the body! The power behind standing up and climbing.",
+      originTip: "\"Back of Pelvis\" - From ilium (posterior), sacrum, and coccyx. Covers the whole rear of the hip.",
+      insertionTip: "\"Gluteal Tuberosity + IT Band\" - Dual insertion = powerful extension AND lateral stability via IT band.",
+      actionTip: "\"Stand Up & Rotate Out\" - Extends hip (stand from sitting, climb stairs) + lateral rotation.",
+      demonstrationTip: "Squeeze your glutes / kick leg backward. Glute max does the heavy lifting when you stand up!"
+    }
   },
   "gluteus-medius": {
     origin: "Ilium - posterior surface",
@@ -848,7 +1064,14 @@ export const MUSCLE_DETAILS: Record<string, MuscleContent> = {
     relatedMuscles: [
       { id: "tensor-fasciae-latae", name: "Tensor fasciae latae", relation: "Synergist (Abduction)" },
       { id: "adductor-longus", name: "Adductor longus", relation: "Antagonist (Adduction)" }
-    ]
+    ],
+    memoryTips: {
+      mnemonic: "\"Gluteus MEDIUS = MIDDLE glute\" - Between maximus (superficial) and minimus (deep). The hip stabilizer!",
+      originTip: "\"Side of Ilium\" - Outer/posterior surface of ilium. Sits on the side of your hip.",
+      insertionTip: "\"Greater Trochanter\" - That bony bump on the side of your hip. Injection site landmark!",
+      actionTip: "\"Abduct & Stabilize\" - Lifts leg sideways + prevents pelvis drop when walking (Trendelenburg test!).",
+      demonstrationTip: "Lift leg out to side (abduction). Feel the muscle on the side of your hip engage."
+    }
   },
   "piriformis": {
     origin: "Sacrum (anterior)",
@@ -863,7 +1086,11 @@ export const MUSCLE_DETAILS: Record<string, MuscleContent> = {
     clinicalConnection: "Piriformis Syndrome: Tightness compresses Sciatic nerve, mimicking Sciatica.",
     relatedMuscles: [
       { id: "gluteus-maximus", name: "Gluteus maximus", relation: "Synergist (Lateral Rotation)" }
-    ]
+    ],
+    memoryTips: {
+      mnemonic: "\"PIRIFORMIS = PEAR-shaped\" - Latin 'pirum' = pear. Pear-shaped muscle deep in buttock. Sciatic nerve runs nearby!",
+      actionTip: "\"Rotate Out (Lateral)\" - External rotator of hip. When tight, can compress sciatic nerve = 'Piriformis Syndrome'."
+    }
   },
   "tensor-fasciae-latae": {
     origin: "Ilium - anterior aspect of Iliac Crest & ASIS",
@@ -878,7 +1105,11 @@ export const MUSCLE_DETAILS: Record<string, MuscleContent> = {
     clinicalConnection: "IT Band Syndrome: Friction/pain at lateral knee, often linked to TFL tightness.",
     relatedMuscles: [
       { id: "gluteus-medius", name: "Gluteus medius", relation: "Synergist (Abduction)" }
-    ]
+    ],
+    memoryTips: {
+      mnemonic: "\"TFL = Tightens Fascia on the Lateral thigh\" - Tensor (tightens) the Fascia Lata (broad band on outer thigh) = IT Band!",
+      actionTip: "\"Abduct & Medially Rotate\" - Lifts leg sideways + rotates thigh inward. Connected to IT band = knee stability too."
+    }
   },
   "sartorius": {
     origin: "Ilium - Anterior Superior Iliac Spine (ASIS)",
@@ -894,7 +1125,14 @@ export const MUSCLE_DETAILS: Record<string, MuscleContent> = {
     relatedMuscles: [
       { id: "gracilis", name: "Gracilis", relation: "Pes Anserinus Group" },
       { id: "semitendinosus", name: "Semitendinosus", relation: "Pes Anserinus Group" }
-    ]
+    ],
+    memoryTips: {
+      mnemonic: "\"SARTORIUS = TAILOR's muscle\" - Latin 'sartor' = tailor. Cross-legged sitting position (how tailors sat) = FABER!",
+      originTip: "\"ASIS = Anterior Superior Iliac Spine\" - The bony point on front of hip you can feel. Sartorius starts here!",
+      insertionTip: "\"Pes Anserinus (Goose's Foot)\" - Shares insertion with Gracilis & Semitendinosus. 'Say Grace before Tea' = Sartorius, Gracilis, Semitendinosus!",
+      actionTip: "\"FABER\" - Flex, ABduct, Externally Rotate (also flexes knee). The cross-legged sitting position!",
+      demonstrationTip: "Cross your legs (ankle on opposite knee). That's all 4 actions of sartorius combined - the tailor position!"
+    }
   },
   "gracilis": {
     origin: "Pubis - near Pubic Symphysis",
@@ -910,7 +1148,11 @@ export const MUSCLE_DETAILS: Record<string, MuscleContent> = {
     relatedMuscles: [
       { id: "adductor-longus", name: "Adductor longus", relation: "Synergist (Adduction)" },
       { id: "sartorius", name: "Sartorius", relation: "Pes Anserinus Group" }
-    ]
+    ],
+    memoryTips: {
+      mnemonic: "\"GRACILIS = GRACEFUL (slender)\" - Latin for 'slender'. The thin, strap-like muscle of the inner thigh. Most medial!",
+      actionTip: "\"Squeeze & Flex\" - Adducts (squeeze legs together) + flexes knee. Part of the Pes Anserinus trio!"
+    }
   },
   "adductor-longus": {
     origin: "Pubis - near Pubic Symphysis",
@@ -926,7 +1168,14 @@ export const MUSCLE_DETAILS: Record<string, MuscleContent> = {
     relatedMuscles: [
       { id: "gracilis", name: "Gracilis", relation: "Synergist (Adduction)" },
       { id: "gluteus-medius", name: "Gluteus medius", relation: "Antagonist (Abduction)" }
-    ]
+    ],
+    memoryTips: {
+      mnemonic: "\"Adductor LONGUS = Longest Adductor\" - Part of the adductor trio (Brevis, Longus, Magnus). Fan-shaped inner thigh muscle.",
+      originTip: "\"Pubis to Linea Aspera\" - From pubic bone to the rough line on back of femur. Fan-shaped!",
+      insertionTip: "\"Linea Aspera\" - The rough line on posterior femur where multiple thigh muscles attach.",
+      actionTip: "\"ADD = Add legs together\" - Adducts (brings legs together) + medially rotates thigh.",
+      demonstrationTip: "Squeeze a ball between your knees. Those inner thigh muscles squeezing = adductors!"
+    }
   },
 
   // --- Anterior Thigh (Quadriceps) ---
@@ -944,7 +1193,14 @@ export const MUSCLE_DETAILS: Record<string, MuscleContent> = {
     relatedMuscles: [
       { id: "vastus-lateralis", name: "Vastus lateralis", relation: "Synergist (Knee Extension)" },
       { id: "iliacus", name: "Iliacus", relation: "Synergist (Hip Flexion)" }
-    ]
+    ],
+    memoryTips: {
+      mnemonic: "\"RECTUS FEMORIS = Straight thigh muscle\" - Runs STRAIGHT down the front of thigh. The ONLY quad that crosses the hip!",
+      originTip: "\"AIIS\" - Anterior Inferior Iliac Spine. Lower than ASIS (where sartorius originates). Think: RF = lower than S on the hip.",
+      insertionTip: "\"All quads share insertion\" - Patella → Patellar tendon → Tibial tuberosity. The kneecap is a sesamoid bone in the tendon!",
+      actionTip: "\"Two Jobs\" - Extends knee (all quads do) + Flexes hip (only rectus femoris does this). The kicking muscle!",
+      demonstrationTip: "Kick a ball (extends knee) or do a straight leg raise (flexes hip). Both actions = rectus femoris!"
+    }
   },
   "vastus-lateralis": {
     origin: "Femur - greater trochanter & Linea Aspera",
@@ -960,7 +1216,14 @@ export const MUSCLE_DETAILS: Record<string, MuscleContent> = {
     relatedMuscles: [
       { id: "rectus-femoris", name: "Rectus femoris", relation: "Synergist (Knee Extension)" },
       { id: "biceps-femoris", name: "Biceps femoris", relation: "Antagonist (Knee Flexion)" }
-    ]
+    ],
+    memoryTips: {
+      mnemonic: "\"VASTUS = Vast/Large, LATERALIS = Lateral/Outer\" - The LARGEST quad on the OUTER side of thigh. Baby injection site!",
+      originTip: "\"Greater Trochanter + Linea Aspera\" - Starts high at hip and runs down lateral femur.",
+      insertionTip: "\"All quads → Patella → Tibial Tuberosity\" - Same insertion as all quadriceps via common quadriceps tendon.",
+      actionTip: "\"One Job: Extend\" - Pure knee extensor. No hip action (doesn't cross hip joint like rectus femoris).",
+      demonstrationTip: "Lock out your knee and feel the outer thigh. That bulky muscle = vastus lateralis, the biggest quad."
+    }
   },
   "vastus-medialis": {
     origin: "Femur - medial edge of Linea Aspera",
@@ -975,7 +1238,14 @@ export const MUSCLE_DETAILS: Record<string, MuscleContent> = {
     clinicalConnection: "Weakness causes Patellofemoral Pain Syndrome (runner's knee).",
     relatedMuscles: [
       { id: "vastus-lateralis", name: "Vastus lateralis", relation: "Synergist (Knee Extension)" }
-    ]
+    ],
+    memoryTips: {
+      mnemonic: "\"VASTUS MEDIALIS = VMO (Vastus Medialis Oblique)\" - The TEARDROP muscle on inner thigh above knee. Key for patellar tracking!",
+      originTip: "\"Medial Linea Aspera\" - Inner edge of the rough line on back of femur.",
+      insertionTip: "\"Pulls patella medially\" - Attaches to patella and pulls it inward. Prevents lateral patellar tracking.",
+      actionTip: "\"Final Lock-Out\" - Extends knee, especially last 15°. Weak VMO = patellofemoral pain (runner's knee)!",
+      demonstrationTip: "Fully straighten knee and squeeze. See the teardrop shape pop out just above the inner knee = VMO!"
+    }
   },
   "vastus-intermedius": {
     origin: "Femur - anterior and lateral shaft",
@@ -990,7 +1260,14 @@ export const MUSCLE_DETAILS: Record<string, MuscleContent> = {
     clinicalConnection: "",
     relatedMuscles: [
       { id: "rectus-femoris", name: "Rectus femoris", relation: "Synergist (Knee Extension)" }
-    ]
+    ],
+    memoryTips: {
+      mnemonic: "\"VASTUS INTERMEDIUS = In the Middle (deep)\" - The hidden quad! Deep to rectus femoris, between medialis and lateralis.",
+      originTip: "\"Wraps femur shaft\" - Front and lateral surfaces of femur. The deepest of the four quads.",
+      insertionTip: "\"Same as all quads\" - Patella → Tibial tuberosity via common tendon.",
+      actionTip: "\"Silent Extender\" - Pure knee extension. Can't feel it but it's working with every knee straightening!",
+      demonstrationTip: "Can't palpate directly - hidden under rectus femoris. Just know it's there, deep in the middle!"
+    }
   },
 
   // --- Posterior Thigh (Hamstrings) ---
@@ -1008,7 +1285,14 @@ export const MUSCLE_DETAILS: Record<string, MuscleContent> = {
     relatedMuscles: [
       { id: "semitendinosus", name: "Semitendinosus", relation: "Synergist" },
       { id: "rectus-femoris", name: "Rectus femoris", relation: "Antagonist (Knee Extension/Hip Flexion)" }
-    ]
+    ],
+    memoryTips: {
+      mnemonic: "\"BICEPS FEMORIS = Two-headed thigh muscle\" - Like arm's biceps (2 heads) but in the leg! The LATERAL hamstring.",
+      originTip: "\"Sit Bones + Femur\" - Long head from ischial tuberosity (sit bone), Short head from femur. Two heads = two origins!",
+      insertionTip: "\"FIBULA = LATERAL\" - Goes to fibula head & lateral tibia. Remember: Biceps femoris is LATERAL, inserts LATERAL!",
+      actionTip: "\"Flex knee + Extend hip\" - Curl heel to butt (knee flex) + kick leg back (hip extension). All hamstrings do this!",
+      demonstrationTip: "Curl heel toward buttock and feel the OUTER tendon behind your knee = biceps femoris (lateral hamstring)."
+    }
   },
   "semitendinosus": {
     origin: "Ischium - Ischial Tuberosity",
@@ -1024,7 +1308,14 @@ export const MUSCLE_DETAILS: Record<string, MuscleContent> = {
     relatedMuscles: [
       { id: "biceps-femoris", name: "Biceps femoris", relation: "Synergist" },
       { id: "sartorius", name: "Sartorius", relation: "Pes Anserinus Group" }
-    ]
+    ],
+    memoryTips: {
+      mnemonic: "\"SEMI-TENDIN-osus = Half TENDON\" - Has a long, cord-like TENDON (like a whip). Superficial medial hamstring!",
+      originTip: "\"Ischial Tuberosity (Sit Bones)\" - All hamstrings (long heads) start from the sit bones!",
+      insertionTip: "\"Pes Anserinus\" - Part of the Goose's Foot on medial tibia. 'Say Grace before Tea' = Sartorius, Gracilis, Semitendinosus!",
+      actionTip: "\"Same as all hamstrings\" - Flexes knee + extends hip. All hamstrings have these two actions.",
+      demonstrationTip: "Curl heel to buttock and feel the INNER cord-like tendon = semitendinosus. Whip-like tendon!"
+    }
   },
   "semimembranosus": {
     origin: "Ischium - Ischial Tuberosity",
@@ -1039,6 +1330,32 @@ export const MUSCLE_DETAILS: Record<string, MuscleContent> = {
     clinicalConnection: "",
     relatedMuscles: [
       { id: "semitendinosus", name: "Semitendinosus", relation: "Synergist" }
-    ]
+    ],
+    memoryTips: {
+      mnemonic: "\"SEMI-MEMBRAN-osus = Half MEMBRANE\" - Has a flat, MEMBRANE-like shape. Deep to semitendinosus on medial side!",
+      originTip: "\"Ischial Tuberosity\" - Same sit bone origin as other hamstrings.",
+      insertionTip: "\"Medial Condyle of Tibia\" - Not part of Pes Anserinus (that's semitendinosus). Goes directly to medial tibial condyle.",
+      actionTip: "\"Same as all hamstrings\" - Flexes knee + extends hip. The deep medial hamstring.",
+      demonstrationTip: "Curl heel to buttock - semimembranosus is deep, under semitendinosus. You feel semitendinosus on top!"
+    }
+  },
+  "flexor-digitorum-superficialis": {
+    origin: "Humerus - Medial Epicondyle & Radius/Ulna - proximal portions",
+    insertion: "Middle Phalanges of digits 2-5",
+    action: "Flexes fingers at PIP joint (middle knuckle)",
+    demonstration: "1. Make a loose fist.\n2. Bend your middle knuckles while keeping fingertips straight if possible.",
+    tips: [
+      "Superficialis = Superficial (closer to surface).",
+      "Tendons split to allow Flexor Digitorum Profundus through.",
+      "Acts on the middle (PIP) joint of fingers."
+    ],
+    clinicalConnection: "",
+    relatedMuscles: [
+      { id: "extensor-digitorum", name: "Extensor digitorum", relation: "Antagonist (Extension)" }
+    ],
+    memoryTips: {
+      mnemonic: "\"FLEXOR DIGITORUM SUPERFICIALIS = Superficial finger Flexor\" - The SUPERFICIAL one flexes the MIDDLE knuckle (PIP). FDS = Middle!",
+      actionTip: "\"Superficial = Stops at Middle\" - FDS (Superficial) = PIP joint (middle). Tendons split to let the deep one through to distal!"
+    }
   }
 };

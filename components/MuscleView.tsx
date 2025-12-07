@@ -15,7 +15,8 @@ import {
   Circle,
   ArrowRight,
   PlayCircle,
-  Zap
+  Zap,
+  Brain
 } from 'lucide-react';
 import { GROUP_A_REQUIREMENTS, GROUP_B_REQUIREMENTS } from '../constants';
 import AdvancedAnimationViewer from './AdvancedAnimationViewer';
@@ -242,6 +243,105 @@ const MuscleView: React.FC<MuscleViewProps> = ({ muscle, onSelectMuscle, isLearn
                 <Info className="w-3.5 h-3.5" />
                 Must also point to origin & insertion on an unpainted skeleton.
               </p>
+            </div>
+          )}
+
+          {/* Memory Tips Section */}
+          {content.memoryTips && (content.memoryTips.mnemonic || content.memoryTips.actionTip || 
+            (muscle.group === 'A' && (content.memoryTips.originTip || content.memoryTips.insertionTip || content.memoryTips.demonstrationTip))) && (
+            <div className={`${theme.infoBox} rounded-2xl p-8 border ${theme.border}`}>
+              <h3 className={`text-lg font-bold ${theme.text} mb-6 flex items-center gap-2`}>
+                <Brain className={`w-5 h-5 ${currentTheme === 'midnight' ? 'text-purple-400' : 'text-purple-600'}`} />
+                Memory Tips
+              </h3>
+              <div className="space-y-5">
+                {content.memoryTips.mnemonic && (
+                  <div className={`p-4 rounded-xl ${
+                    currentTheme === 'midnight' 
+                    ? 'bg-purple-900/30 border border-purple-700/30' 
+                    : 'bg-purple-50 border border-purple-200'
+                  }`}>
+                    <span className={`text-xs font-bold uppercase tracking-wider ${
+                      currentTheme === 'midnight' ? 'text-purple-300' : 'text-purple-600'
+                    }`}>
+                      🧠 Main Mnemonic
+                    </span>
+                    <p className={`mt-2 ${theme.text} text-sm leading-relaxed font-medium`}>
+                      {content.memoryTips.mnemonic}
+                    </p>
+                  </div>
+                )}
+                
+                <div className={`grid ${muscle.group === 'A' ? 'md:grid-cols-2' : ''} gap-4`}>
+                  {muscle.group === 'A' && content.memoryTips.originTip && (
+                    <div className={`p-4 rounded-xl ${
+                      currentTheme === 'midnight' 
+                      ? 'bg-red-900/20 border border-red-800/30' 
+                      : 'bg-red-50 border border-red-200'
+                    }`}>
+                      <span className={`text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 ${
+                        currentTheme === 'midnight' ? 'text-red-300' : 'text-red-600'
+                      }`}>
+                        <MapPin className="w-3 h-3" /> Origin Memory Tip
+                      </span>
+                      <p className={`mt-2 ${theme.text} text-sm leading-relaxed`}>
+                        {content.memoryTips.originTip}
+                      </p>
+                    </div>
+                  )}
+                  
+                  {muscle.group === 'A' && content.memoryTips.insertionTip && (
+                    <div className={`p-4 rounded-xl ${
+                      currentTheme === 'midnight' 
+                      ? 'bg-blue-900/20 border border-blue-800/30' 
+                      : 'bg-blue-50 border border-blue-200'
+                    }`}>
+                      <span className={`text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 ${
+                        currentTheme === 'midnight' ? 'text-blue-300' : 'text-blue-600'
+                      }`}>
+                        <MapPin className="w-3 h-3" /> Insertion Memory Tip
+                      </span>
+                      <p className={`mt-2 ${theme.text} text-sm leading-relaxed`}>
+                        {content.memoryTips.insertionTip}
+                      </p>
+                    </div>
+                  )}
+                </div>
+
+                {content.memoryTips.actionTip && (
+                  <div className={`p-4 rounded-xl ${
+                    currentTheme === 'midnight' 
+                    ? 'bg-emerald-900/20 border border-emerald-800/30' 
+                    : 'bg-emerald-50 border border-emerald-200'
+                  }`}>
+                    <span className={`text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 ${
+                      currentTheme === 'midnight' ? 'text-emerald-300' : 'text-emerald-600'
+                    }`}>
+                      <Play className="w-3 h-3" /> Action Memory Tip
+                    </span>
+                    <p className={`mt-2 ${theme.text} text-sm leading-relaxed`}>
+                      {content.memoryTips.actionTip}
+                    </p>
+                  </div>
+                )}
+
+                {muscle.group === 'A' && content.memoryTips.demonstrationTip && (
+                  <div className={`p-4 rounded-xl ${
+                    currentTheme === 'midnight' 
+                    ? 'bg-amber-900/20 border border-amber-800/30' 
+                    : 'bg-amber-50 border border-amber-200'
+                  }`}>
+                    <span className={`text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 ${
+                      currentTheme === 'midnight' ? 'text-amber-300' : 'text-amber-600'
+                    }`}>
+                      <Activity className="w-3 h-3" /> Demonstration Memory Tip
+                    </span>
+                    <p className={`mt-2 ${theme.text} text-sm leading-relaxed`}>
+                      {content.memoryTips.demonstrationTip}
+                    </p>
+                  </div>
+                )}
+              </div>
             </div>
           )}
 

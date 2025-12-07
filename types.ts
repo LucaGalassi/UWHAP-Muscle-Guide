@@ -21,6 +21,13 @@ export interface MuscleContent {
   tips: string[];
   clinicalConnection: string; // Renamed from clinicalNote
   relatedMuscles: RelatedMuscle[];
+  memoryTips?: {
+    mnemonic?: string; // Main mnemonic for the muscle
+    originTip?: string; // Memory tip for origin (Group A only)
+    insertionTip?: string; // Memory tip for insertion (Group A only)
+    actionTip?: string; // Memory tip for action
+    demonstrationTip?: string; // Memory tip for demonstration (Group A only)
+  };
 }
 
 // Learning Types
