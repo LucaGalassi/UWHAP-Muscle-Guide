@@ -15,8 +15,18 @@ interface SplashScreenProps {
 
 // Format timestamp to relative time string
 const formatRelativeTime = (timestamp: number): string => {
+  // Validate timestamp
+  if (!timestamp || isNaN(timestamp) || timestamp <= 0) {
+    return 'Unknown';
+  }
+  
   const now = Date.now();
   const diff = now - timestamp;
+  
+  // If timestamp is in the future, return 'Just now'
+  if (diff < 0) {
+    return 'Just now';
+  }
   
   const seconds = Math.floor(diff / 1000);
   const minutes = Math.floor(seconds / 60);
@@ -44,9 +54,17 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onFinish, studentName, hasS
     try {
       const savedTimestamp = localStorage.getItem('last_save_timestamp');
       if (savedTimestamp) {
-        setLastSaveTime(parseInt(savedTimestamp, 10));
+        const parsed = parseInt(savedTimestamp, 10);
+        // Validate that it's a valid number and a reasonable timestamp
+        if (!isNaN(parsed) && parsed > 0 && parsed <= Date.now()) {
+          setLastSaveTime(parsed);
+        } else {
+          console.warn('Invalid last_save_timestamp value:', savedTimestamp);
+        }
       }
-    } catch {}
+    } catch (e) {
+      console.error('Failed to load last save timestamp', e);
+    }
     
     if (hasSavedSession) {
       if (autoResume) {
