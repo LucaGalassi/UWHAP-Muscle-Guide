@@ -166,7 +166,7 @@ const App: React.FC = () => {
     
     return {
       totalSessions: typeof data.totalSessions === 'number' && !isNaN(data.totalSessions) ? Math.max(0, data.totalSessions) : 0,
-      lastSessionAt: typeof data.lastSessionAt === 'number' && !isNaN(data.lastSessionAt) && data.lastSessionAt > 0 ? data.lastSessionAt : Date.now(),
+      lastSessionAt: typeof data.lastSessionAt === 'number' && !isNaN(data.lastSessionAt) && data.lastSessionAt > 0 && data.lastSessionAt <= Date.now() ? data.lastSessionAt : Date.now(),
       musclesViewed: typeof data.musclesViewed === 'number' && !isNaN(data.musclesViewed) ? Math.max(0, data.musclesViewed) : 0,
       flashcardsAnswered: typeof data.flashcardsAnswered === 'number' && !isNaN(data.flashcardsAnswered) ? Math.max(0, data.flashcardsAnswered) : 0,
       ratings: {
