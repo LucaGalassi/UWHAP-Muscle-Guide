@@ -149,6 +149,35 @@ const App: React.FC = () => {
     flashcardsAnswered: number;
     ratings: { AGAIN: number; HARD: number; GOOD: number; EASY: number };
   };
+  
+  // Helper to validate and normalize AppStats structure
+  const normalizeAppStats = (data: any): AppStats => {
+    const defaultStats: AppStats = {
+      totalSessions: 0,
+      lastSessionAt: Date.now(),
+      musclesViewed: 0,
+      flashcardsAnswered: 0,
+      ratings: { AGAIN: 0, HARD: 0, GOOD: 0, EASY: 0 }
+    };
+    
+    if (!data || typeof data !== 'object') {
+      return defaultStats;
+    }
+    
+    return {
+      totalSessions: typeof data.totalSessions === 'number' && !isNaN(data.totalSessions) ? Math.max(0, data.totalSessions) : 0,
+      lastSessionAt: typeof data.lastSessionAt === 'number' && !isNaN(data.lastSessionAt) && data.lastSessionAt > 0 && data.lastSessionAt <= Date.now() ? data.lastSessionAt : Date.now(),
+      musclesViewed: typeof data.musclesViewed === 'number' && !isNaN(data.musclesViewed) ? Math.max(0, data.musclesViewed) : 0,
+      flashcardsAnswered: typeof data.flashcardsAnswered === 'number' && !isNaN(data.flashcardsAnswered) ? Math.max(0, data.flashcardsAnswered) : 0,
+      ratings: {
+        AGAIN: typeof data.ratings?.AGAIN === 'number' && !isNaN(data.ratings.AGAIN) ? Math.max(0, data.ratings.AGAIN) : 0,
+        HARD: typeof data.ratings?.HARD === 'number' && !isNaN(data.ratings.HARD) ? Math.max(0, data.ratings.HARD) : 0,
+        GOOD: typeof data.ratings?.GOOD === 'number' && !isNaN(data.ratings.GOOD) ? Math.max(0, data.ratings.GOOD) : 0,
+        EASY: typeof data.ratings?.EASY === 'number' && !isNaN(data.ratings.EASY) ? Math.max(0, data.ratings.EASY) : 0
+      }
+    };
+  };
+  
   const [stats, setStats] = useState<AppStats>({
     totalSessions: 0,
     lastSessionAt: Date.now(),
@@ -325,14 +354,25 @@ const App: React.FC = () => {
     // 7. Stats: load, bump session count
     try {
       const raw = localStorage.getItem('app_stats');
-      let loaded: AppStats | null = null;
-      if (raw) loaded = JSON.parse(raw);
-      const next: AppStats = loaded ? { ...loaded } : { totalSessions: 0, lastSessionAt: 0, musclesViewed: 0, flashcardsAnswered: 0, ratings: { AGAIN: 0, HARD: 0, GOOD: 0, EASY: 0 } };
-      next.totalSessions += 1;
-      next.lastSessionAt = Date.now();
+      let loaded: any = null;
+      if (raw) {
+        try {
+          loaded = JSON.parse(raw);
+        } catch (parseError) {
+          console.error('Failed to parse app_stats, resetting to defaults', parseError);
+        }
+      }
+      const normalized = normalizeAppStats(loaded);
+      const next: AppStats = {
+        ...normalized,
+        totalSessions: normalized.totalSessions + 1,
+        lastSessionAt: Date.now()
+      };
       setStats(next);
       localStorage.setItem('app_stats', JSON.stringify(next));
-    } catch {}
+    } catch (e) {
+      console.error('Failed to load/save app stats', e);
+    }
   }, []);
 
   // Show welcome modal for new users after splash finishes
@@ -407,22 +447,42 @@ const App: React.FC = () => {
     lastMuscleIdRef.current = id;
     try {
       const raw = localStorage.getItem('app_stats');
-      const s: AppStats = raw ? JSON.parse(raw) : { totalSessions: 1, lastSessionAt: Date.now(), musclesViewed: 0, flashcardsAnswered: 0, ratings: { AGAIN: 0, HARD: 0, GOOD: 0, EASY: 0 } };
+      let loaded: any = null;
+      if (raw) {
+        try {
+          loaded = JSON.parse(raw);
+        } catch (parseError) {
+          console.error('Failed to parse app_stats in muscle view tracking', parseError);
+        }
+      }
+      const s = normalizeAppStats(loaded);
       s.musclesViewed += 1;
       setStats(s);
       localStorage.setItem('app_stats', JSON.stringify(s));
-    } catch {}
+    } catch (e) {
+      console.error('Failed to track muscle view', e);
+    }
   }, [selectedMuscle]);
 
   const recordFlashcardRating = (rating: 'AGAIN'|'HARD'|'GOOD'|'EASY') => {
     try {
       const raw = localStorage.getItem('app_stats');
-      const s: AppStats = raw ? JSON.parse(raw) : { totalSessions: 1, lastSessionAt: Date.now(), musclesViewed: 0, flashcardsAnswered: 0, ratings: { AGAIN: 0, HARD: 0, GOOD: 0, EASY: 0 } };
+      let loaded: any = null;
+      if (raw) {
+        try {
+          loaded = JSON.parse(raw);
+        } catch (parseError) {
+          console.error('Failed to parse app_stats in flashcard rating', parseError);
+        }
+      }
+      const s = normalizeAppStats(loaded);
       s.flashcardsAnswered += 1;
       s.ratings[rating] = (s.ratings[rating] || 0) + 1;
       setStats(s);
       localStorage.setItem('app_stats', JSON.stringify(s));
-    } catch {}
+    } catch (e) {
+      console.error('Failed to record flashcard rating', e);
+    }
   };
 
   const handleResetProgress = () => {
